@@ -126,6 +126,73 @@ fileRouter.post('/create-directory', async (req, res) => {
   }
 });
 
+// Delete file
+fileRouter.delete('/files/*', async (req, res) => {
+  try {
+    const workingDir = getWorkingDir();
+    const relativePath = decodeURIComponent(req.url.replace('/files/', ''));
+    const filePath = path.join(workingDir, relativePath);
+    
+    // Security check: ensure file is within working directory
+    if (!filePath.startsWith(workingDir)) {
+      return res.status(403).json({ error: 'Access denied' });
+    }
+    
+    // Prevent deletion of the working directory itself
+    if (filePath === workingDir) {
+      return res.status(403).json({ error: 'Cannot delete working directory' });
+    }
+    
+    // Check if file exists
+    try {
+      await fs.access(filePath);
+    } catch {
+      return res.status(404).json({ error: 'File not found' });
+    }
+    
+    await fs.rm(filePath);
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error deleting file:', error);
+    res.status(500).json({ error: 'Failed to delete file' });
+  }
+});
+
+// Delete directory
+fileRouter.delete('/directories/*', async (req, res) => {
+  try {
+    const workingDir = getWorkingDir();
+    const relativePath = decodeURIComponent(req.url.replace('/directories/', ''));
+    const dirPath = path.join(workingDir, relativePath);
+    
+    // Security check: ensure directory is within working directory
+    if (!dirPath.startsWith(workingDir)) {
+      return res.status(403).json({ error: 'Access denied' });
+    }
+    
+    // Prevent deletion of the working directory itself
+    if (dirPath === workingDir) {
+      return res.status(403).json({ error: 'Cannot delete working directory' });
+    }
+    
+    // Check if directory exists
+    try {
+      const stat = await fs.stat(dirPath);
+      if (!stat.isDirectory()) {
+        return res.status(400).json({ error: 'Path is not a directory' });
+      }
+    } catch {
+      return res.status(404).json({ error: 'Directory not found' });
+    }
+    
+    await fs.rm(dirPath, { recursive: true, force: true });
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error deleting directory:', error);
+    res.status(500).json({ error: 'Failed to delete directory' });
+  }
+});
+
 // Theme management endpoints
 fileRouter.get('/themes', async (req, res) => {
   try {

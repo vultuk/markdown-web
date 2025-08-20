@@ -2,6 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { FileExplorer } from './components/FileExplorer';
 import { Editor } from './components/Editor';
 import { Header } from './components/Header';
+import { ConfirmationModal } from './components/ConfirmationModal';
 import { useAutoSave } from './hooks/useAutoSave';
 import styles from './styles/App.module.css';
 
@@ -18,6 +19,19 @@ function App() {
   const [fileContent, setFileContent] = useState<string>('');
   const [isPreviewMode, setIsPreviewMode] = useState<boolean>(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(true);
+  
+  // Confirmation modal state
+  const [confirmModal, setConfirmModal] = useState<{
+    isOpen: boolean;
+    title: string;
+    message: string;
+    onConfirm: () => void;
+  }>({
+    isOpen: false,
+    title: '',
+    message: '',
+    onConfirm: () => {}
+  });
 
   // URL state management functions
   const getFilePathFromURL = useCallback(() => {
@@ -130,6 +144,74 @@ function App() {
     }
   }, [loadFiles]);
 
+  const handleDeleteFile = useCallback((filePath: string) => {
+    const fileName = filePath.split('/').pop() || filePath;
+    setConfirmModal({
+      isOpen: true,
+      title: 'Delete File',
+      message: `Are you sure you want to delete '${fileName}'? This action cannot be undone.`,
+      onConfirm: async () => {
+        try {
+          const response = await fetch(`/api/files/${encodeURIComponent(filePath)}`, {
+            method: 'DELETE',
+          });
+          
+          if (response.ok) {
+            await loadFiles();
+            // If the deleted file was selected, clear the selection
+            if (selectedFile === filePath) {
+              setSelectedFile(null);
+              setFileContent('');
+              setIsPreviewMode(false);
+              window.history.pushState({}, '', window.location.pathname);
+            }
+          } else {
+            const error = await response.json();
+            alert(error.error || 'Failed to delete file');
+          }
+        } catch (error) {
+          console.error('Failed to delete file:', error);
+          alert('Failed to delete file');
+        }
+        setConfirmModal(prev => ({ ...prev, isOpen: false }));
+      }
+    });
+  }, [loadFiles, selectedFile]);
+
+  const handleDeleteDirectory = useCallback((dirPath: string) => {
+    const dirName = dirPath.split('/').pop() || dirPath;
+    setConfirmModal({
+      isOpen: true,
+      title: 'Delete Folder',
+      message: `Are you sure you want to delete the folder '${dirName}' and all its contents? This action cannot be undone.`,
+      onConfirm: async () => {
+        try {
+          const response = await fetch(`/api/directories/${encodeURIComponent(dirPath)}`, {
+            method: 'DELETE',
+          });
+          
+          if (response.ok) {
+            await loadFiles();
+            // If the deleted directory contained the selected file, clear the selection
+            if (selectedFile && selectedFile.startsWith(dirPath + '/')) {
+              setSelectedFile(null);
+              setFileContent('');
+              setIsPreviewMode(false);
+              window.history.pushState({}, '', window.location.pathname);
+            }
+          } else {
+            const error = await response.json();
+            alert(error.error || 'Failed to delete directory');
+          }
+        } catch (error) {
+          console.error('Failed to delete directory:', error);
+          alert('Failed to delete directory');
+        }
+        setConfirmModal(prev => ({ ...prev, isOpen: false }));
+      }
+    });
+  }, [loadFiles, selectedFile]);
+
   useEffect(() => {
     loadFiles();
   }, [loadFiles]);
@@ -190,6 +272,8 @@ function App() {
               onFileSelect={handleFileSelect}
               onCreateFile={handleCreateFile}
               onCreateDirectory={handleCreateDirectory}
+              onDeleteFile={handleDeleteFile}
+              onDeleteDirectory={handleDeleteDirectory}
               selectedFile={selectedFile}
             />
           </div>
@@ -206,6 +290,17 @@ function App() {
           />
         </div>
       </div>
+      
+      <ConfirmationModal
+        isOpen={confirmModal.isOpen}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        confirmText="Delete"
+        cancelText="Cancel"
+        onConfirm={confirmModal.onConfirm}
+        onCancel={() => setConfirmModal(prev => ({ ...prev, isOpen: false }))}
+        danger={true}
+      />
     </div>
   );
 }

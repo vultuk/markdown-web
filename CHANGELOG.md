@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.2] - 2024-08-20
+
+### Fixed
+- Completely rewrote print functionality to properly flow content across multiple pages
+- Created separate print container that bypasses app layout constraints during printing
+- Fixed print content width to fill entire page properly
+- Added real-time content synchronization between preview and print container
+- Resolved issue where content appeared in constrained containers instead of flowing naturally
+
+### Technical Changes
+- Added JavaScript-based print container creation in MarkdownPreview component
+- Implemented MutationObserver for real-time content updates
+- Rewrote print CSS to use display:none instead of visibility:hidden
+- Reset all HTML/body constraints during print mode
+
 ## [1.2.1] - 2024-08-20
 
 ### Fixed
@@ -145,6 +160,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Clean, responsive interface
 - GitHub Flavored Markdown support
 
+[1.2.2]: https://github.com/vultuk/markdown-web/compare/v1.2.1...v1.2.2
 [1.2.1]: https://github.com/vultuk/markdown-web/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/vultuk/markdown-web/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/vultuk/markdown-web/compare/v1.0.9...v1.1.0

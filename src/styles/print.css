@@ -1,99 +1,116 @@
 @media print {
-  /* Hide everything except markdown content */
-  body * {
-    visibility: hidden;
+  /* Reset everything for print */
+  * {
+    box-sizing: border-box !important;
   }
   
-  .print-content,
-  .print-content * {
-    visibility: visible;
-  }
-  
-  .print-content {
-    position: static !important;
-    left: auto !important;
-    top: auto !important;
-    width: 100% !important;
+  html, body {
     height: auto !important;
     overflow: visible !important;
-    max-height: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
   }
   
-  /* Print-friendly colors */
-  .print-content {
+  /* Hide all app structure except our print container */
+  body > *:not(#print-container) {
+    display: none !important;
+  }
+  
+  /* Show and style the print container */
+  #print-container {
+    display: block !important;
+    position: static !important;
+    width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    background: white !important;
+  }
+  
+  /* Print-friendly base styling */
+  #print-container {
     color: #000 !important;
-    background: #fff !important;
-    font-family: 'Times New Roman', Times, serif;
-    font-size: 12pt;
-    line-height: 1.6;
-    padding: 20px;
+    font-family: 'Times New Roman', Times, serif !important;
+    font-size: 12pt !important;
+    line-height: 1.6 !important;
+    padding: 20pt !important;
+  }
+  
+  /* Reset all child elements to display naturally */
+  #print-container * {
+    visibility: visible !important;
+    background: transparent !important;
   }
   
   /* Headings */
-  .print-content h1,
-  .print-content h2,
-  .print-content h3,
-  .print-content h4,
-  .print-content h5,
-  .print-content h6 {
+  #print-container h1,
+  #print-container h2,
+  #print-container h3,
+  #print-container h4,
+  #print-container h5,
+  #print-container h6 {
     color: #000 !important;
     page-break-after: avoid;
     margin-top: 20pt;
     margin-bottom: 10pt;
   }
   
-  .print-content h1 {
+  #print-container h1 {
     font-size: 18pt;
     border-bottom: 2pt solid #000;
     padding-bottom: 5pt;
   }
   
-  .print-content h2 {
+  #print-container h2 {
     font-size: 16pt;
     border-bottom: 1pt solid #666;
     padding-bottom: 3pt;
   }
   
-  .print-content h3 {
+  #print-container h3 {
     font-size: 14pt;
   }
   
-  .print-content h4,
-  .print-content h5,
-  .print-content h6 {
+  #print-container h4,
+  #print-container h5,
+  #print-container h6 {
     font-size: 12pt;
   }
   
   /* Paragraphs */
-  .print-content p {
+  #print-container p {
     margin: 8pt 0;
     text-align: justify;
   }
   
   /* Lists */
-  .print-content ul,
-  .print-content ol {
+  #print-container ul,
+  #print-container ol {
     margin: 8pt 0;
     padding-left: 20pt;
   }
   
-  .print-content li {
+  #print-container li {
     margin: 4pt 0;
   }
   
   /* Code blocks */
-  .print-content pre {
+  #print-container pre {
     background: #f8f8f8 !important;
     border: 1pt solid #ddd !important;
     padding: 8pt !important;
     font-family: 'Courier New', monospace;
     font-size: 10pt;
-    overflow: hidden;
+    overflow: visible !important;
     page-break-inside: avoid;
     margin: 8pt 0;
+    white-space: pre-wrap;
   }
   
-  .print-content code {
+  #print-container code {
     background: #f0f0f0 !important;
     padding: 1pt 3pt !important;
     font-family: 'Courier New', monospace;
@@ -102,7 +119,7 @@
   }
   
   /* Blockquotes */
-  .print-content blockquote {
+  #print-container blockquote {
     border-left: 3pt solid #666 !important;
     padding-left: 12pt;
     margin: 8pt 0;
@@ -111,45 +128,45 @@
   }
   
   /* Tables */
-  .print-content table {
+  #print-container table {
     border-collapse: collapse;
     width: 100%;
     margin: 8pt 0;
     page-break-inside: avoid;
   }
   
-  .print-content th,
-  .print-content td {
+  #print-container th,
+  #print-container td {
     border: 1pt solid #666 !important;
     padding: 4pt 8pt;
     text-align: left;
   }
   
-  .print-content th {
+  #print-container th {
     background: #f0f0f0 !important;
     font-weight: bold;
   }
   
   /* Links */
-  .print-content a {
+  #print-container a {
     color: #000 !important;
     text-decoration: underline;
   }
   
-  .print-content a[href^="http"]:after {
+  #print-container a[href^="http"]:after {
     content: " (" attr(href) ")";
     font-size: 10pt;
     color: #666;
   }
   
   /* Images */
-  .print-content img {
+  #print-container img {
     max-width: 100%;
     page-break-inside: avoid;
   }
   
   /* Page breaks */
-  .print-content hr {
+  #print-container hr {
     page-break-after: always;
     visibility: hidden;
     margin: 0;

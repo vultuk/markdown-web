@@ -5,6 +5,31 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.8.0] - 2024-08-20
+
+### Added
+- **Toast Notification System**: User-friendly notifications for operations and errors
+- **Enhanced Error Handling**: Better error feedback with contextual messages
+- **Operation Status Feedback**: Real-time feedback for file operations and failures
+
+### New Features
+- **Toast Component**: Accessible toast notifications with different types (info, success, error)
+- **Smart Error Messages**: Contextual error messages for file operations, renaming, and navigation
+- **Better User Feedback**: Improved user experience with clear operation status messages
+- **Auto-dismiss Notifications**: Toast messages automatically dismiss after 4 seconds
+
+### Technical Improvements
+- **Toast State Management**: Centralized toast notification state in main App component
+- **Error Recovery**: Better error handling with graceful fallbacks for failed operations
+- **Accessibility**: Toast notifications include proper ARIA attributes and roles
+- **Mobile Responsive**: Toast notifications adapt to mobile screen sizes
+
+### User Experience
+- **File Operation Feedback**: Clear messages when file operations succeed or fail
+- **Navigation Errors**: Helpful messages when file navigation fails with automatic recovery
+- **Rename Feedback**: Success and error messages for file/folder rename operations
+- **Loading States**: Better feedback during file loading and content retrieval
+
 ## [1.7.0] - 2024-08-20
 
 ### Added
@@ -310,6 +335,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Clean, responsive interface
 - GitHub Flavored Markdown support
 
+[1.8.0]: https://github.com/vultuk/markdown-web/compare/v1.7.0...v1.8.0
 [1.7.0]: https://github.com/vultuk/markdown-web/compare/v1.6.2...v1.7.0
 [1.6.2]: https://github.com/vultuk/markdown-web/compare/v1.6.1...v1.6.2
 [1.6.1]: https://github.com/vultuk/markdown-web/compare/v1.6.0...v1.6.1

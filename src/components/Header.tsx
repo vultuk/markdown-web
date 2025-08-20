@@ -43,9 +43,9 @@ export function Header({
       </div>
       
       <div className={styles.right}>
-        <ThemeSelector />
         {hasSelectedFile && (
           <>
+            <ThemeSelector />
             <SaveIndicator isSaving={isSaving} hasUnsavedChanges={hasUnsavedChanges} />
             <button 
               className={styles.toggleButton}

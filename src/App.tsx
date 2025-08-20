@@ -5,6 +5,7 @@ import { Header } from './components/Header';
 import { ConfirmationModal } from './components/ConfirmationModal';
 import { useAutoSave } from './hooks/useAutoSave';
 import styles from './styles/App.module.css';
+import { Toast } from './components/Toast';
 
 interface FileItem {
   name: string;
@@ -33,6 +34,11 @@ function App() {
   });
   const [isResizing, setIsResizing] = useState<boolean>(false);
   const [isMobile, setIsMobile] = useState<boolean>(typeof window !== 'undefined' ? window.innerWidth <= 768 : false);
+  const [toast, setToast] = useState<{ message: string; type?: 'info' | 'error' | 'success' } | null>(null);
+
+  const showToast = useCallback((message: string, type: 'info' | 'error' | 'success' = 'info') => {
+    setToast({ message, type });
+  }, []);
   
   // Confirmation modal state
   const [confirmModal, setConfirmModal] = useState<{
@@ -94,23 +100,40 @@ function App() {
     }
   }, []);
 
-  const loadFileContent = useCallback(async (filePath: string) => {
+  const loadFileContent = useCallback(async (filePath: string): Promise<boolean> => {
     try {
       const response = await fetch(`/api/files/${filePath}`);
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
       const data = await response.json();
+      if (!data || typeof data.content !== 'string') {
+        throw new Error('Invalid response');
+      }
       setFileContent(data.content);
+      return true;
     } catch (error) {
       console.error('Failed to load file content:', error);
       setFileContent('');
+      return false;
     }
   }, []);
 
-  const handleFileSelect = useCallback((filePath: string) => {
+  const handleFileSelect = useCallback(async (filePath: string) => {
+    const ok = await loadFileContent(filePath);
+    if (!ok) {
+      // If it fails, clear selection and URL
+      setSelectedFile(null);
+      setIsPreviewMode(false);
+      setFileContent('');
+      updateURL(null);
+      showToast('Could not open file. Returning to home.', 'error');
+      return;
+    }
     setSelectedFile(filePath);
     setIsPreviewMode(false);
-    loadFileContent(filePath);
     updateURL(filePath);
-  }, [loadFileContent, updateURL]);
+  }, [loadFileContent, updateURL, showToast]);
 
   const handleCreateFile = useCallback(async (fileName: string, directory?: string) => {
     const fullPath = directory ? `${directory}/${fileName}` : fileName;
@@ -235,31 +258,45 @@ function App() {
       });
       if (!response.ok) {
         const err = await response.json().catch(() => ({}));
-        alert(err.error || 'Failed to rename');
+        showToast(err.error || 'Failed to rename', 'error');
         return false;
       }
       await loadFiles();
       // Update selection and URL if needed
       if (selectedFile) {
         if (selectedFile === oldPath) {
-          setSelectedFile(newPath);
-          updateURL(newPath);
-          await loadFileContent(newPath);
+          const ok = await loadFileContent(newPath);
+          if (ok) {
+            setSelectedFile(newPath);
+            updateURL(newPath);
+          } else {
+            setSelectedFile(null);
+            setFileContent('');
+            updateURL(null);
+            showToast('Renamed, but failed to open the new path.', 'error');
+          }
         } else if (selectedFile.startsWith(oldPath + '/')) {
           const suffix = selectedFile.slice(oldPath.length);
           const updated = newPath + suffix;
-          setSelectedFile(updated);
-          updateURL(updated);
-          await loadFileContent(updated);
+          const ok = await loadFileContent(updated);
+          if (ok) {
+            setSelectedFile(updated);
+            updateURL(updated);
+          } else {
+            setSelectedFile(null);
+            setFileContent('');
+            updateURL(null);
+            showToast('Renamed folder, but failed to open nested file.', 'error');
+          }
         }
       }
       return true;
     } catch (error) {
       console.error('Failed to rename:', error);
-      alert('Failed to rename');
+      showToast('Failed to rename', 'error');
       return false;
     }
-  }, [loadFiles, selectedFile, updateURL, loadFileContent]);
+  }, [loadFiles, selectedFile, updateURL, loadFileContent, showToast]);
 
   useEffect(() => {
     loadFiles();
@@ -304,9 +341,17 @@ function App() {
     const loadFileFromURL = async () => {
       const filePath = getFilePathFromURL();
       if (filePath) {
-        setSelectedFile(filePath);
-        setIsPreviewMode(false);
-        await loadFileContent(filePath);
+        const ok = await loadFileContent(filePath);
+        if (ok) {
+          setSelectedFile(filePath);
+          setIsPreviewMode(false);
+        } else {
+          setSelectedFile(null);
+          setIsPreviewMode(false);
+          setFileContent('');
+          updateURL(null);
+          showToast('Could not open file from URL. Returning to home.', 'error');
+        }
       }
     };
 
@@ -314,12 +359,20 @@ function App() {
     loadFileFromURL();
 
     // Handle browser back/forward navigation
-    const handlePopState = (event: PopStateEvent) => {
+    const handlePopState = async (event: PopStateEvent) => {
       const filePath = getFilePathFromURL();
       if (filePath && filePath !== selectedFile) {
-        setSelectedFile(filePath);
-        setIsPreviewMode(false);
-        loadFileContent(filePath);
+        const ok = await loadFileContent(filePath);
+        if (ok) {
+          setSelectedFile(filePath);
+          setIsPreviewMode(false);
+        } else {
+          setSelectedFile(null);
+          setIsPreviewMode(false);
+          setFileContent('');
+          updateURL(null);
+          showToast('Could not open file. Returning to home.', 'error');
+        }
       } else if (!filePath && selectedFile) {
         setSelectedFile(null);
         setFileContent('');
@@ -331,10 +384,17 @@ function App() {
     return () => {
       window.removeEventListener('popstate', handlePopState);
     };
-  }, [getFilePathFromURL, loadFileContent, selectedFile]);
+  }, [getFilePathFromURL, loadFileContent, selectedFile, updateURL, showToast]);
 
   return (
     <div className={styles.app}>
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
       <Header
         isSidebarOpen={isSidebarOpen}
         onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}

@@ -53,7 +53,7 @@ export function Header({
             >
               {isPreviewMode ? 'Edit' : 'Preview'}
             </button>
-            <ExportButton content={fileContent} fileName={fileName} />
+            <ExportButton content={fileContent} fileName={fileName} isPreviewMode={isPreviewMode} />
           </>
         )}
       </div>

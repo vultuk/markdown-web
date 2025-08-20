@@ -1,15 +1,20 @@
 import React, { useState, useRef, useEffect } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import html2pdf from 'html2pdf.js';
+import { useTheme } from '../hooks/useTheme';
 import styles from '../styles/ExportButton.module.css';
 
 interface ExportButtonProps {
   content: string;
   fileName: string | null;
+  isPreviewMode: boolean;
 }
 
-export function ExportButton({ content, fileName }: ExportButtonProps) {
+export function ExportButton({ content, fileName, isPreviewMode }: ExportButtonProps) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const { currentTheme, generateCSS } = useTheme();
 
   const getFileName = () => {
     if (!fileName) return 'untitled';
@@ -30,33 +35,100 @@ export function ExportButton({ content, fileName }: ExportButtonProps) {
   };
 
   const exportToPDF = async () => {
-    const printContainer = document.getElementById('print-container');
-    if (!printContainer) {
-      console.error('Print container not found');
-      return;
-    }
-
-    const options = {
-      margin: [0.5, 0.5, 0.5, 0.5],
-      filename: `${getFileName()}.pdf`,
-      image: { type: 'jpeg', quality: 0.98 },
-      html2canvas: { 
-        scale: 2,
-        useCORS: true,
-        letterRendering: true
-      },
-      jsPDF: { 
-        unit: 'in', 
-        format: 'letter', 
-        orientation: 'portrait' 
-      }
-    };
+    let containerElement: HTMLElement | null = null;
+    let tempContainer: HTMLElement | null = null;
 
     try {
-      await html2pdf().set(options).from(printContainer).save();
+      if (isPreviewMode) {
+        // Use existing print container when in preview mode
+        containerElement = document.getElementById('print-container');
+        if (!containerElement) {
+          alert('Preview not ready. Please switch to Preview mode first.');
+          return;
+        }
+      } else {
+        // Create temporary container when in edit mode
+        if (!currentTheme) {
+          alert('Theme not loaded. Please try again.');
+          return;
+        }
+
+        // Create temporary container
+        tempContainer = document.createElement('div');
+        tempContainer.style.position = 'absolute';
+        tempContainer.style.left = '-9999px';
+        tempContainer.style.top = '-9999px';
+        tempContainer.style.width = '8.5in';
+        tempContainer.style.visibility = 'hidden';
+        document.body.appendChild(tempContainer);
+
+        // Create React root and render markdown
+        const reactRoot = document.createElement('div');
+        tempContainer.appendChild(reactRoot);
+
+        // Use React to render the markdown content
+        const { createRoot } = await import('react-dom/client');
+        const root = createRoot(reactRoot);
+        
+        await new Promise<void>((resolve) => {
+          root.render(
+            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+              {content}
+            </ReactMarkdown>
+          );
+          // Wait for rendering to complete
+          setTimeout(() => {
+            resolve();
+          }, 100);
+        });
+
+        // Apply theme styles
+        const printCSS = generateCSS(currentTheme, true);
+        reactRoot.style.cssText = printCSS.container;
+
+        Object.entries(printCSS.elements).forEach(([element, css]) => {
+          const elements = reactRoot.querySelectorAll(element);
+          elements.forEach(el => {
+            (el as HTMLElement).style.cssText = css;
+          });
+        });
+
+        containerElement = reactRoot;
+      }
+
+      if (!containerElement) {
+        throw new Error('Could not create content container for PDF export');
+      }
+
+      const options = {
+        margin: [0.5, 0.5, 0.5, 0.5],
+        filename: `${getFileName()}.pdf`,
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: { 
+          scale: 2,
+          useCORS: true,
+          letterRendering: true,
+          foreignObjectRendering: true,
+          logging: false
+        },
+        jsPDF: { 
+          unit: 'in', 
+          format: 'letter', 
+          orientation: 'portrait' 
+        }
+      };
+
+      await html2pdf().set(options).from(containerElement).save();
       setIsDropdownOpen(false);
+
     } catch (error) {
       console.error('Error generating PDF:', error);
+      alert('Failed to generate PDF. Please try again.');
+    } finally {
+      // Clean up temporary container
+      if (tempContainer) {
+        document.body.removeChild(tempContainer);
+      }
     }
   };
 

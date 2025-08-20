@@ -178,6 +178,8 @@ function App() {
         isSaving={isSaving}
         hasUnsavedChanges={hasUnsavedChanges}
         hasSelectedFile={!!selectedFile}
+        fileContent={fileContent}
+        fileName={selectedFile}
       />
       
       <div className={styles.body}>

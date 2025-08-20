@@ -1,6 +1,7 @@
 import React from 'react';
 import { SaveIndicator } from './SaveIndicator';
 import { ThemeSelector } from './ThemeSelector';
+import { ExportButton } from './ExportButton';
 import styles from '../styles/Header.module.css';
 
 interface HeaderProps {
@@ -11,6 +12,8 @@ interface HeaderProps {
   isSaving: boolean;
   hasUnsavedChanges: boolean;
   hasSelectedFile: boolean;
+  fileContent?: string;
+  fileName?: string | null;
 }
 
 export function Header({ 
@@ -20,7 +23,9 @@ export function Header({
   onTogglePreview, 
   isSaving, 
   hasUnsavedChanges,
-  hasSelectedFile 
+  hasSelectedFile,
+  fileContent = '',
+  fileName
 }: HeaderProps) {
   return (
     <header className={styles.header}>
@@ -48,6 +53,7 @@ export function Header({
             >
               {isPreviewMode ? 'Edit' : 'Preview'}
             </button>
+            <ExportButton content={fileContent} fileName={fileName} />
           </>
         )}
       </div>

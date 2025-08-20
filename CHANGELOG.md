@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.11.0] - 2024-08-20
+
+### Added
+- **Progressive Web App (PWA) Support**: Application can now be installed as a native-like web app
+- **Service Worker Registration**: Enables offline functionality and improved caching
+- **Mobile App Experience**: Enhanced mobile web app capabilities with proper meta tags
+- **Apple Touch Icon Support**: Optimized icons for iOS home screen installation
+- **Web App Manifest**: Structured manifest file for better app store integration
+
+### Technical Improvements
+- Added PWA meta tags for mobile web app capabilities
+- Implemented service worker registration for offline support
+- Enhanced mobile responsiveness with app-like interface
+- Added theme color and status bar styling for mobile devices
+
 ## [1.10.0] - 2024-08-20
 
 ### Added

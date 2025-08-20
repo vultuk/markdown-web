@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { FileExplorer } from './components/FileExplorer';
 import { Editor } from './components/Editor';
+import { MarkdownPreview } from './components/MarkdownPreview';
 import { Header } from './components/Header';
 import { ConfirmationModal } from './components/ConfirmationModal';
 import { useAutoSave } from './hooks/useAutoSave';
@@ -439,15 +440,37 @@ function App() {
           </>
         )}
         <div className={styles.main}>
-          <Editor
-            content={fileContent}
-            onChange={setFileContent}
-            isPreviewMode={isPreviewMode}
-            isSaving={isSaving}
-            hasUnsavedChanges={hasUnsavedChanges}
-            onManualSave={saveNow}
-            fileName={selectedFile}
-          />
+          {isPreviewMode ? (
+            <div className={styles.splitMain}>
+              <div className={styles.pane}>
+                <Editor
+                  content={fileContent}
+                  onChange={setFileContent}
+                  isPreviewMode={false}
+                  isSaving={isSaving}
+                  hasUnsavedChanges={hasUnsavedChanges}
+                  onManualSave={saveNow}
+                  fileName={selectedFile}
+                />
+              </div>
+              <div className={styles.divider} />
+              <div className={styles.pane}>
+                {selectedFile ? (
+                  <MarkdownPreview content={fileContent} />
+                ) : null}
+              </div>
+            </div>
+          ) : (
+            <Editor
+              content={fileContent}
+              onChange={setFileContent}
+              isPreviewMode={false}
+              isSaving={isSaving}
+              hasUnsavedChanges={hasUnsavedChanges}
+              onManualSave={saveNow}
+              fileName={selectedFile}
+            />
+          )}
         </div>
       </div>
       

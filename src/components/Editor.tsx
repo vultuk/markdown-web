@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import { MarkdownPreview } from './MarkdownPreview';
 import { StatusBar } from './StatusBar';
 import styles from '../styles/Editor.module.css';
 
@@ -50,8 +49,6 @@ export function Editor({
             <h2>Welcome to Markdown Web Editor</h2>
             <p>Select a file from the sidebar to start editing, or create a new one.</p>
           </div>
-        ) : isPreviewMode ? (
-          <MarkdownPreview content={content} />
         ) : (
           <textarea
             className={styles.textarea}

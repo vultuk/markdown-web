@@ -5,6 +5,38 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.9.0] - 2024-08-20
+
+### Added
+- **Split-View Preview Mode**: Side-by-side editing and preview experience
+- **Enhanced Preview Functionality**: Improved preview mode with better layout management
+- **Developer Documentation**: Comprehensive repository guidelines and development instructions
+- **Architecture Improvements**: Better separation of concerns between components
+
+### New Features
+- **Split-Screen Interface**: Preview mode now shows editor and preview side-by-side
+- **Improved Layout System**: Enhanced CSS grid system for better responsive design
+- **Better Component Architecture**: Cleaner separation between Editor and Preview components
+- **Repository Guidelines**: Complete development guidelines in AGENTS.md
+
+### Technical Improvements
+- **Component Refactoring**: Moved MarkdownPreview handling from Editor to App component
+- **Layout Management**: New split-pane layout system for preview mode
+- **CSS Architecture**: Enhanced responsive design with better mobile support
+- **Code Organization**: Improved import structure and component responsibilities
+
+### User Experience
+- **Visual Editing**: See markdown source and rendered output simultaneously
+- **Better Workflow**: Enhanced editing experience with immediate visual feedback
+- **Responsive Design**: Split-view adapts to different screen sizes
+- **Improved Navigation**: Better preview mode toggle and layout management
+
+### Documentation
+- **Development Guidelines**: Complete coding standards and project structure documentation
+- **Build Instructions**: Comprehensive build, test, and development command reference
+- **Security Guidelines**: Best practices for secure development and deployment
+- **Contribution Guide**: Clear guidelines for commits, PRs, and testing
+
 ## [1.8.0] - 2024-08-20
 
 ### Added
@@ -335,6 +367,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Clean, responsive interface
 - GitHub Flavored Markdown support
 
+[1.9.0]: https://github.com/vultuk/markdown-web/compare/v1.8.0...v1.9.0
 [1.8.0]: https://github.com/vultuk/markdown-web/compare/v1.7.0...v1.8.0
 [1.7.0]: https://github.com/vultuk/markdown-web/compare/v1.6.2...v1.7.0
 [1.6.2]: https://github.com/vultuk/markdown-web/compare/v1.6.1...v1.6.2

@@ -54,6 +54,22 @@ body {
   overflow: hidden;
 }
 
+.splitMain {
+  display: flex;
+  height: 100%;
+}
+
+.pane {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.divider {
+  width: 1px;
+  background: #3e3e42;
+}
+
 /* Mobile layout */
 @media (max-width: 768px) {
   .app {

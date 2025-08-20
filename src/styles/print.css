@@ -83,7 +83,6 @@
   /* Paragraphs */
   #print-container p {
     margin: 8pt 0;
-    text-align: justify;
   }
   
   /* Lists */

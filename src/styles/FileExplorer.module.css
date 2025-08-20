@@ -83,6 +83,22 @@
   display: flex;
 }
 
+.fileContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.fileActions {
+  display: none;
+  gap: 2px;
+}
+
+.fileContainer:hover .fileActions {
+  display: flex;
+}
+
 .actionButton {
   background: none;
   border: none;
@@ -96,6 +112,15 @@
 .actionButton:hover {
   background-color: #3e3e42;
   color: #cccccc;
+}
+
+.deleteButton {
+  color: #f48771;
+}
+
+.deleteButton:hover {
+  background-color: #5a2d2d;
+  color: #f48771;
 }
 
 .formButtons {

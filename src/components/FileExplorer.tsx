@@ -13,6 +13,8 @@ interface FileExplorerProps {
   onFileSelect: (path: string) => void;
   onCreateFile: (fileName: string, directory?: string) => void;
   onCreateDirectory: (dirName: string, directory?: string) => void;
+  onDeleteFile: (filePath: string) => void;
+  onDeleteDirectory: (dirPath: string) => void;
   selectedFile: string | null;
 }
 
@@ -21,6 +23,8 @@ export function FileExplorer({
   onFileSelect, 
   onCreateFile, 
   onCreateDirectory, 
+  onDeleteFile,
+  onDeleteDirectory,
   selectedFile 
 }: FileExplorerProps) {
   const [expandedDirs, setExpandedDirs] = useState<Set<string>>(new Set());
@@ -98,15 +102,39 @@ export function FileExplorer({
                 >
                   📁+
                 </button>
+                <button 
+                  className={`${styles.actionButton} ${styles.deleteButton}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDeleteDirectory(item.path);
+                  }}
+                  title="Delete this folder"
+                >
+                  🗑️
+                </button>
               </div>
             </div>
           ) : (
-            <div 
-              className={styles.file}
-              onClick={() => onFileSelect(item.path)}
-            >
-              <span className={styles.icon}>📄</span>
-              <span>{item.name}</span>
+            <div className={styles.fileContainer}>
+              <div 
+                className={styles.file}
+                onClick={() => onFileSelect(item.path)}
+              >
+                <span className={styles.icon}>📄</span>
+                <span>{item.name}</span>
+              </div>
+              <div className={styles.fileActions}>
+                <button 
+                  className={`${styles.actionButton} ${styles.deleteButton}`}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onDeleteFile(item.path);
+                  }}
+                  title="Delete this file"
+                >
+                  🗑️
+                </button>
+              </div>
             </div>
           )}
         </div>

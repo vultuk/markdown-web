@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.2] - 2024-08-20
+
+### Fixed
+- **Resolved theme switching bug**: Theme changes now apply instantly in preview mode (for real this time!)
+- Fixed architecture issue where components had separate theme states instead of shared state
+
+### Technical Architecture Improvements
+- **Implemented Theme Context**: Created centralized React Context for theme state management
+- **Shared State System**: All components now use the same theme state via React Context
+- **Backwards Compatibility**: useTheme hook maintains the same API while using shared context
+- **Real-Time Propagation**: Theme changes immediately propagate to all components
+
+### How It Works Now
+- Single source of truth for theme state across the entire application
+- ThemeSelector and MarkdownPreview share the same context state
+- No more component remounting required for theme changes to apply
+- Instant theme switching in any mode (edit or preview)
+
 ## [1.3.1] - 2024-08-20
 
 ### Fixed
@@ -213,6 +231,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Clean, responsive interface
 - GitHub Flavored Markdown support
 
+[1.3.2]: https://github.com/vultuk/markdown-web/compare/v1.3.1...v1.3.2
 [1.3.1]: https://github.com/vultuk/markdown-web/compare/v1.3.0...v1.3.1
 [1.3.0]: https://github.com/vultuk/markdown-web/compare/v1.2.4...v1.3.0
 [1.2.4]: https://github.com/vultuk/markdown-web/compare/v1.2.3...v1.2.4

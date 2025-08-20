@@ -47,40 +47,51 @@ export function MarkdownPreview({ content }: MarkdownPreviewProps) {
   useEffect(() => {
     if (!currentTheme || !contentRef.current) return;
 
-    const preview = contentRef.current;
-    const printContainer = document.getElementById('print-container');
-    
-    // Generate CSS for preview and print
-    const previewCSS = generateCSS(currentTheme, false);
-    const printCSS = generateCSS(currentTheme, true);
-    
-    // Apply preview styles
-    preview.style.cssText = previewCSS.container;
-    
-    // Apply element styles to preview
-    Object.entries(previewCSS.elements).forEach(([element, css]) => {
-      const elements = preview.querySelectorAll(element);
-      elements.forEach(el => {
-        (el as HTMLElement).style.cssText = css;
-      });
-    });
-
-    // Apply styles to print container if it exists
-    if (printContainer) {
-      printContainer.style.cssText = printCSS.container;
+    // Use setTimeout to ensure DOM elements are ready after React rendering
+    const applyStyles = () => {
+      const preview = contentRef.current;
+      const printContainer = document.getElementById('print-container');
       
-      Object.entries(printCSS.elements).forEach(([element, css]) => {
-        const elements = printContainer.querySelectorAll(element);
+      if (!preview) return;
+      
+      // Generate CSS for preview and print
+      const previewCSS = generateCSS(currentTheme, false);
+      const printCSS = generateCSS(currentTheme, true);
+      
+      // Apply preview styles
+      preview.style.cssText = previewCSS.container;
+      
+      // Apply element styles to preview
+      Object.entries(previewCSS.elements).forEach(([element, css]) => {
+        const elements = preview.querySelectorAll(element);
         elements.forEach(el => {
           (el as HTMLElement).style.cssText = css;
         });
       });
-    }
+
+      // Apply styles to print container if it exists
+      if (printContainer) {
+        printContainer.style.cssText = printCSS.container;
+        
+        Object.entries(printCSS.elements).forEach(([element, css]) => {
+          const elements = printContainer.querySelectorAll(element);
+          elements.forEach(el => {
+            (el as HTMLElement).style.cssText = css;
+          });
+        });
+      }
+    };
+
+    // Apply styles on next tick to ensure DOM is ready
+    setTimeout(applyStyles, 0);
   }, [currentTheme, content, generateCSS]);
 
   return (
     <div ref={contentRef} className={styles.preview}>
-      <ReactMarkdown remarkPlugins={[remarkGfm]}>
+      <ReactMarkdown 
+        key={currentTheme?.name || 'default'} 
+        remarkPlugins={[remarkGfm]}
+      >
         {content}
       </ReactMarkdown>
     </div>

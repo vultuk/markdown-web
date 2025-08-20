@@ -1,0 +1,159 @@
+@media print {
+  /* Hide everything except markdown content */
+  body * {
+    visibility: hidden;
+  }
+  
+  .print-content,
+  .print-content * {
+    visibility: visible;
+  }
+  
+  .print-content {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+  }
+  
+  /* Print-friendly colors */
+  .print-content {
+    color: #000 !important;
+    background: #fff !important;
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 12pt;
+    line-height: 1.6;
+    padding: 20px;
+  }
+  
+  /* Headings */
+  .print-content h1,
+  .print-content h2,
+  .print-content h3,
+  .print-content h4,
+  .print-content h5,
+  .print-content h6 {
+    color: #000 !important;
+    page-break-after: avoid;
+    margin-top: 20pt;
+    margin-bottom: 10pt;
+  }
+  
+  .print-content h1 {
+    font-size: 18pt;
+    border-bottom: 2pt solid #000;
+    padding-bottom: 5pt;
+  }
+  
+  .print-content h2 {
+    font-size: 16pt;
+    border-bottom: 1pt solid #666;
+    padding-bottom: 3pt;
+  }
+  
+  .print-content h3 {
+    font-size: 14pt;
+  }
+  
+  .print-content h4,
+  .print-content h5,
+  .print-content h6 {
+    font-size: 12pt;
+  }
+  
+  /* Paragraphs */
+  .print-content p {
+    margin: 8pt 0;
+    text-align: justify;
+  }
+  
+  /* Lists */
+  .print-content ul,
+  .print-content ol {
+    margin: 8pt 0;
+    padding-left: 20pt;
+  }
+  
+  .print-content li {
+    margin: 4pt 0;
+  }
+  
+  /* Code blocks */
+  .print-content pre {
+    background: #f8f8f8 !important;
+    border: 1pt solid #ddd !important;
+    padding: 8pt !important;
+    font-family: 'Courier New', monospace;
+    font-size: 10pt;
+    overflow: hidden;
+    page-break-inside: avoid;
+    margin: 8pt 0;
+  }
+  
+  .print-content code {
+    background: #f0f0f0 !important;
+    padding: 1pt 3pt !important;
+    font-family: 'Courier New', monospace;
+    font-size: 10pt;
+    border: none !important;
+  }
+  
+  /* Blockquotes */
+  .print-content blockquote {
+    border-left: 3pt solid #666 !important;
+    padding-left: 12pt;
+    margin: 8pt 0;
+    font-style: italic;
+    color: #333 !important;
+  }
+  
+  /* Tables */
+  .print-content table {
+    border-collapse: collapse;
+    width: 100%;
+    margin: 8pt 0;
+    page-break-inside: avoid;
+  }
+  
+  .print-content th,
+  .print-content td {
+    border: 1pt solid #666 !important;
+    padding: 4pt 8pt;
+    text-align: left;
+  }
+  
+  .print-content th {
+    background: #f0f0f0 !important;
+    font-weight: bold;
+  }
+  
+  /* Links */
+  .print-content a {
+    color: #000 !important;
+    text-decoration: underline;
+  }
+  
+  .print-content a[href^="http"]:after {
+    content: " (" attr(href) ")";
+    font-size: 10pt;
+    color: #666;
+  }
+  
+  /* Images */
+  .print-content img {
+    max-width: 100%;
+    page-break-inside: avoid;
+  }
+  
+  /* Page breaks */
+  .print-content hr {
+    page-break-after: always;
+    visibility: hidden;
+    margin: 0;
+  }
+  
+  /* Ensure proper page margins */
+  @page {
+    margin: 1in;
+  }
+}

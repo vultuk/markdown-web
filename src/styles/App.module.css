@@ -1,0 +1,39 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  background-color: #1e1e1e;
+  color: #d4d4d4;
+  overflow: hidden;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+}
+
+.body {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.sidebar {
+  width: 300px;
+  background-color: #252526;
+  border-right: 1px solid #3e3e42;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
+.main {
+  flex: 1;
+  background-color: #1e1e1e;
+  overflow: hidden;
+}

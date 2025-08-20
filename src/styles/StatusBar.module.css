@@ -1,0 +1,32 @@
+.statusBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 16px;
+  background-color: #2d2d30;
+  border-top: 1px solid #3e3e42;
+  font-size: 12px;
+  color: #888;
+  height: 24px;
+  flex-shrink: 0;
+}
+
+.left {
+  display: flex;
+  align-items: center;
+}
+
+.right {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.fileName {
+  color: #cccccc;
+  font-weight: 500;
+}
+
+.stat {
+  color: #888;
+}

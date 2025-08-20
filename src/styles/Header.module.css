@@ -1,0 +1,69 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 16px;
+  background-color: #2d2d30;
+  border-bottom: 1px solid #3e3e42;
+  height: 48px;
+  flex-shrink: 0;
+  z-index: 100;
+}
+
+.left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.hamburger {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  width: 24px;
+  height: 24px;
+  border-radius: 3px;
+}
+
+.hamburger:hover {
+  background-color: #3e3e42;
+}
+
+.hamburgerLine {
+  width: 18px;
+  height: 2px;
+  background-color: #cccccc;
+  border-radius: 1px;
+  transition: all 0.2s ease;
+}
+
+.title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #ffffff;
+  margin: 0;
+}
+
+.toggleButton {
+  padding: 6px 12px;
+  background-color: #0e639c;
+  border: none;
+  border-radius: 3px;
+  color: white;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.toggleButton:hover {
+  background-color: #1177bb;
+}

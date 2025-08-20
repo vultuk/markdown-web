@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { FileExplorer } from './components/FileExplorer';
 import { Editor } from './components/Editor';
 import { MarkdownPreview } from './components/MarkdownPreview';
@@ -35,6 +35,19 @@ function App() {
   });
   const [isResizing, setIsResizing] = useState<boolean>(false);
   const [isMobile, setIsMobile] = useState<boolean>(typeof window !== 'undefined' ? window.innerWidth <= 768 : false);
+  const [isSplitResizing, setIsSplitResizing] = useState<boolean>(false);
+  const MIN_SPLIT_LEFT = 200;
+  const MIN_SPLIT_RIGHT = 200;
+  const [splitWidth, setSplitWidth] = useState<number>(() => {
+    try {
+      const stored = localStorage.getItem('splitWidth');
+      const parsed = stored ? parseInt(stored, 10) : NaN;
+      return Number.isFinite(parsed) ? parsed : 600;
+    } catch {
+      return 600;
+    }
+  });
+  const mainRef = useRef<HTMLDivElement | null>(null);
   const [toast, setToast] = useState<{ message: string; type?: 'info' | 'error' | 'success' } | null>(null);
 
   const showToast = useCallback((message: string, type: 'info' | 'error' | 'success' = 'info') => {
@@ -317,6 +330,25 @@ function App() {
     } catch {}
   }, [sidebarWidth]);
 
+  // Initialize split width to half of container if not set
+  useEffect(() => {
+    if (!mainRef.current) return;
+    try {
+      const stored = localStorage.getItem('splitWidth');
+      if (!stored) {
+        const rect = mainRef.current.getBoundingClientRect();
+        if (rect.width) setSplitWidth(Math.max(MIN_SPLIT_LEFT, Math.min(rect.width - MIN_SPLIT_RIGHT, rect.width / 2)));
+      }
+    } catch {}
+  }, []);
+
+  // Persist split width
+  useEffect(() => {
+    try {
+      localStorage.setItem('splitWidth', String(splitWidth));
+    } catch {}
+  }, [splitWidth]);
+
   // Handle drag-to-resize events
   useEffect(() => {
     if (!isResizing) return;
@@ -336,6 +368,27 @@ function App() {
       window.removeEventListener('mouseup', handleMouseUp);
     };
   }, [isResizing]);
+
+  // Handle split drag-to-resize events
+  useEffect(() => {
+    if (!isSplitResizing) return;
+    const handleMouseMove = (e: MouseEvent) => {
+      if (!mainRef.current) return;
+      const rect = mainRef.current.getBoundingClientRect();
+      let x = e.clientX - rect.left;
+      const min = MIN_SPLIT_LEFT;
+      const max = rect.width - MIN_SPLIT_RIGHT;
+      x = Math.max(min, Math.min(max, x));
+      setSplitWidth(x);
+    };
+    const handleMouseUp = () => setIsSplitResizing(false);
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isSplitResizing]);
 
   // Handle initial URL parsing and browser navigation
   useEffect(() => {
@@ -415,7 +468,7 @@ function App() {
         />
       )}
       
-      <div className={`${styles.body} ${isResizing ? styles.resizing : ''}`}>
+      <div className={`${styles.body} ${(isResizing || isSplitResizing) ? styles.resizing : ''}`}>
         {isSidebarOpen && (
           <>
           <div className={styles.sidebar} style={isMobile ? undefined : { width: sidebarWidth }}>
@@ -440,9 +493,9 @@ function App() {
           </>
         )}
         <div className={styles.main}>
-          {isPreviewMode ? (
-            <div className={styles.splitMain}>
-              <div className={styles.pane}>
+          {(isPreviewMode && !isMobile) ? (
+            <div className={styles.splitMain} ref={mainRef}>
+              <div className={styles.pane} style={{ width: splitWidth }}>
                 <Editor
                   content={fileContent}
                   onChange={setFileContent}
@@ -453,13 +506,22 @@ function App() {
                   fileName={selectedFile}
                 />
               </div>
-              <div className={styles.divider} />
+              <div
+                className={styles.resizer}
+                role="separator"
+                aria-orientation="vertical"
+                aria-label="Resize editor/preview"
+                onMouseDown={(e) => { e.preventDefault(); setIsSplitResizing(true); }}
+              />
               <div className={styles.pane}>
                 {selectedFile ? (
                   <MarkdownPreview content={fileContent} />
                 ) : null}
               </div>
             </div>
+          ) : isPreviewMode ? (
+            // Mobile: show preview full width
+            <MarkdownPreview content={fileContent} />
           ) : (
             <Editor
               content={fileContent}

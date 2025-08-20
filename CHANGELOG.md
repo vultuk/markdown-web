@@ -5,6 +5,37 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.10.0] - 2024-08-20
+
+### Added
+- **Resizable Split-View Panes**: Drag-to-resize functionality for editor and preview panes
+- **Persistent Layout Preferences**: Split pane widths are saved and restored between sessions
+- **Enhanced Mobile Adaptation**: Intelligent layout switching between desktop and mobile modes
+- **Improved Split-View Controls**: Better visual feedback and interaction for resizing
+
+### New Features
+- **Draggable Pane Divider**: Click and drag to adjust the width between editor and preview
+- **Minimum Width Constraints**: Ensures both panes maintain usable minimum widths
+- **Layout Persistence**: Remembers your preferred split layout across browser sessions
+- **Smart Initialization**: Automatically sets optimal split proportions on first use
+
+### Technical Improvements
+- **Split Resize State Management**: Dedicated state handling for split-view resizing operations
+- **Ref-based Measurements**: Accurate container width calculations for responsive sizing
+- **Enhanced Mouse Event Handling**: Smooth drag operations with proper event management
+- **LocalStorage Integration**: Reliable persistence of split width preferences
+
+### User Experience
+- **Flexible Workspace**: Customize editor vs preview space allocation to your preference
+- **Visual Feedback**: Clear resize cursor and visual indicators during drag operations
+- **Responsive Behavior**: Different layout strategies for mobile vs desktop viewing
+- **Smooth Interactions**: Fluid resizing with proper constraints and boundaries
+
+### Mobile Experience
+- **Adaptive Layout**: Mobile devices show full-width preview instead of split view
+- **Touch-Optimized**: Better touch interaction handling for mobile users
+- **Performance**: Optimized rendering for smaller screens and touch devices
+
 ## [1.9.0] - 2024-08-20
 
 ### Added
@@ -367,6 +398,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Clean, responsive interface
 - GitHub Flavored Markdown support
 
+[1.10.0]: https://github.com/vultuk/markdown-web/compare/v1.9.0...v1.10.0
 [1.9.0]: https://github.com/vultuk/markdown-web/compare/v1.8.0...v1.9.0
 [1.8.0]: https://github.com/vultuk/markdown-web/compare/v1.7.0...v1.8.0
 [1.7.0]: https://github.com/vultuk/markdown-web/compare/v1.6.2...v1.7.0

@@ -67,7 +67,10 @@ function parseCookies(header: string | undefined): Record<string, string> {
 
 async function scrypt(password: string, salt: Buffer, N: number, r: number, p: number, keyLen: number): Promise<Buffer> {
   return new Promise((resolve, reject) => {
-    crypto.scrypt(password, salt, keyLen, { N, r, p }, (err, dk) => {
+    // Compute a safe maxmem per Node.js docs: should exceed 128*N*r plus overhead
+    const required = 128 * N * r + keyLen + salt.length;
+    const maxmem = Math.max(64 * 1024 * 1024, required * 2); // at least 64MB or 2x requirement
+    crypto.scrypt(password, salt, keyLen, { N, r, p, maxmem }, (err, dk) => {
       if (err) return reject(err);
       resolve(dk as Buffer);
     });
@@ -194,4 +197,3 @@ export function requireAuth(): express.RequestHandler {
     return next();
   };
 }
-

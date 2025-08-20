@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.12.1] - 2025-08-20
+
+### Fixed
+- **Scrypt Memory Safety**: Added proper `maxmem` parameter calculation to prevent potential memory issues during password hashing
+- **Enhanced Security**: Improved memory management in authentication system following Node.js best practices
+
+### Technical Improvements
+- Added safe memory limit calculation for scrypt operations (minimum 64MB or 2x requirement)
+- Enhanced cryptographic function safety with proper memory bounds
+
 ## [1.12.0] - 2025-08-20
 
 ### Added
@@ -446,6 +456,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Clean, responsive interface
 - GitHub Flavored Markdown support
 
+[1.12.1]: https://github.com/vultuk/markdown-web/compare/v1.12.0...v1.12.1
 [1.12.0]: https://github.com/vultuk/markdown-web/compare/v1.11.0...v1.12.0
 [1.11.0]: https://github.com/vultuk/markdown-web/compare/v1.10.0...v1.11.0
 [1.10.0]: https://github.com/vultuk/markdown-web/compare/v1.9.0...v1.10.0

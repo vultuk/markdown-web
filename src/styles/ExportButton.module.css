@@ -12,6 +12,7 @@
   color: white;
   cursor: pointer;
   font-size: 12px;
+  line-height: 1;
   border-right: 1px solid #1177bb;
 }
 
@@ -26,7 +27,7 @@
   border-radius: 0 3px 3px 0;
   color: white;
   cursor: pointer;
-  font-size: 10px;
+  font-size: 12px;
   line-height: 1;
   display: flex;
   align-items: center;

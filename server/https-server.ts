@@ -5,13 +5,14 @@ import fs from 'fs';
 import path from 'path';
 import { fileRouter } from './api';
 import { ThemeManager } from './themeManager';
+import { requireAuth, setupAuth } from './auth';
 
 const app = express();
 const HTTP_PORT = process.env.HTTP_PORT || 80;
 const HTTPS_PORT = process.env.HTTPS_PORT || 443;
 
 app.use(express.json());
-app.use('/api', fileRouter);
+// Auth and API protection are configured in startHttpsServer()
 
 // Serve static files from the React app build directory
 app.use(express.static(path.join(__dirname, './client')));
@@ -35,13 +36,25 @@ function redirectToHttps(req: express.Request, res: express.Response, next: expr
   res.redirect(301, `https://${req.headers.host}${req.url}`);
 }
 
-export async function startHttpsServer(workingDirectory: string, domain: string = 'server.vultuk.io') {
+export async function startHttpsServer(workingDirectory: string, domain: string = 'server.vultuk.io', options?: { disableAuth?: boolean; password?: string }) {
   // Set the working directory for file operations
   process.env.WORKING_DIR = workingDirectory;
   
   // Initialize themes
   const themeManager = new ThemeManager();
   await themeManager.initialize();
+  
+  // Configure authentication
+  const { enabled, password } = await setupAuth(app, {
+    disabled: options?.disableAuth,
+    password: options?.password,
+  });
+
+  if (enabled) {
+    app.use('/api', requireAuth(), fileRouter);
+  } else {
+    app.use('/api', fileRouter);
+  }
 
   const certPath = `/etc/letsencrypt/live/${domain}/cert.pem`;
   const keyPath = `/etc/letsencrypt/live/${domain}/privkey.pem`;
@@ -72,6 +85,14 @@ export async function startHttpsServer(workingDirectory: string, domain: string 
         console.log(`HTTPS server running on port ${HTTPS_PORT}`);
         console.log(`Secure site available at https://${domain}`);
         console.log(`Working directory: ${workingDirectory}`);
+        if (enabled) {
+          console.log('Authentication: ENABLED');
+          if (password) {
+            console.log(`Password: ${password}`);
+          }
+        } else {
+          console.log('Authentication: DISABLED');
+        }
       });
     } else {
       console.log('SSL certificates not found. HTTPS server not started.');

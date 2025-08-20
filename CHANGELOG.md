@@ -5,6 +5,39 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.12.0] - 2025-08-20
+
+### Added
+- **Password Authentication System**: Optional password protection for secure access to your markdown editor
+- **Session Management**: Secure JWT-based session handling with HttpOnly cookies
+- **Command Line Authentication Options**: New `--auth <password>` and `--disable-auth` flags for CLI control
+- **Rate Limiting**: Built-in protection against brute force login attempts (20 attempts per 10 minutes per IP)
+- **Security Features**: Scrypt password hashing, HMAC session signing, and CSRF protection
+
+### New Features
+- **Flexible Authentication**: Choose to enable or disable authentication based on your security needs
+- **Auto-generated Passwords**: Strong, URL-safe passwords automatically generated when auth is enabled without a custom password
+- **Secure by Default**: HTTPS-compatible authentication with secure cookie settings
+- **Login Interface**: Clean, VS Code-themed login form for password entry
+- **Session Persistence**: Configurable session lifetime (default 24 hours)
+
+### Technical Improvements
+- **Advanced Cryptography**: Uses Node.js crypto module with scrypt key derivation and timing-safe comparison
+- **Memory-based Rate Limiting**: Simple, effective protection against login attempts without external dependencies
+- **Auth Middleware**: Modular authentication system that can be easily enabled/disabled
+- **Secure Headers**: Proper cookie security attributes including HttpOnly, SameSite, and Secure flags
+
+### Command Line Interface
+- **New Flags**: `--auth <password>` to set a custom password, `--disable-auth` to run without authentication
+- **Backward Compatibility**: Existing commands work unchanged when authentication is disabled
+- **Clear Status Messages**: Console output shows authentication status and password when applicable
+
+### User Experience
+- **Seamless Integration**: Authentication gate appears before the main application when enabled
+- **Visual Feedback**: Loading states and error messages for authentication attempts
+- **Terminal Integration**: Password is displayed in terminal output for easy reference
+- **Quick Setup**: Authentication can be enabled with a simple command line flag
+
 ## [1.11.0] - 2024-08-20
 
 ### Added
@@ -413,6 +446,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Clean, responsive interface
 - GitHub Flavored Markdown support
 
+[1.12.0]: https://github.com/vultuk/markdown-web/compare/v1.11.0...v1.12.0
+[1.11.0]: https://github.com/vultuk/markdown-web/compare/v1.10.0...v1.11.0
 [1.10.0]: https://github.com/vultuk/markdown-web/compare/v1.9.0...v1.10.0
 [1.9.0]: https://github.com/vultuk/markdown-web/compare/v1.8.0...v1.9.0
 [1.8.0]: https://github.com/vultuk/markdown-web/compare/v1.7.0...v1.8.0

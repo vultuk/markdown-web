@@ -5,13 +5,24 @@ const path = require('path');
 
 async function main() {
   const workingDirectory = process.cwd();
-  const shouldOpenBrowser = !process.argv.includes('--no-open');
+  const argv = process.argv.slice(2);
+  const shouldOpenBrowser = !argv.includes('--no-open');
+  const disableAuth = argv.includes('--disable-auth');
+  const authIndex = argv.indexOf('--auth');
+  const providedPassword = authIndex !== -1 ? argv[authIndex + 1] : undefined;
+  if (authIndex !== -1 && !providedPassword) {
+    console.error('Error: --auth requires a password value');
+    process.exit(1);
+  }
   
   console.log('Starting Markdown Web Editor...');
   console.log(`Working directory: ${workingDirectory}`);
   
   try {
-    const server = startServer(workingDirectory);
+    const server = startServer(workingDirectory, {
+      disableAuth: disableAuth,
+      password: providedPassword,
+    });
     
     // Open browser after a short delay to ensure server is ready
     if (shouldOpenBrowser) {

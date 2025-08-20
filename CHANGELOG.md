@@ -5,6 +5,21 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2024-08-20
+
+### Added
+- Print functionality with clean, print-friendly styling
+- Print-only CSS that shows rendered markdown content exclusively
+- Professional typography for printed documents (Times New Roman)
+- Black-on-white color scheme optimized for printing
+- Proper page breaks and margins for professional output
+- URL display for external links in printed version
+
+### Features
+- Press `Ctrl+P` or `Cmd+P` to print only the rendered markdown
+- Hide all UI elements during printing for clean output
+- Print-optimized styling for headers, code blocks, tables, and lists
+
 ## [1.1.0] - 2024-08-20
 
 ### Fixed
@@ -123,6 +138,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Clean, responsive interface
 - GitHub Flavored Markdown support
 
+[1.2.0]: https://github.com/vultuk/markdown-web/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/vultuk/markdown-web/compare/v1.0.9...v1.1.0
 [1.0.9]: https://github.com/vultuk/markdown-web/compare/v1.0.8...v1.0.9
 [1.0.8]: https://github.com/vultuk/markdown-web/compare/v1.0.7...v1.0.8

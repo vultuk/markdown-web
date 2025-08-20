@@ -67,3 +67,19 @@
 .toggleButton:hover {
   background-color: #1177bb;
 }
+
+/* Mobile tweaks */
+@media (max-width: 768px) {
+  .title {
+    display: none;
+  }
+
+  .right {
+    gap: 8px;
+  }
+
+  .toggleButton {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+}

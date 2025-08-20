@@ -7,6 +7,14 @@
   line-height: 1.6;
 }
 
+@media (max-width: 768px) {
+  .preview {
+    padding: 14px 16px;
+    font-size: 16px;
+    line-height: 1.7;
+  }
+}
+
 .preview h1,
 .preview h2,
 .preview h3,

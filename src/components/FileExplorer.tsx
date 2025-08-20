@@ -16,6 +16,7 @@ interface FileExplorerProps {
   onDeleteFile: (filePath: string) => void;
   onDeleteDirectory: (dirPath: string) => void;
   selectedFile: string | null;
+  onRenamePath: (oldPath: string, newPath: string) => Promise<boolean>;
 }
 
 export function FileExplorer({ 
@@ -25,13 +26,16 @@ export function FileExplorer({
   onCreateDirectory, 
   onDeleteFile,
   onDeleteDirectory,
-  selectedFile 
+  selectedFile,
+  onRenamePath
 }: FileExplorerProps) {
   const [expandedDirs, setExpandedDirs] = useState<Set<string>>(new Set());
   const [showCreateFile, setShowCreateFile] = useState<string | null>(null);
   const [showCreateDir, setShowCreateDir] = useState<string | null>(null);
   const [newFileName, setNewFileName] = useState('');
   const [newDirName, setNewDirName] = useState('');
+  const [renamingPath, setRenamingPath] = useState<string | null>(null);
+  const [renameValue, setRenameValue] = useState('');
 
   const toggleDirectory = (path: string) => {
     const newExpanded = new Set(expandedDirs);
@@ -63,6 +67,37 @@ export function FileExplorer({
   const renderFileItem = (item: FileItem, level = 0) => {
     const isExpanded = expandedDirs.has(item.path);
     const isSelected = selectedFile === item.path;
+    const isRenaming = renamingPath === item.path;
+
+    const startRename = () => {
+      setRenamingPath(item.path);
+      setRenameValue(item.name);
+    };
+
+    const commitRename = async () => {
+      const trimmed = renameValue.trim();
+      if (!trimmed || trimmed === item.name) {
+        setRenamingPath(null);
+        return;
+      }
+      // Compute new path in same directory
+      const dir = item.path.includes('/') ? item.path.slice(0, item.path.lastIndexOf('/')) : '';
+      let newName = trimmed;
+      if (item.type === 'file' && !/\.md$/i.test(newName)) {
+        newName += '.md';
+      }
+      const newPath = dir ? `${dir}/${newName}` : newName;
+      const ok = await onRenamePath(item.path, newPath);
+      if (!ok) {
+        // keep editing on failure
+        return;
+      }
+      setRenamingPath(null);
+    };
+
+    const cancelRename = () => {
+      setRenamingPath(null);
+    };
 
     return (
       <div key={item.path}>
@@ -79,7 +114,21 @@ export function FileExplorer({
                 <span className={styles.icon}>
                   {isExpanded ? '📂' : '📁'}
                 </span>
-                <span>{item.name}</span>
+                {isRenaming ? (
+                  <input
+                    className={styles.renameInput}
+                    value={renameValue}
+                    onChange={(e) => setRenameValue(e.target.value)}
+                    onBlur={commitRename}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') commitRename();
+                      if (e.key === 'Escape') cancelRename();
+                    }}
+                    autoFocus
+                  />
+                ) : (
+                  <span onDoubleClick={startRename}>{item.name}</span>
+                )}
               </div>
               <div className={styles.directoryActions}>
                 <button 
@@ -121,7 +170,21 @@ export function FileExplorer({
                 onClick={() => onFileSelect(item.path)}
               >
                 <span className={styles.icon}>📄</span>
-                <span>{item.name}</span>
+                {isRenaming ? (
+                  <input
+                    className={styles.renameInput}
+                    value={renameValue}
+                    onChange={(e) => setRenameValue(e.target.value)}
+                    onBlur={commitRename}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') commitRename();
+                      if (e.key === 'Escape') cancelRename();
+                    }}
+                    autoFocus
+                  />
+                ) : (
+                  <span onDoubleClick={startRename}>{item.name}</span>
+                )}
               </div>
               <div className={styles.fileActions}>
                 <button 

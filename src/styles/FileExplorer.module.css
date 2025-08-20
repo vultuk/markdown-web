@@ -155,6 +155,19 @@
   overflow-y: auto;
 }
 
+@media (max-width: 768px) {
+  .header {
+    padding: 10px 12px;
+  }
+  .createButton {
+    padding: 4px 6px;
+  }
+  .directory,
+  .file {
+    padding: 6px 8px;
+  }
+}
+
 .fileItem {
   cursor: pointer;
   user-select: none;
@@ -179,4 +192,19 @@
 .icon {
   margin-right: 6px;
   font-size: 14px;
+}
+
+.renameInput {
+  width: 100%;
+  padding: 4px 6px;
+  background-color: #3c3c3c;
+  border: 1px solid #5a5a5a;
+  border-radius: 3px;
+  color: #d4d4d4;
+  font-size: 13px;
+}
+
+.renameInput:focus {
+  outline: none;
+  border-color: #007acc;
 }

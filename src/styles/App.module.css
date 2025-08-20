@@ -53,3 +53,40 @@ body {
   background-color: #1e1e1e;
   overflow: hidden;
 }
+
+/* Mobile layout */
+@media (max-width: 768px) {
+  .app {
+    width: 100vw;
+    height: 100vh;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 48px; /* header height */
+    left: 0;
+    height: calc(100vh - 48px);
+    width: 80vw;
+    max-width: 360px;
+    z-index: 200;
+    box-shadow: 2px 0 8px rgba(0,0,0,0.4);
+  }
+
+  .resizer {
+    display: none;
+  }
+}
+
+.backdrop {
+  position: fixed;
+  inset: 48px 0 0 0; /* below header */
+  background: rgba(0,0,0,0.5);
+  z-index: 150;
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .backdropOpen {
+    display: block;
+  }
+}

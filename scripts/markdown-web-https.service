@@ -1,0 +1,20 @@
+[Unit]
+Description=Markdown Web HTTPS Server
+After=network.target
+Wants=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/home/ec2-user/Development/vultuk/markdown-web
+Environment=NODE_ENV=production
+Environment=WORKING_DIR=/home/ec2-user
+ExecStart=/usr/bin/node dist/server/https-server.js
+Restart=always
+RestartSec=10
+StandardOutput=syslog
+StandardError=syslog
+SyslogIdentifier=markdown-web-https
+
+[Install]
+WantedBy=multi-user.target

@@ -126,6 +126,55 @@ fileRouter.post('/create-directory', async (req, res) => {
   }
 });
 
+// Rename file or directory
+fileRouter.post('/rename', async (req, res) => {
+  try {
+    const workingDir = getWorkingDir();
+    const { oldPath, newPath } = req.body as { oldPath?: string; newPath?: string };
+
+    if (!oldPath || !newPath) {
+      return res.status(400).json({ error: 'oldPath and newPath are required' });
+    }
+
+    const absOld = path.join(workingDir, oldPath);
+    const absNew = path.join(workingDir, newPath);
+
+    // Security: ensure both paths are within working dir
+    if (!absOld.startsWith(workingDir) || !absNew.startsWith(workingDir)) {
+      return res.status(403).json({ error: 'Access denied' });
+    }
+
+    // Prevent renaming working directory itself
+    if (absOld === workingDir) {
+      return res.status(403).json({ error: 'Cannot rename working directory' });
+    }
+
+    // Source must exist
+    try {
+      await fs.access(absOld);
+    } catch {
+      return res.status(404).json({ error: 'Source path not found' });
+    }
+
+    // Destination must not exist
+    try {
+      await fs.access(absNew);
+      return res.status(409).json({ error: 'Destination already exists' });
+    } catch {
+      // ok
+    }
+
+    // Ensure destination directory exists
+    await fs.mkdir(path.dirname(absNew), { recursive: true });
+
+    await fs.rename(absOld, absNew);
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error renaming path:', error);
+    res.status(500).json({ error: 'Failed to rename path' });
+  }
+});
+
 // Delete file
 fileRouter.delete('/files/*', async (req, res) => {
   try {

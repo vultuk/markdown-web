@@ -5,6 +5,40 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.7.0] - 2024-08-20
+
+### Added
+- **File and Folder Renaming**: Double-click any file or folder to rename it inline
+- **HTTPS/SSL Support**: Complete SSL/TLS infrastructure with Let's Encrypt integration
+- **Mobile Responsive Design**: Enhanced mobile interface with touch-friendly interactions
+- **SSL Setup Scripts**: Automated SSL certificate generation and server management tools
+
+### New Features
+- **Inline Renaming**: Double-click files and folders in the explorer to rename them instantly
+- **SSL Certificate Management**: Automated Let's Encrypt certificate generation and renewal
+- **HTTPS Server**: Production-ready HTTPS server with automatic HTTP to HTTPS redirect
+- **Mobile UI Improvements**: Better touch targets and responsive layout for mobile devices
+- **SSL Status Monitoring**: Built-in SSL certificate status checking and monitoring tools
+
+### Technical Improvements
+- **New API Endpoint**: `/api/rename` for file and directory renaming operations
+- **HTTPS Server Module**: Complete HTTPS server implementation with certificate handling
+- **SSL Scripts**: Setup, startup, and status checking scripts for SSL/HTTPS deployment
+- **Responsive Design**: Enhanced CSS with better mobile breakpoints and touch interactions
+- **Security**: Comprehensive path validation and security checks for rename operations
+
+### Infrastructure
+- **SSL Setup**: `scripts/setup-ssl.sh` for automated certificate generation
+- **HTTPS Startup**: `scripts/start-https.sh` for production HTTPS server deployment
+- **Service Management**: Systemd service file for production server management
+- **SSL Monitoring**: `scripts/ssl-status.sh` for certificate and server status checking
+- **Documentation**: Complete SSL setup and deployment documentation
+
+### Mobile Experience
+- **Touch Interactions**: Optimized touch targets for mobile file management
+- **Responsive Layout**: Better mobile sidebar and content area management
+- **Mobile Navigation**: Enhanced mobile-friendly navigation and controls
+
 ## [1.6.2] - 2024-08-20
 
 ### Improved
@@ -276,6 +310,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Clean, responsive interface
 - GitHub Flavored Markdown support
 
+[1.7.0]: https://github.com/vultuk/markdown-web/compare/v1.6.2...v1.7.0
 [1.6.2]: https://github.com/vultuk/markdown-web/compare/v1.6.1...v1.6.2
 [1.6.1]: https://github.com/vultuk/markdown-web/compare/v1.6.0...v1.6.1
 [1.6.0]: https://github.com/vultuk/markdown-web/compare/v1.3.2...v1.6.0

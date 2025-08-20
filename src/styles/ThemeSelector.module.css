@@ -30,3 +30,9 @@
   color: #d4d4d4;
   padding: 8px;
 }
+
+@media (max-width: 768px) {
+  .container {
+    display: none;
+  }
+}

@@ -1,6 +1,6 @@
 {
   "name": "markdown-web",
-  "version": "1.6.2",
+  "version": "1.7.0",
   "description": "A modern, browser-based markdown editor that you can run in any directory. Edit .md files with live preview, auto-save, and a VS Code-inspired interface.",
   "main": "dist/server/index.js",
   "bin": {
@@ -9,7 +9,9 @@
   "files": [
     "dist/",
     "bin/",
-    "README.md"
+    "scripts/",
+    "README.md",
+    "SSL_SETUP.md"
   ],
   "repository": {
     "type": "git",
@@ -27,6 +29,8 @@
     "build:client": "vite build",
     "build:server": "tsc -p tsconfig.server.json",
     "start": "node dist/server/index.js",
+    "start:https": "sudo node dist/server/https-server.js",
+    "setup-ssl": "sudo ./scripts/setup-ssl.sh",
     "typecheck": "tsc --noEmit",
     "prepublishOnly": "npm run build"
   },

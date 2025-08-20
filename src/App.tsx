@@ -32,6 +32,7 @@ function App() {
     }
   });
   const [isResizing, setIsResizing] = useState<boolean>(false);
+  const [isMobile, setIsMobile] = useState<boolean>(typeof window !== 'undefined' ? window.innerWidth <= 768 : false);
   
   // Confirmation modal state
   const [confirmModal, setConfirmModal] = useState<{
@@ -225,9 +226,51 @@ function App() {
     });
   }, [loadFiles, selectedFile]);
 
+  const handleRenamePath = useCallback(async (oldPath: string, newPath: string) => {
+    try {
+      const response = await fetch('/api/rename', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ oldPath, newPath }),
+      });
+      if (!response.ok) {
+        const err = await response.json().catch(() => ({}));
+        alert(err.error || 'Failed to rename');
+        return false;
+      }
+      await loadFiles();
+      // Update selection and URL if needed
+      if (selectedFile) {
+        if (selectedFile === oldPath) {
+          setSelectedFile(newPath);
+          updateURL(newPath);
+          await loadFileContent(newPath);
+        } else if (selectedFile.startsWith(oldPath + '/')) {
+          const suffix = selectedFile.slice(oldPath.length);
+          const updated = newPath + suffix;
+          setSelectedFile(updated);
+          updateURL(updated);
+          await loadFileContent(updated);
+        }
+      }
+      return true;
+    } catch (error) {
+      console.error('Failed to rename:', error);
+      alert('Failed to rename');
+      return false;
+    }
+  }, [loadFiles, selectedFile, updateURL, loadFileContent]);
+
   useEffect(() => {
     loadFiles();
   }, [loadFiles]);
+
+  // Track viewport size for responsive behavior
+  useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
 
   // Persist sidebar width
   useEffect(() => {
@@ -303,11 +346,18 @@ function App() {
         fileContent={fileContent}
         fileName={selectedFile}
       />
+      {/* Mobile backdrop to close sidebar */}
+      {isSidebarOpen && (
+        <div
+          className={`${styles.backdrop} ${styles.backdropOpen}`}
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
       
       <div className={`${styles.body} ${isResizing ? styles.resizing : ''}`}>
         {isSidebarOpen && (
           <>
-          <div className={styles.sidebar} style={{ width: sidebarWidth }}>
+          <div className={styles.sidebar} style={isMobile ? undefined : { width: sidebarWidth }}>
             <FileExplorer
               files={files}
               onFileSelect={handleFileSelect}
@@ -316,6 +366,7 @@ function App() {
               onDeleteFile={handleDeleteFile}
               onDeleteDirectory={handleDeleteDirectory}
               selectedFile={selectedFile}
+              onRenamePath={handleRenamePath}
             />
           </div>
           <div 

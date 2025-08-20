@@ -149,13 +149,7 @@
   /* Links */
   #print-container a {
     color: #000 !important;
-    text-decoration: underline;
-  }
-  
-  #print-container a[href^="http"]:after {
-    content: " (" attr(href) ")";
-    font-size: 10pt;
-    color: #666;
+    text-decoration: none;
   }
   
   /* Images */

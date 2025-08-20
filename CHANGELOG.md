@@ -5,6 +5,33 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.0] - 2024-08-20
+
+### Added
+- **Export Functionality**: Export markdown files to various formats including PDF
+- **File and Folder Deletion**: Complete file/folder deletion feature with confirmation modal
+- **Enhanced Dependencies**: Added codex and codex-cli dependencies for improved functionality
+
+### New Features
+- **PDF Export**: High-quality PDF generation from markdown content
+- **Markdown Export**: Export files as .md with proper formatting
+- **Confirmation Modals**: Safety confirmation dialogs for destructive actions
+- **Export Button**: Clean, accessible export interface in the header
+- **Delete Operations**: Context-aware file and folder deletion with confirmation
+
+### Technical Improvements
+- **Export API**: New `/api/export` endpoint for file conversion
+- **Modal System**: Reusable confirmation modal component
+- **Enhanced UI**: Improved styling and user experience for export features
+- **Error Handling**: Better error management for export and delete operations
+- **Accessibility**: Improved keyboard navigation and screen reader support
+
+### Bug Fixes
+- Fixed blank PDF export issues
+- Resolved dropdown styling problems
+- Improved export UX and error messaging
+- Enhanced file deletion safety checks
+
 ## [1.3.2] - 2024-08-20
 
 ### Fixed
@@ -231,6 +258,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Clean, responsive interface
 - GitHub Flavored Markdown support
 
+[1.6.0]: https://github.com/vultuk/markdown-web/compare/v1.3.2...v1.6.0
 [1.3.2]: https://github.com/vultuk/markdown-web/compare/v1.3.1...v1.3.2
 [1.3.1]: https://github.com/vultuk/markdown-web/compare/v1.3.0...v1.3.1
 [1.3.0]: https://github.com/vultuk/markdown-web/compare/v1.2.4...v1.3.0

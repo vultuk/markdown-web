@@ -19,6 +19,19 @@ function App() {
   const [fileContent, setFileContent] = useState<string>('');
   const [isPreviewMode, setIsPreviewMode] = useState<boolean>(false);
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(true);
+  const MIN_SIDEBAR_WIDTH = 200;
+  const MAX_SIDEBAR_WIDTH = 600;
+  const [sidebarWidth, setSidebarWidth] = useState<number>(() => {
+    try {
+      const stored = localStorage.getItem('sidebarWidth');
+      const parsed = stored ? parseInt(stored, 10) : 300;
+      if (!isFinite(parsed)) return 300;
+      return Math.max(MIN_SIDEBAR_WIDTH, Math.min(MAX_SIDEBAR_WIDTH, parsed));
+    } catch {
+      return 300;
+    }
+  });
+  const [isResizing, setIsResizing] = useState<boolean>(false);
   
   // Confirmation modal state
   const [confirmModal, setConfirmModal] = useState<{
@@ -216,6 +229,33 @@ function App() {
     loadFiles();
   }, [loadFiles]);
 
+  // Persist sidebar width
+  useEffect(() => {
+    try {
+      localStorage.setItem('sidebarWidth', String(sidebarWidth));
+    } catch {}
+  }, [sidebarWidth]);
+
+  // Handle drag-to-resize events
+  useEffect(() => {
+    if (!isResizing) return;
+    const handleMouseMove = (e: MouseEvent) => {
+      const newWidth = Math.max(
+        MIN_SIDEBAR_WIDTH,
+        Math.min(MAX_SIDEBAR_WIDTH, e.clientX)
+      );
+      setSidebarWidth(newWidth);
+    };
+    const handleMouseUp = () => setIsResizing(false);
+
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mouseup', handleMouseUp);
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('mouseup', handleMouseUp);
+    };
+  }, [isResizing]);
+
   // Handle initial URL parsing and browser navigation
   useEffect(() => {
     const loadFileFromURL = async () => {
@@ -264,9 +304,10 @@ function App() {
         fileName={selectedFile}
       />
       
-      <div className={styles.body}>
+      <div className={`${styles.body} ${isResizing ? styles.resizing : ''}`}>
         {isSidebarOpen && (
-          <div className={styles.sidebar}>
+          <>
+          <div className={styles.sidebar} style={{ width: sidebarWidth }}>
             <FileExplorer
               files={files}
               onFileSelect={handleFileSelect}
@@ -277,6 +318,14 @@ function App() {
               selectedFile={selectedFile}
             />
           </div>
+          <div 
+            className={styles.resizer}
+            role="separator"
+            aria-orientation="vertical"
+            aria-label="Resize sidebar"
+            onMouseDown={(e) => { e.preventDefault(); setIsResizing(true); }}
+          />
+          </>
         )}
         <div className={styles.main}>
           <Editor

@@ -24,6 +24,22 @@ body {
   overflow: hidden;
 }
 
+.resizer {
+  width: 4px;
+  background-color: #3e3e42;
+  cursor: col-resize;
+  flex-shrink: 0;
+}
+
+.resizer:hover {
+  background-color: #4a4a4e;
+}
+
+.resizing {
+  cursor: col-resize;
+  user-select: none;
+}
+
 .sidebar {
   width: 300px;
   background-color: #252526;

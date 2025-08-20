@@ -28,6 +28,8 @@ export interface Theme {
     li: Record<string, string>;
   };
   print: {
+    background: string;
+    color: string;
     fontFamily: string;
     fontSize: string;
     lineHeight: string;
@@ -247,6 +249,8 @@ export class ThemeManager {
           }
         },
         print: {
+          background: '#ffffff',
+          color: '#000000',
           fontFamily: '"Times New Roman", Times, serif',
           fontSize: '12pt',
           lineHeight: '1.6',
@@ -429,6 +433,8 @@ export class ThemeManager {
           }
         },
         print: {
+          background: '#ffffff',
+          color: '#24292f',
           fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", "Helvetica Neue", Arial, sans-serif',
           fontSize: '11pt',
           lineHeight: '1.5',
@@ -614,6 +620,8 @@ export class ThemeManager {
           }
         },
         print: {
+          background: '#ffffff',
+          color: '#1a1a1a',
           fontFamily: '"Crimson Text", "Times New Roman", Times, serif',
           fontSize: '12pt',
           lineHeight: '1.7',
@@ -794,6 +802,8 @@ export class ThemeManager {
           }
         },
         print: {
+          background: '#ffffff',
+          color: '#1a1a1a',
           fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, sans-serif',
           fontSize: '11pt',
           lineHeight: '1.6',
@@ -986,6 +996,8 @@ export class ThemeManager {
           }
         },
         print: {
+          background: '#ffffff',
+          color: '#37352f',
           fontFamily: 'ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif',
           fontSize: '11pt',
           lineHeight: '1.5',

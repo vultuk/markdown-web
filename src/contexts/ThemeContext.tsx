@@ -26,6 +26,8 @@ export interface Theme {
     li: Record<string, string>;
   };
   print: {
+    background: string;
+    color: string;
     fontFamily: string;
     fontSize: string;
     lineHeight: string;
@@ -189,7 +191,12 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
       `;
     } else {
       // Base container styles for print
+      // Use theme-provided background and color, defaulting to white/black
+      const bg = (styles as any).background || '#ffffff';
+      const fg = (styles as any).color || '#000000';
       css += `
+        background: ${bg} !important;
+        color: ${fg} !important;
         font-family: ${styles.fontFamily} !important;
         font-size: ${styles.fontSize} !important;
         line-height: ${styles.lineHeight} !important;

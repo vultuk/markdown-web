@@ -1,5 +1,6 @@
 import React from 'react';
 import { SaveIndicator } from './SaveIndicator';
+import { ThemeSelector } from './ThemeSelector';
 import styles from '../styles/Header.module.css';
 
 interface HeaderProps {
@@ -37,6 +38,7 @@ export function Header({
       </div>
       
       <div className={styles.right}>
+        <ThemeSelector />
         {hasSelectedFile && (
           <>
             <SaveIndicator isSaving={isSaving} hasUnsavedChanges={hasUnsavedChanges} />

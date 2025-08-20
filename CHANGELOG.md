@@ -5,6 +5,34 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2024-08-20
+
+### Added
+- **Complete Theming System**: Choose from 5 professional themes for preview and print
+- **Theme Selector**: Dropdown in header to switch between themes instantly
+- **Theme Persistence**: Selected theme is saved in `~/.markdown-web/themes` directory
+- **Dynamic Styling**: Real-time theme application to both preview and print output
+- **Professional Themes**: 5 built-in themes - Dark, GitHub, Academic, Minimal, and Notion
+
+### New Themes
+- 🌙 **Dark** - VS Code-inspired dark theme (default)
+- 🐙 **GitHub** - Clean GitHub-style markdown rendering
+- 🎓 **Academic** - Serif fonts, formal styling for papers  
+- ✨ **Minimal** - Clean, minimal with excellent typography
+- 📝 **Notion** - Notion-inspired clean design
+
+### Technical Features
+- New API endpoints for theme management (`/api/themes`, `/api/settings`)
+- Theme manager backend service with automatic theme initialization
+- Real-time CSS generation and application
+- Synchronized preview and print styling
+- Theme data stored in JSON format for easy customization
+
+### Enhanced Print Experience
+- Print output now uses selected theme for consistent styling
+- Professional typography optimized for each theme
+- Theme-specific formatting for headers, code blocks, tables, and more
+
 ## [1.2.4] - 2024-08-20
 
 ### Improved
@@ -173,6 +201,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Clean, responsive interface
 - GitHub Flavored Markdown support
 
+[1.3.0]: https://github.com/vultuk/markdown-web/compare/v1.2.4...v1.3.0
 [1.2.4]: https://github.com/vultuk/markdown-web/compare/v1.2.3...v1.2.4
 [1.2.3]: https://github.com/vultuk/markdown-web/compare/v1.2.2...v1.2.3
 [1.2.2]: https://github.com/vultuk/markdown-web/compare/v1.2.1...v1.2.2

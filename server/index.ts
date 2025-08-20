@@ -1,6 +1,7 @@
 import express from 'express';
 import path from 'path';
 import { fileRouter } from './api';
+import { ThemeManager } from './themeManager';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -16,9 +17,13 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, './client/index.html'));
 });
 
-export function startServer(workingDirectory: string) {
+export async function startServer(workingDirectory: string) {
   // Set the working directory for file operations
   process.env.WORKING_DIR = workingDirectory;
+  
+  // Initialize themes
+  const themeManager = new ThemeManager();
+  await themeManager.initialize();
   
   const server = app.listen(PORT, () => {
     console.log(`Markdown Web Editor running on http://localhost:${PORT}`);

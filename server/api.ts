@@ -1,8 +1,11 @@
 import express from 'express';
 import fs from 'fs/promises';
 import path from 'path';
+import { ThemeManager } from './themeManager';
 
 export const fileRouter = express.Router();
+
+const themeManager = new ThemeManager();
 
 const getWorkingDir = () => process.env.WORKING_DIR || process.cwd();
 
@@ -120,6 +123,76 @@ fileRouter.post('/create-directory', async (req, res) => {
   } catch (error) {
     console.error('Error creating directory:', error);
     res.status(500).json({ error: 'Failed to create directory' });
+  }
+});
+
+// Theme management endpoints
+fileRouter.get('/themes', async (req, res) => {
+  try {
+    const themes = await themeManager.getThemes();
+    res.json(themes);
+  } catch (error) {
+    console.error('Error getting themes:', error);
+    res.status(500).json({ error: 'Failed to get themes' });
+  }
+});
+
+fileRouter.get('/themes/:name', async (req, res) => {
+  try {
+    const { name } = req.params;
+    const theme = await themeManager.getTheme(name);
+    
+    if (!theme) {
+      return res.status(404).json({ error: 'Theme not found' });
+    }
+    
+    res.json(theme);
+  } catch (error) {
+    console.error('Error getting theme:', error);
+    res.status(500).json({ error: 'Failed to get theme' });
+  }
+});
+
+fileRouter.post('/themes/:name', async (req, res) => {
+  try {
+    const { name } = req.params;
+    const theme = req.body;
+    
+    if (!theme || theme.name !== name) {
+      return res.status(400).json({ error: 'Invalid theme data' });
+    }
+    
+    await themeManager.saveTheme(theme);
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error saving theme:', error);
+    res.status(500).json({ error: 'Failed to save theme' });
+  }
+});
+
+fileRouter.get('/settings', async (req, res) => {
+  try {
+    const settings = await themeManager.getSettings();
+    res.json(settings);
+  } catch (error) {
+    console.error('Error getting settings:', error);
+    res.status(500).json({ error: 'Failed to get settings' });
+  }
+});
+
+fileRouter.post('/settings', async (req, res) => {
+  try {
+    const settings = req.body;
+    
+    if (!settings || typeof settings.selectedTheme !== 'string') {
+      return res.status(400).json({ error: 'Invalid settings data' });
+    }
+    
+    await themeManager.saveSettings(settings);
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error saving settings:', error);
+    res.status(500).json({ error: 'Failed to save settings' });
   }
 });
 

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { useTheme } from '../hooks/useTheme';
 import styles from '../styles/MarkdownPreview.module.css';
 import '../styles/print.css';
 
@@ -10,6 +11,7 @@ interface MarkdownPreviewProps {
 
 export function MarkdownPreview({ content }: MarkdownPreviewProps) {
   const contentRef = useRef<HTMLDivElement>(null);
+  const { currentTheme, generateCSS } = useTheme();
 
   useEffect(() => {
     // Create print container on mount and update it when content changes
@@ -40,6 +42,41 @@ export function MarkdownPreview({ content }: MarkdownPreviewProps) {
       observer.disconnect();
     };
   }, [content]);
+
+  // Apply theme styles
+  useEffect(() => {
+    if (!currentTheme || !contentRef.current) return;
+
+    const preview = contentRef.current;
+    const printContainer = document.getElementById('print-container');
+    
+    // Generate CSS for preview and print
+    const previewCSS = generateCSS(currentTheme, false);
+    const printCSS = generateCSS(currentTheme, true);
+    
+    // Apply preview styles
+    preview.style.cssText = previewCSS.container;
+    
+    // Apply element styles to preview
+    Object.entries(previewCSS.elements).forEach(([element, css]) => {
+      const elements = preview.querySelectorAll(element);
+      elements.forEach(el => {
+        (el as HTMLElement).style.cssText = css;
+      });
+    });
+
+    // Apply styles to print container if it exists
+    if (printContainer) {
+      printContainer.style.cssText = printCSS.container;
+      
+      Object.entries(printCSS.elements).forEach(([element, css]) => {
+        const elements = printContainer.querySelectorAll(element);
+        elements.forEach(el => {
+          (el as HTMLElement).style.cssText = css;
+        });
+      });
+    }
+  }, [currentTheme, content, generateCSS]);
 
   return (
     <div ref={contentRef} className={styles.preview}>

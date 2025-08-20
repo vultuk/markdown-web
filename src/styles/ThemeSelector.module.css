@@ -1,0 +1,32 @@
+.container {
+  margin-right: 16px;
+}
+
+.select {
+  background-color: #2d2d30;
+  color: #d4d4d4;
+  border: 1px solid #3e3e42;
+  border-radius: 4px;
+  padding: 6px 12px;
+  font-size: 14px;
+  font-family: inherit;
+  cursor: pointer;
+  outline: none;
+  min-width: 140px;
+}
+
+.select:hover {
+  background-color: #37373a;
+  border-color: #4e4e52;
+}
+
+.select:focus {
+  border-color: #569cd6;
+  box-shadow: 0 0 0 1px #569cd6;
+}
+
+.select option {
+  background-color: #2d2d30;
+  color: #d4d4d4;
+  padding: 8px;
+}

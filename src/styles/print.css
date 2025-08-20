@@ -26,130 +26,14 @@
     max-height: none !important;
     overflow: visible !important;
     margin: 0 !important;
-    padding: 0 !important;
-    background: white !important;
-  }
-  
-  /* Print-friendly base styling */
-  #print-container {
-    color: #000 !important;
-    font-family: 'Times New Roman', Times, serif !important;
-    font-size: 12pt !important;
-    line-height: 1.6 !important;
     padding: 20pt !important;
+    background: white !important;
+    color: #000 !important;
   }
   
   /* Reset all child elements to display naturally */
   #print-container * {
     visibility: visible !important;
-    background: transparent !important;
-  }
-  
-  /* Headings */
-  #print-container h1,
-  #print-container h2,
-  #print-container h3,
-  #print-container h4,
-  #print-container h5,
-  #print-container h6 {
-    color: #000 !important;
-    page-break-after: avoid;
-    margin-top: 20pt;
-    margin-bottom: 10pt;
-  }
-  
-  #print-container h1 {
-    font-size: 18pt;
-    border-bottom: 2pt solid #000;
-    padding-bottom: 5pt;
-  }
-  
-  #print-container h2 {
-    font-size: 16pt;
-    border-bottom: 1pt solid #666;
-    padding-bottom: 3pt;
-  }
-  
-  #print-container h3 {
-    font-size: 14pt;
-  }
-  
-  #print-container h4,
-  #print-container h5,
-  #print-container h6 {
-    font-size: 12pt;
-  }
-  
-  /* Paragraphs */
-  #print-container p {
-    margin: 8pt 0;
-  }
-  
-  /* Lists */
-  #print-container ul,
-  #print-container ol {
-    margin: 8pt 0;
-    padding-left: 20pt;
-  }
-  
-  #print-container li {
-    margin: 4pt 0;
-  }
-  
-  /* Code blocks */
-  #print-container pre {
-    background: #f8f8f8 !important;
-    border: 1pt solid #ddd !important;
-    padding: 8pt !important;
-    font-family: 'Courier New', monospace;
-    font-size: 10pt;
-    overflow: visible !important;
-    page-break-inside: avoid;
-    margin: 8pt 0;
-    white-space: pre-wrap;
-  }
-  
-  #print-container code {
-    background: #f0f0f0 !important;
-    padding: 1pt 3pt !important;
-    font-family: 'Courier New', monospace;
-    font-size: 10pt;
-    border: none !important;
-  }
-  
-  /* Blockquotes */
-  #print-container blockquote {
-    border-left: 3pt solid #666 !important;
-    padding-left: 12pt;
-    margin: 8pt 0;
-    font-style: italic;
-    color: #333 !important;
-  }
-  
-  /* Tables */
-  #print-container table {
-    border-collapse: collapse;
-    width: 100%;
-    margin: 8pt 0;
-    page-break-inside: avoid;
-  }
-  
-  #print-container th,
-  #print-container td {
-    border: 1pt solid #666 !important;
-    padding: 4pt 8pt;
-    text-align: left;
-  }
-  
-  #print-container th {
-    background: #f0f0f0 !important;
-    font-weight: bold;
-  }
-  
-  /* Links */
-  #print-container a {
-    color: #000 !important;
-    text-decoration: none;
   }
   
   /* Images */

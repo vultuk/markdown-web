@@ -1,6 +1,4 @@
 import React, { useState, useRef, useEffect } from 'react';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
 import html2pdf from 'html2pdf.js';
 import { useTheme } from '../hooks/useTheme';
 import styles from '../styles/ExportButton.module.css';
@@ -53,6 +51,15 @@ export function ExportButton({ content, fileName, isPreviewMode }: ExportButtonP
           return;
         }
 
+        // Import marked for markdown processing
+        const { marked } = await import('marked');
+        
+        // Configure marked with GFM
+        marked.setOptions({
+          gfm: true,
+          breaks: true
+        });
+
         // Create temporary container
         tempContainer = document.createElement('div');
         tempContainer.style.position = 'absolute';
@@ -62,38 +69,26 @@ export function ExportButton({ content, fileName, isPreviewMode }: ExportButtonP
         tempContainer.style.visibility = 'hidden';
         document.body.appendChild(tempContainer);
 
-        // Create React root and render markdown
-        const reactRoot = document.createElement('div');
-        tempContainer.appendChild(reactRoot);
+        // Create content container
+        const contentDiv = document.createElement('div');
+        tempContainer.appendChild(contentDiv);
 
-        // Use React to render the markdown content
-        const { createRoot } = await import('react-dom/client');
-        const root = createRoot(reactRoot);
-        
-        await new Promise<void>((resolve) => {
-          root.render(
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>
-              {content}
-            </ReactMarkdown>
-          );
-          // Wait for rendering to complete
-          setTimeout(() => {
-            resolve();
-          }, 100);
-        });
+        // Convert markdown to HTML
+        const htmlContent = await marked(content);
+        contentDiv.innerHTML = htmlContent;
 
         // Apply theme styles
         const printCSS = generateCSS(currentTheme, true);
-        reactRoot.style.cssText = printCSS.container;
+        contentDiv.style.cssText = printCSS.container;
 
         Object.entries(printCSS.elements).forEach(([element, css]) => {
-          const elements = reactRoot.querySelectorAll(element);
+          const elements = contentDiv.querySelectorAll(element);
           elements.forEach(el => {
             (el as HTMLElement).style.cssText = css;
           });
         });
 
-        containerElement = reactRoot;
+        containerElement = contentDiv;
       }
 
       if (!containerElement) {
@@ -108,7 +103,6 @@ export function ExportButton({ content, fileName, isPreviewMode }: ExportButtonP
           scale: 2,
           useCORS: true,
           letterRendering: true,
-          foreignObjectRendering: true,
           logging: false
         },
         jsPDF: { 

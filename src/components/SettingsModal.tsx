@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import styles from '../styles/ConfirmationModal.module.css';
+import { useTheme } from '../hooks/useTheme';
 
 export type PreviewLayout = 'full' | 'split';
 
@@ -11,6 +12,7 @@ interface SettingsModalProps {
 }
 
 export function SettingsModal({ isOpen, onClose, previewLayout, onChangePreviewLayout }: SettingsModalProps) {
+  const { availableThemes, selectedTheme, loading, changeTheme } = useTheme();
   useEffect(() => {
     if (!isOpen) return;
     const onKey = (e: KeyboardEvent) => {
@@ -29,7 +31,7 @@ export function SettingsModal({ isOpen, onClose, previewLayout, onChangePreviewL
           <h3>Settings</h3>
         </div>
         <div className={styles.body}>
-          <fieldset style={{ border: 'none', padding: 0, margin: 0 }}>
+          <fieldset style={{ border: 'none', padding: 0, margin: 0, marginBottom: 16 }}>
             <legend style={{ color: '#bbb', marginBottom: 8, fontSize: 13 }}>Preview layout</legend>
             <label style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, cursor: 'pointer' }}>
               <input
@@ -52,6 +54,30 @@ export function SettingsModal({ isOpen, onClose, previewLayout, onChangePreviewL
               <span>Resizable split</span>
             </label>
           </fieldset>
+
+          <fieldset style={{ border: 'none', padding: 0, margin: 0 }}>
+            <legend style={{ color: '#bbb', marginBottom: 8, fontSize: 13 }}>Theme</legend>
+            {loading || availableThemes.length === 0 ? (
+              <div style={{ color: '#999', fontSize: 13 }}>Loading themes…</div>
+            ) : (
+              <select
+                value={selectedTheme}
+                onChange={(e) => changeTheme(e.target.value)}
+                style={{
+                  width: '100%',
+                  padding: '8px 10px',
+                  borderRadius: 4,
+                  border: '1px solid #3e3e42',
+                  background: '#1e1e1e',
+                  color: '#ddd'
+                }}
+              >
+                {availableThemes.map((t) => (
+                  <option key={t.name} value={t.name}>{t.displayName}</option>
+                ))}
+              </select>
+            )}
+          </fieldset>
         </div>
         <div className={styles.footer}>
           <button className={styles.confirmButton} onClick={onClose}>Close</button>
@@ -60,4 +86,3 @@ export function SettingsModal({ isOpen, onClose, previewLayout, onChangePreviewL
     </div>
   );
 }
-

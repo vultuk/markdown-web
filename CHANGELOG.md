@@ -5,6 +5,28 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.14.0] - 2025-08-21
+
+### Added
+- **Centralized Theme Selection**: Theme selector moved to settings modal for consolidated configuration
+- **Enhanced Settings Modal**: Added theme selection dropdown with all available themes in settings
+- **Unified Settings Experience**: All user preferences now accessible in one location
+
+### Improved
+- **Cleaner Header Interface**: Removed theme selector from header to reduce UI clutter
+- **Better Settings Organization**: Theme selection now grouped with other preferences in settings modal
+- **Streamlined UI**: More focused header with essential controls only
+
+### Technical Improvements
+- **Settings Modal Integration**: Added `useTheme` hook integration in settings modal
+- **Theme State Management**: Settings modal now handles theme loading states and selection
+- **Component Consolidation**: Centralized theme-related UI in single settings interface
+
+### User Experience
+- **Consolidated Configuration**: All settings (preview layout, themes) accessible in one modal
+- **Cleaner Interface**: Less cluttered header allows more focus on content
+- **Logical Grouping**: Related settings organized together for better discoverability
+
 ## [1.13.0] - 2025-08-21
 
 ### Added

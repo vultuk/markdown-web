@@ -1,6 +1,5 @@
 import React from 'react';
 import { SaveIndicator } from './SaveIndicator';
-import { ThemeSelector } from './ThemeSelector';
 import { ExportButton } from './ExportButton';
 import styles from '../styles/Header.module.css';
 
@@ -45,7 +44,6 @@ export function Header({
       <div className={styles.right}>
         {hasSelectedFile && (
           <>
-            <ThemeSelector />
             <SaveIndicator isSaving={isSaving} hasUnsavedChanges={hasUnsavedChanges} />
             <button 
               className={styles.toggleButton}

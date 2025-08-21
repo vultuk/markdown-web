@@ -325,7 +325,7 @@ fileRouter.post('/ai/apply', async (req, res) => {
       const errText = await resp.text().catch(() => '');
       return res.status(502).json({ error: 'OpenAI request failed', details: errText.slice(0, 1000) });
     }
-    const data = await resp.json();
+    const data = await resp.json() as any;
     const updated = data?.choices?.[0]?.message?.content;
     if (typeof updated !== 'string' || !updated.trim()) {
       return res.status(502).json({ error: 'Invalid response from OpenAI' });

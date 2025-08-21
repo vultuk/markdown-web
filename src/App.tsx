@@ -418,6 +418,9 @@ function App() {
         const ok = await loadFileContent(filePath);
         if (ok) {
           setSelectedFile(filePath);
+          if (isMobile) {
+            setIsSidebarOpen(false);
+          }
         } else {
           setSelectedFile(null);
           setFileContent('');
@@ -437,6 +440,9 @@ function App() {
         const ok = await loadFileContent(filePath);
         if (ok) {
           setSelectedFile(filePath);
+          if (isMobile) {
+            setIsSidebarOpen(false);
+          }
         } else {
           setSelectedFile(null);
           setFileContent('');
@@ -453,7 +459,7 @@ function App() {
     return () => {
       window.removeEventListener('popstate', handlePopState);
     };
-  }, [getFilePathFromURL, loadFileContent, selectedFile, updateURL, showToast]);
+  }, [getFilePathFromURL, loadFileContent, selectedFile, updateURL, showToast, isMobile]);
 
   return (
     <div className={styles.app}>

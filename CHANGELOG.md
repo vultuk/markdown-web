@@ -2,6 +2,38 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.0] - 2025-08-21
+
+Breaking changes
+- Default authentication: Password auth is now enabled by default for the server and all `/api` endpoints. Existing unauthenticated workflows must pass a password. Use `--disable-auth` to opt out, or `--auth <password>` to set a custom password.
+- API protection: `/api` is protected via session cookie; clients must include credentials.
+- UI adjustments: Theme selector moved from header to Settings modal; preview default is “Full area” (can be changed).
+
+Features
+- CLI auth options: `--auth <password>`, `--disable-auth`, and generated random password by default.
+- Auth endpoints: `/auth/status`, `/auth/login`, `/auth/logout` with signed HttpOnly session cookie.
+- Settings modal: New UI with options for preview layout (Full area / Resizable split), sidebar behavior (Overlay / Inline), theme selection, OpenAI model, and scroll sync toggle.
+- Persistent settings: Settings saved to `~/.markdown-web/settings.json`; client persists updates and shows a save toast.
+- AI integration: Optional `--openai-key` enables an AI flow with prompt modal, per-request model override, Accept/Reject review, autosave pause during review, and theme-friendly UI polish.
+- AI usage logging: Logs to `~/.markdown-web/logs/<encoded-filepath>/ai.json` with prompt, tokens, model, and estimated cost; Status bar shows per-file total cost.
+- Syntax highlighting: Theme-aware code highlighting in preview and print/export (auto dark/light based on theme background).
+- Mermaid support: Render ` ```mermaid` fenced blocks in preview with theme-aware Mermaid diagrams.
+- Scroll sync: Optional editor/preview scroll synchronization in desktop split mode, toggleable in Settings.
+- Desktop sidebar overlay: Sidebar can behave as an overlay on desktop (default) or inline resizable.
+- Mobile UX: Uses `100dvh` for correct viewport sizing; keeps key UI elements visible.
+
+Fixes & hardening
+- Scrypt memory: Set explicit `maxmem` for Node’s scrypt to avoid memory errors on modern Node.
+- Auth route ordering: Ensure auth + API routes are mounted before static/catch-all to avoid 401/HTML mismatches.
+- Cookie handling: Client uses `credentials: 'same-origin'` for all API/auth endpoints.
+- Large payloads: Increased JSON body limit (default 50MB) and configurable via `JSON_LIMIT`.
+- Mermaid loader: Switched to a safer dynamic UMD loader path to avoid ESM init errors in production bundles.
+
+Developer notes
+- Server: Uses OpenAI official SDK (Responses API) and returns `output_text` for markdown-only responses.
+- Dev proxy: Vite dev proxies `/auth` alongside `/api`.
+
+
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 

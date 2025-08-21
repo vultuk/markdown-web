@@ -5,7 +5,7 @@
 }
 
 .exportButton {
-  padding: 6px 12px;
+  padding: 6px 10px;
   background-color: #0e639c;
   border: none;
   border-radius: 3px 0 0 3px;
@@ -24,7 +24,7 @@
 }
 
 .dropdownToggle {
-  padding: 6px 8px;
+  padding: 6px 10px;
   background-color: #0e639c;
   border: none;
   border-radius: 0 3px 3px 0;
@@ -81,9 +81,9 @@
   border-radius: 0 0 3px 3px;
 }
 
-.exportIcon { font-size: 14px; line-height: 1; }
+.exportIcon { line-height: 0; color: currentColor; display: none; }
 .exportLabel { line-height: 1; }
-.exportCaret { font-size: 10px; }
+.exportCaret { line-height: 0; display: none; }
 .exportCaretLabel { display: inline; }
 
 @media (max-width: 768px) {
@@ -91,4 +91,6 @@
   .dropdownToggle { padding: 6px; min-width: 28px; }
   .exportLabel { display: none; }
   .exportCaretLabel { display: none; }
+  .exportIcon { display: inline-flex; }
+  .exportCaret { display: inline-flex; }
 }

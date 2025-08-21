@@ -147,7 +147,11 @@ export function ExportButton({ content, fileName, isPreviewMode }: ExportButtonP
         title="Export markdown file"
         aria-label="Export markdown file"
       >
-        <span className={styles.exportIcon} aria-hidden>⤓</span>
+        <span className={styles.exportIcon} aria-hidden>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path d="M5 20h14v-2H5v2zm7-18l-5 5h3v6h4V7h3l-5-5z"/>
+          </svg>
+        </span>
         <span className={styles.exportLabel}>Export</span>
       </button>
       
@@ -156,7 +160,11 @@ export function ExportButton({ content, fileName, isPreviewMode }: ExportButtonP
         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
         title="Export options"
       >
-        <span className={styles.exportCaret} aria-hidden>▼</span>
+        <span className={styles.exportCaret} aria-hidden>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path d="M7 10l5 5 5-5H7z"/>
+          </svg>
+        </span>
         <span className={styles.exportCaretLabel}>Options</span>
       </button>
 

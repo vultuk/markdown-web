@@ -60,7 +60,15 @@ export function Header({
               title={isPreviewMode ? 'Edit' : 'Preview'}
             >
               <span className={styles.btnIcon} aria-hidden>
-                {isPreviewMode ? '✏️' : '👁️'}
+                {isPreviewMode ? (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zm2.92 1.83H5v-0.92l8.06-8.06 0.92 0.92-8.06 8.06zM20.71 7.04a1 1 0 0 0 0-1.41l-2.34-2.34a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/>
+                  </svg>
+                ) : (
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 5c-7 0-11 7-11 7s4 7 11 7 11-7 11-7-4-7-11-7zm0 12a5 5 0 1 1 0-10 5 5 0 0 1 0 10z"/>
+                  </svg>
+                )}
               </span>
               <span className={styles.btnLabel}>{isPreviewMode ? 'Edit' : 'Preview'}</span>
             </button>
@@ -72,7 +80,11 @@ export function Header({
                   aria-label="Accept changes"
                   title="Accept changes"
                 >
-                  <span className={styles.btnIcon} aria-hidden>✅</span>
+                  <span className={styles.btnIcon} aria-hidden>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M9 16.2l-3.5-3.5-1.4 1.4L9 19 20.3 7.7l-1.4-1.4z"/>
+                    </svg>
+                  </span>
                   <span className={styles.btnLabel}>Accept</span>
                 </button>
                 <button 
@@ -81,7 +93,11 @@ export function Header({
                   aria-label="Revert changes"
                   title="Revert changes"
                 >
-                  <span className={styles.btnIcon} aria-hidden>↩️</span>
+                  <span className={styles.btnIcon} aria-hidden>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M12 5v4H6l6 6v-4h1a5 5 0 1 1 0 10h-1v-2h1a3 3 0 1 0 0-6h-1V9l-4 4-4-4h8V5h2z"/>
+                    </svg>
+                  </span>
                   <span className={styles.btnLabel}>Revert</span>
                 </button>
               </>
@@ -92,7 +108,11 @@ export function Header({
                 aria-label="Open AI assistant"
                 title="Open AI assistant"
               >
-                <span className={styles.btnIcon} aria-hidden>✨</span>
+                <span className={styles.btnIcon} aria-hidden>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M5 3l2 4 4 2-4 2-2 4-2-4-4-2 4-2 2-4zm12 4l1.5 3 3 1.5-3 1.5L17 16l-1.5-3-3-1.5 3-1.5L17 7zM12 12l1 2 2 1-2 1-1 2-1-2-2-1 2-1 1-2z"/>
+                  </svg>
+                </span>
                 <span className={styles.btnLabel}>AI</span>
               </button>
             )}

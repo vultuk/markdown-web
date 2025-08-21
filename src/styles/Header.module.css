@@ -91,13 +91,8 @@
   .btnLabel {
     display: none;
   }
+  .btnIcon { display: inline-flex; }
 }
 
-.btnIcon {
-  font-size: 14px;
-  line-height: 1;
-}
-
-.btnLabel {
-  line-height: 1;
-}
+.btnIcon { display: none; color: currentColor; line-height: 0; }
+.btnLabel { line-height: 1; }

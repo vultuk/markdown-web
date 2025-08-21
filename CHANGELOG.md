@@ -2,6 +2,32 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.6.1] - 2025-08-21
+
+### Improved
+- **SVG Icon System**: Replaced emoji icons with professional SVG icons for better cross-platform consistency
+- **Enhanced Visual Design**: Improved icon rendering with proper SVG implementations for all UI buttons
+- **Better Mobile Experience**: Enhanced icon display behavior on mobile devices with improved responsive design
+- **Icon Consistency**: Standardized icon styling and display properties across all interface elements
+
+### Technical Improvements
+- **Icon System Overhaul**: Migrated from unicode emojis (⤓, ▼, ✏️, 👁️, ✅, ↩️, ✨) to scalable SVG icons
+- **Responsive Icon Display**: Enhanced CSS media queries for optimal icon visibility on different screen sizes
+- **Cross-Platform Compatibility**: SVG icons ensure consistent appearance across all operating systems and browsers
+- **Performance Optimization**: Optimized icon rendering with proper line-height and display properties
+
+### Visual Enhancements
+- **Export Button Icons**: Professional download and dropdown arrow SVG icons
+- **Header Button Icons**: Clean edit, preview, accept, revert, and AI assistant SVG icons
+- **Mobile-First Design**: Icons show properly on mobile with responsive visibility controls
+- **Theme Integration**: SVG icons adapt to current theme colors using `currentColor` property
+
+### User Experience
+- **Professional Appearance**: Consistent, crisp icon rendering across all devices and platforms
+- **Better Accessibility**: SVG icons with proper ARIA attributes and screen reader compatibility
+- **Visual Clarity**: Enhanced icon recognition and interface usability
+- **Cross-Browser Support**: Reliable icon display across all modern web browsers
+
 ## [2.6.0] - 2025-08-21
 
 ### Added

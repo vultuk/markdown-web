@@ -2,6 +2,38 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.9.0] - 2025-08-21
+
+### Added
+- **Context Menu System**: Right-click context menus for files, folders, and file explorer background
+- **Mobile Context Menu Support**: Double-tap context menu functionality for touch devices
+- **Enhanced File Operations**: Context-aware file and folder operations with streamlined interface
+- **Mobile-Responsive Interactions**: Adaptive UI behavior that detects mobile devices and adjusts interaction patterns
+
+### New Features
+- **Right-Click Context Menus**: Full context menu system with file/folder specific actions
+- **Touch-Friendly Mobile Interface**: Double-tap support for mobile devices to access context menus
+- **Streamlined Action Interface**: Replaced hover-based action buttons with cleaner context menu system
+- **Responsive UI Detection**: Automatic mobile/desktop detection with appropriate interaction patterns
+
+### Technical Improvements
+- **Context Menu Architecture**: Robust context menu system with proper event handling and positioning
+- **Mobile Detection Logic**: Window resize listener and mobile viewport detection
+- **Event Management**: Comprehensive event handling for context menus, escape key, and click-to-close
+- **State Management**: Enhanced state management for context menu positioning and visibility
+
+### User Experience
+- **Intuitive Context Actions**: Right-click or double-tap to access relevant file/folder operations
+- **Clean Interface Design**: Removed visual clutter by replacing hover buttons with context menus
+- **Cross-Platform Consistency**: Unified interaction model that works on both desktop and mobile
+- **Accessible Context Menus**: Proper keyboard navigation with escape key support
+
+### Developer Experience
+- **Simplified Action Interface**: Cleaner code architecture with centralized context menu logic
+- **Responsive Design Patterns**: Better mobile-first design with adaptive interaction models
+- **Enhanced Touch Support**: Improved touch device compatibility and interaction patterns
+- **Modular Context System**: Extensible context menu architecture for future enhancements
+
 ## [2.8.0] - 2025-08-21
 
 ### Added

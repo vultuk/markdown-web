@@ -48,6 +48,40 @@ export function FileExplorer({
   const [newDirName, setNewDirName] = useState('');
   const [renamingPath, setRenamingPath] = useState<string | null>(null);
   const [renameValue, setRenameValue] = useState('');
+  const [menu, setMenu] = useState<{ open: boolean; x: number; y: number; type: 'file' | 'directory' | 'root'; path?: string } | null>(null);
+  const [isMobile, setIsMobile] = useState<boolean>(typeof window !== 'undefined' ? window.innerWidth <= 768 : false);
+
+  React.useEffect(() => {
+    const onResize = () => setIsMobile(window.innerWidth <= 768);
+    window.addEventListener('resize', onResize);
+    return () => window.removeEventListener('resize', onResize);
+  }, []);
+
+  const openMenuAtEvent = (e: React.MouseEvent, type: 'file' | 'directory' | 'root', path?: string) => {
+    e.preventDefault();
+    e.stopPropagation();
+    let x = (e as any).clientX as number | undefined;
+    let y = (e as any).clientY as number | undefined;
+    if (!x || !y) {
+      const el = e.currentTarget as HTMLElement;
+      const rect = el.getBoundingClientRect();
+      x = rect.left + rect.width * 0.4;
+      y = rect.top + rect.height;
+    }
+    setMenu({ open: true, x: x!, y: y!, type, path });
+  };
+
+  // Close context menu on click/escape/scroll
+  React.useEffect(() => {
+    const handleClick = () => setMenu(null);
+    const handleKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setMenu(null); };
+    window.addEventListener('click', handleClick);
+    window.addEventListener('keydown', handleKey);
+    return () => {
+      window.removeEventListener('click', handleClick);
+      window.removeEventListener('keydown', handleKey);
+    };
+  }, []);
   const [draggingPath, setDraggingPath] = useState<string | null>(null);
   const [dragOverDir, setDragOverDir] = useState<string | null>(null);
 
@@ -124,7 +158,16 @@ export function FileExplorer({
           style={{ paddingLeft: `${level * 20 + 8}px` }}
         >
           {item.type === 'directory' ? (
-            <div className={styles.directoryContainer}>
+            <div className={styles.directoryContainer}
+              onContextMenu={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setMenu({ open: true, x: e.clientX, y: e.clientY, type: 'directory', path: item.path });
+              }}
+              onDoubleClick={(e) => {
+                if (isMobile) openMenuAtEvent(e, 'directory', item.path);
+              }}
+            >
               <div 
                 className={`${styles.directory} ${draggingPath === item.path ? styles.dragging : ''} ${dragOverDir === item.path ? styles.dropTarget : ''}`}
                 onClick={() => toggleDirectory(item.path)}
@@ -186,7 +229,17 @@ export function FileExplorer({
                     autoFocus
                   />
                 ) : (
-                  <span onDoubleClick={startRename}>{item.name}</span>
+                  <span
+                    onDoubleClick={(e) => {
+                      if (isMobile) {
+                        openMenuAtEvent(e as any, 'directory', item.path);
+                      } else {
+                        startRename();
+                      }
+                    }}
+                  >
+                    {item.name}
+                  </span>
                 )}
               </div>
               <div className={styles.directoryActions}>
@@ -234,6 +287,14 @@ export function FileExplorer({
                   try { e.dataTransfer.effectAllowed = 'move'; } catch {}
                 }}
                 onDragEnd={() => { setDraggingPath(null); setDragOverDir(null); }}
+                onContextMenu={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setMenu({ open: true, x: e.clientX, y: e.clientY, type: 'file', path: item.path });
+                }}
+                onDoubleClick={(e) => {
+                  if (isMobile) openMenuAtEvent(e, 'file', item.path);
+                }}
               >
                 <span className={styles.icon}>📄</span>
                 {isRenaming ? (
@@ -249,7 +310,17 @@ export function FileExplorer({
                     autoFocus
                   />
                 ) : (
-                  <span onDoubleClick={startRename}>{item.name}</span>
+                  <span
+                    onDoubleClick={(e) => {
+                      if (isMobile) {
+                        openMenuAtEvent(e as any, 'file', item.path);
+                      } else {
+                        startRename();
+                      }
+                    }}
+                  >
+                    {item.name}
+                  </span>
                 )}
               </div>
               <div className={styles.fileActions}>
@@ -345,9 +416,94 @@ export function FileExplorer({
         </div>
       )}
 
-      <div className={styles.fileList}>
+      <div
+        className={styles.fileList}
+        onContextMenu={(e) => {
+          e.preventDefault();
+          setMenu({ open: true, x: e.clientX, y: e.clientY, type: 'root' });
+        }}
+        onDoubleClick={(e) => {
+          if (isMobile) openMenuAtEvent(e as any, 'root');
+        }}
+      >
         {files.map(file => renderFileItem(file))}
       </div>
+
+      {menu?.open && (
+        <div
+          className={styles.contextMenu}
+          style={{ left: menu.x, top: menu.y, position: 'fixed' }}
+          onClick={(e) => e.stopPropagation()}
+          onContextMenu={(e) => { e.preventDefault(); e.stopPropagation(); }}
+        >
+          {menu.type === 'directory' && (
+            <>
+              <button
+                className={styles.contextItem}
+                onClick={() => { setMenu(null); setShowCreateFile(menu.path || ''); }}
+              >
+                New File
+              </button>
+              <button
+                className={styles.contextItem}
+                onClick={() => { setMenu(null); setShowCreateDir(menu.path || ''); }}
+              >
+                New Folder
+              </button>
+              <button
+                className={styles.contextItem}
+                onClick={() => {
+                  setMenu(null);
+                  if (menu.path) { setRenamingPath(menu.path); setRenameValue(basename(menu.path)); }
+                }}
+              >
+                Rename Folder
+              </button>
+              <button
+                className={`${styles.contextItem} ${styles.danger}`}
+                onClick={() => { setMenu(null); if (menu.path) onDeleteDirectory(menu.path); }}
+              >
+                Delete Folder
+              </button>
+            </>
+          )}
+          {menu.type === 'file' && (
+            <>
+              <button
+                className={styles.contextItem}
+                onClick={() => {
+                  setMenu(null);
+                  if (menu.path) { setRenamingPath(menu.path); setRenameValue(basename(menu.path)); }
+                }}
+              >
+                Rename File
+              </button>
+              <button
+                className={`${styles.contextItem} ${styles.danger}`}
+                onClick={() => { setMenu(null); if (menu.path) onDeleteFile(menu.path); }}
+              >
+                Delete File
+              </button>
+            </>
+          )}
+          {menu.type === 'root' && (
+            <>
+              <button
+                className={styles.contextItem}
+                onClick={() => { setMenu(null); setShowCreateFile(''); }}
+              >
+                New File in root
+              </button>
+              <button
+                className={styles.contextItem}
+                onClick={() => { setMenu(null); setShowCreateDir(''); }}
+              >
+                New Folder in root
+              </button>
+            </>
+          )}
+        </div>
+      )}
 
       <div className={styles.footer}>
         <button 

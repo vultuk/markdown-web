@@ -2,6 +2,44 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.5.0] - 2025-08-21
+
+### Added
+- **Selection-Based AI Editing**: Apply AI prompts to selected text portions instead of entire content
+- **Smart Text Selection Tracking**: Real-time tracking of text selection state with visual feedback
+- **Selection Indicator**: Visual indicator showing when text is selected for AI operations
+- **Enhanced AI Workflow**: AI operations work seamlessly on both full content and selected segments
+
+### New Features
+- **Precise AI Control**: Select specific paragraphs, sentences, or code blocks for targeted AI editing
+- **Selection Merge Logic**: Intelligent merging of AI-edited selections back into original content
+- **Visual Selection Feedback**: "Using selection (X chars)" indicator in AI modal when text is selected
+- **Flexible AI Operations**: Both Adjust and Ask modes support selection-based operations
+- **Real-time Selection Updates**: Selection state updates as users navigate and select text
+
+### Enhanced AI Capabilities  
+- **Context-Aware Prompting**: AI operations use selected text as context when available
+- **Selective Content Modification**: Make targeted changes without affecting entire document
+- **Improved Precision**: Edit specific sections while preserving surrounding content structure
+- **Better Workflow Integration**: Selection-based editing fits naturally into existing AI workflow
+
+### User Experience Improvements
+- **Intuitive Text Selection**: Standard text selection behavior with enhanced AI integration
+- **Clear Visual Feedback**: Users know exactly what content will be processed by AI
+- **Non-Disruptive Selection**: Text selection doesn't interfere with normal editing workflow
+- **Seamless Editing**: Selected text editing feels natural and responsive
+
+### Technical Enhancements
+- **Selection State Management**: Robust tracking of selection start/end positions with refs
+- **Content Merging Algorithm**: Smart merging of edited selections with original content
+- **Selection Persistence**: Selection state maintained during AI operations
+- **Error-Safe Selection**: Graceful handling of selection edge cases and browser differences
+
+### Accessibility
+- **ARIA Live Regions**: Selection feedback announced to screen readers
+- **Keyboard Selection**: Full keyboard selection support with visual feedback
+- **Clear Status Updates**: Real-time selection status communicated to all users
+
 ## [2.4.0] - 2025-08-21
 
 ### Added

@@ -82,6 +82,12 @@
 
 .aiBody { padding: 12px; }
 
+.aiSelectionNote {
+  color: #bbbbbb;
+  font-size: 12px;
+  margin: 4px 0 8px 0;
+}
+
 .aiTextarea {
   width: 100%;
   min-height: 110px;

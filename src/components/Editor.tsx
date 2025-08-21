@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { StatusBar } from './StatusBar';
 import styles from '../styles/Editor.module.css';
 import ReactMarkdown from 'react-markdown';
@@ -37,6 +37,9 @@ export function Editor({
   const [model, setModel] = useState<string>(defaultModel || 'gpt-5-mini');
   const [mode, setMode] = useState<'adjust' | 'ask'>('adjust');
   const [answer, setAnswer] = useState<string | null>(null);
+  const textRef = useRef<HTMLTextAreaElement | null>(null);
+  const [selStart, setSelStart] = useState<number | null>(null);
+  const [selEnd, setSelEnd] = useState<number | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -98,9 +101,23 @@ export function Editor({
           <textarea
             className={styles.textarea}
             value={content}
-            onChange={(e) => onChange(e.target.value)}
+            onChange={(e) => {
+              onChange(e.target.value);
+              // keep latest caret as selection if none
+              try {
+                setSelStart(e.currentTarget.selectionStart ?? null);
+                setSelEnd(e.currentTarget.selectionEnd ?? null);
+              } catch {}
+            }}
             placeholder="Start typing your markdown..."
             spellCheck={false}
+            ref={textRef}
+            onSelect={(e) => {
+              try {
+                setSelStart(e.currentTarget.selectionStart ?? null);
+                setSelEnd(e.currentTarget.selectionEnd ?? null);
+              } catch {}
+            }}
           />
         )}
       </div>
@@ -153,6 +170,17 @@ export function Editor({
                   </select>
                 </div>
               </div>
+              {(() => {
+                const start = selStart ?? textRef.current?.selectionStart ?? null;
+                const end = selEnd ?? textRef.current?.selectionEnd ?? null;
+                const hasSel = typeof start === 'number' && typeof end === 'number' && start !== end;
+                const len = hasSel ? Math.abs((end as number) - (start as number)) : 0;
+                return hasSel ? (
+                  <div className={styles.aiSelectionNote} aria-live="polite">
+                    Using selection ({len} chars)
+                  </div>
+                ) : null;
+              })()}
               <textarea
                 className={styles.aiTextarea}
                 placeholder={mode === 'adjust' ? 'Describe the changes you want to apply to this markdown…' : 'Ask a question about this markdown…'}
@@ -192,12 +220,26 @@ export function Editor({
                   if (!p) { setAiOpen(false); return; }
                   try {
                     setAiLoading(true);
+                    // Determine selection range (if any)
+                    let start = selStart ?? undefined;
+                    let end = selEnd ?? undefined;
+                    const ta = textRef.current;
+                    if ((start == null || end == null) && ta) {
+                      try {
+                        start = ta.selectionStart ?? undefined;
+                        end = ta.selectionEnd ?? undefined;
+                      } catch {}
+                    }
+                    const hasSelection = typeof start === 'number' && typeof end === 'number' && start !== end;
+                    const s = typeof start === 'number' ? start : 0;
+                    const e = typeof end === 'number' ? end : content.length;
+                    const selectedText = hasSelection ? content.slice(s, e) : content;
                     if (mode === 'adjust') {
                       const res = await fetch('/api/ai/apply', {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         credentials: 'same-origin',
-                        body: JSON.stringify({ prompt: p, content, path: fileName || '', model }),
+                        body: JSON.stringify({ prompt: p, content: selectedText, path: fileName || '', model }),
                       });
                       if (!res.ok) {
                         let msg = 'AI request failed';
@@ -215,9 +257,15 @@ export function Editor({
                         alert('Invalid AI response');
                         return;
                       }
+                      const updatedSegment = data.content as string;
                       setPrevContent(content);
                       onAiPendingChange?.(true);
-                      if (onAiApply) onAiApply(data.content); else onChange(data.content);
+                      if (hasSelection) {
+                        const merged = content.slice(0, s) + updatedSegment + content.slice(e);
+                        if (onAiApply) onAiApply(merged); else onChange(merged);
+                      } else {
+                        if (onAiApply) onAiApply(updatedSegment); else onChange(updatedSegment);
+                      }
                       try { window.dispatchEvent(new CustomEvent('ai-cost-updated', { detail: { path: fileName || '' } })); } catch {}
                       setAiOpen(false);
                       setPrompt('');
@@ -226,7 +274,7 @@ export function Editor({
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         credentials: 'same-origin',
-                        body: JSON.stringify({ prompt: p, content, model }),
+                        body: JSON.stringify({ prompt: p, content: selectedText, model }),
                       });
                       if (!res.ok) {
                         let msg = 'AI request failed';

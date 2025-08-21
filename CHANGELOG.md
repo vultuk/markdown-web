@@ -5,6 +5,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.15.0] - 2025-08-21
+
+### Added
+- **Sidebar Overlay Mode**: New overlay sidebar option that floats over content without resizing layout
+- **Sidebar Behavior Configuration**: Choose between "Overlay (recommended)" or "Inline (resizes content)" modes
+- **Double-click Split Reset**: Double-click split-view resizer to quickly reset to 50/50 layout
+- **External Link Behavior**: All markdown links now open in new tabs with proper security attributes
+
+### New Features
+- **Smart Sidebar Positioning**: Overlay mode provides floating sidebar with shadow and z-index positioning
+- **Improved Desktop Experience**: Overlay mode prevents content jumping when sidebar opens/closes
+- **Enhanced Split-View Controls**: Quick reset functionality for split-view proportions
+- **Better Link Security**: External links open safely with `target="_blank"` and `rel="noopener noreferrer"`
+
+### Technical Improvements
+- **Sidebar Mode State**: New `SidebarMode` type and state management with localStorage persistence
+- **Dynamic Sidebar Styling**: Conditional CSS classes for overlay vs inline sidebar behavior
+- **Enhanced Settings Modal**: Added sidebar behavior configuration section with radio buttons
+- **Mobile-First Behavior**: Mobile devices always use overlay mode regardless of desktop setting
+
+### User Experience
+- **Configurable Sidebar**: Users can choose sidebar behavior that fits their workflow
+- **Non-disruptive Navigation**: Overlay mode keeps content stable while browsing files
+- **Quick Layout Adjustment**: Double-click to instantly balance split-view panes
+- **Safer Link Navigation**: External links won't interfere with editor session
+
 ## [1.14.0] - 2025-08-21
 
 ### Added

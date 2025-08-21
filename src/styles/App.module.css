@@ -48,6 +48,16 @@ body {
   flex-shrink: 0;
 }
 
+.sidebarOverlay {
+  position: fixed;
+  top: 48px; /* header height */
+  left: 0;
+  height: calc(100vh - 48px);
+  width: 360px;
+  z-index: 200;
+  box-shadow: 2px 0 8px rgba(0,0,0,0.4);
+}
+
 .main {
   flex: 1;
   background-color: #1e1e1e;
@@ -105,4 +115,8 @@ body {
   .backdropOpen {
     display: block;
   }
+}
+
+.backdropOverlay {
+  display: block;
 }

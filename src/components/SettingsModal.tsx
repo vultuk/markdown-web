@@ -3,15 +3,18 @@ import styles from '../styles/ConfirmationModal.module.css';
 import { useTheme } from '../hooks/useTheme';
 
 export type PreviewLayout = 'full' | 'split';
+export type SidebarMode = 'overlay' | 'inline';
 
 interface SettingsModalProps {
   isOpen: boolean;
   onClose: () => void;
   previewLayout: PreviewLayout;
   onChangePreviewLayout: (layout: PreviewLayout) => void;
+  sidebarMode: SidebarMode;
+  onChangeSidebarMode: (mode: SidebarMode) => void;
 }
 
-export function SettingsModal({ isOpen, onClose, previewLayout, onChangePreviewLayout }: SettingsModalProps) {
+export function SettingsModal({ isOpen, onClose, previewLayout, onChangePreviewLayout, sidebarMode, onChangeSidebarMode }: SettingsModalProps) {
   const { availableThemes, selectedTheme, loading, changeTheme } = useTheme();
   useEffect(() => {
     if (!isOpen) return;
@@ -31,6 +34,31 @@ export function SettingsModal({ isOpen, onClose, previewLayout, onChangePreviewL
           <h3>Settings</h3>
         </div>
         <div className={styles.body}>
+          <fieldset style={{ border: 'none', padding: 0, margin: 0, marginBottom: 16 }}>
+            <legend style={{ color: '#bbb', marginBottom: 8, fontSize: 13 }}>Sidebar behavior (desktop)</legend>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, cursor: 'pointer' }}>
+              <input
+                type="radio"
+                name="sidebarMode"
+                value="overlay"
+                checked={sidebarMode === 'overlay'}
+                onChange={() => onChangeSidebarMode('overlay')}
+              />
+              <span>Overlay (recommended)</span>
+            </label>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+              <input
+                type="radio"
+                name="sidebarMode"
+                value="inline"
+                checked={sidebarMode === 'inline'}
+                onChange={() => onChangeSidebarMode('inline')}
+              />
+              <span>Inline (resizes content)</span>
+            </label>
+            <div style={{ color: '#888', fontSize: 12, marginTop: 6 }}>Mobile always uses overlay.</div>
+          </fieldset>
+
           <fieldset style={{ border: 'none', padding: 0, margin: 0, marginBottom: 16 }}>
             <legend style={{ color: '#bbb', marginBottom: 8, fontSize: 13 }}>Preview layout</legend>
             <label style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, cursor: 'pointer' }}>

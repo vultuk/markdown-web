@@ -91,6 +91,11 @@ export function MarkdownPreview({ content }: MarkdownPreviewProps) {
       <ReactMarkdown 
         key={currentTheme?.name || 'default'} 
         remarkPlugins={[remarkGfm]}
+        components={{
+          a: ({ node, ...props }) => (
+            <a {...props} target="_blank" rel="noopener noreferrer" />
+          )
+        }}
       >
         {content}
       </ReactMarkdown>

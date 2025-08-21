@@ -4,7 +4,7 @@ import { Editor } from './components/Editor';
 import { MarkdownPreview } from './components/MarkdownPreview';
 import { Header } from './components/Header';
 import { ConfirmationModal } from './components/ConfirmationModal';
-import { SettingsModal, PreviewLayout } from './components/SettingsModal';
+import { SettingsModal, PreviewLayout, SidebarMode } from './components/SettingsModal';
 import { useAutoSave } from './hooks/useAutoSave';
 import styles from './styles/App.module.css';
 import { Toast } from './components/Toast';
@@ -64,6 +64,14 @@ function App() {
       return (v === 'split' || v === 'full') ? (v as PreviewLayout) : 'full';
     } catch {
       return 'full';
+    }
+  });
+  const [sidebarMode, setSidebarMode] = useState<SidebarMode>(() => {
+    try {
+      const v = localStorage.getItem('sidebarMode');
+      return (v === 'overlay' || v === 'inline') ? (v as SidebarMode) : 'overlay';
+    } catch {
+      return 'overlay';
     }
   });
 
@@ -164,8 +172,12 @@ function App() {
     }
     setSelectedFile(filePath);
     setIsPreviewMode(false);
+    // Close sidebar if overlay (desktop) or on mobile
+    if (isMobile || sidebarMode === 'overlay') {
+      setIsSidebarOpen(false);
+    }
     updateURL(filePath);
-  }, [loadFileContent, updateURL, showToast]);
+  }, [loadFileContent, updateURL, showToast, isMobile, sidebarMode]);
 
   const handleCreateFile = useCallback(async (fileName: string, directory?: string) => {
     const fullPath = directory ? `${directory}/${fileName}` : fileName;
@@ -385,6 +397,12 @@ function App() {
     } catch {}
   }, [previewLayout]);
 
+  useEffect(() => {
+    try {
+      localStorage.setItem('sidebarMode', sidebarMode);
+    } catch {}
+  }, [sidebarMode]);
+
   // Handle drag-to-resize events
   useEffect(() => {
     if (!isResizing) return;
@@ -497,10 +515,10 @@ function App() {
         fileContent={fileContent}
         fileName={selectedFile}
       />
-      {/* Mobile backdrop to close sidebar */}
+      {/* Backdrop to close sidebar (mobile always; desktop only in overlay mode) */}
       {isSidebarOpen && (
         <div
-          className={`${styles.backdrop} ${styles.backdropOpen}`}
+          className={`${styles.backdrop} ${(isMobile || sidebarMode === 'overlay') ? styles.backdropOpen : ''} ${( !isMobile && sidebarMode === 'overlay') ? styles.backdropOverlay : ''}`}
           onClick={() => setIsSidebarOpen(false)}
         />
       )}
@@ -508,7 +526,10 @@ function App() {
       <div className={`${styles.body} ${(isResizing || isSplitResizing) ? styles.resizing : ''}`}>
         {isSidebarOpen && (
           <>
-          <div className={styles.sidebar} style={isMobile ? undefined : { width: sidebarWidth }}>
+          <div 
+            className={`${styles.sidebar} ${(!isMobile && sidebarMode === 'overlay') ? styles.sidebarOverlay : ''}`}
+            style={(!isMobile && sidebarMode === 'inline') ? { width: sidebarWidth } : undefined}
+          >
             <FileExplorer
               files={files}
               onFileSelect={handleFileSelect}
@@ -521,13 +542,15 @@ function App() {
               onOpenSettings={() => setSettingsOpen(true)}
             />
           </div>
-          <div 
-            className={styles.resizer}
-            role="separator"
-            aria-orientation="vertical"
-            aria-label="Resize sidebar"
-            onMouseDown={(e) => { e.preventDefault(); setIsResizing(true); }}
-          />
+          {(sidebarMode === 'inline' && !isMobile) && (
+            <div 
+              className={styles.resizer}
+              role="separator"
+              aria-orientation="vertical"
+              aria-label="Resize sidebar"
+              onMouseDown={(e) => { e.preventDefault(); setIsResizing(true); }}
+            />
+          )}
           </>
         )}
         <div className={styles.main}>
@@ -550,6 +573,12 @@ function App() {
                 aria-orientation="vertical"
                 aria-label="Resize editor/preview"
                 onMouseDown={(e) => { e.preventDefault(); setIsSplitResizing(true); }}
+                onDoubleClick={() => {
+                  if (!mainRef.current) return;
+                  const rect = mainRef.current.getBoundingClientRect();
+                  const target = Math.max(MIN_SPLIT_LEFT, Math.min(rect.width - MIN_SPLIT_RIGHT, rect.width / 2));
+                  setSplitWidth(target);
+                }}
               />
               <div className={styles.pane}>
                 {selectedFile ? (
@@ -579,6 +608,8 @@ function App() {
         onClose={() => setSettingsOpen(false)}
         previewLayout={previewLayout}
         onChangePreviewLayout={setPreviewLayout}
+        sidebarMode={sidebarMode}
+        onChangeSidebarMode={setSidebarMode}
       />
 
       <ConfirmationModal

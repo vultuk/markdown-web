@@ -12,6 +12,7 @@ import hljsDarkCss from 'highlight.js/styles/github-dark.css?inline';
 // Light theme (used for light preview or print)
 // @ts-ignore - Vite inline import
 import hljsLightCss from 'highlight.js/styles/github.css?inline';
+import { Mermaid } from './Mermaid';
 
 interface MarkdownPreviewProps {
   content: string;
@@ -137,6 +138,26 @@ export function MarkdownPreview({ content }: MarkdownPreviewProps) {
     setTimeout(applyStyles, 0);
   }, [currentTheme, content, generateCSS]);
 
+  const isDarkBackground = (bg?: string) => {
+    const isHex = (v: string) => /^#([0-9a-fA-F]{3}){1,2}$/.test(v);
+    const hexToRgb = (hex: string) => {
+      let h = hex.replace('#', '');
+      if (h.length === 3) h = h.split('').map(c => c + c).join('');
+      const num = parseInt(h, 16);
+      return { r: (num >> 16) & 255, g: (num >> 8) & 255, b: num & 255 };
+    };
+    const luminance = (hex: string) => {
+      const { r, g, b } = hexToRgb(hex);
+      const srgb = [r, g, b].map(v => {
+        const c = v / 255;
+        return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+      });
+      return 0.2126 * srgb[0] + 0.7152 * srgb[1] + 0.0722 * srgb[2];
+    };
+    if (bg && isHex(bg)) return luminance(bg) < 0.5;
+    return true;
+  };
+
   return (
     <div ref={contentRef} className={styles.preview}>
       <ReactMarkdown 
@@ -144,6 +165,19 @@ export function MarkdownPreview({ content }: MarkdownPreviewProps) {
         remarkPlugins={[remarkGfm]}
         rehypePlugins={[[rehypeHighlight, { ignoreMissing: true, detect: true }]]}
         components={{
+          code: ({ inline, className, children, ...props }) => {
+            const match = /language-(\w+)/.exec(className || '');
+            const code = String(children || '');
+            if (!inline && match && match[1].toLowerCase() === 'mermaid') {
+              const dark = isDarkBackground((currentTheme as any)?.preview?.background);
+              return <Mermaid code={code} theme={dark ? 'dark' : 'default'} />;
+            }
+            return (
+              <code className={className} {...props}>
+                {children}
+              </code>
+            );
+          },
           a: ({ node, ...props }) => (
             <a {...props} target="_blank" rel="noopener noreferrer" />
           )

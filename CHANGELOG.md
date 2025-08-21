@@ -5,6 +5,38 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.19.0] - 2025-08-21
+
+### Added
+- **Mermaid Diagram Support**: Native support for Mermaid diagrams in markdown code blocks
+- **Interactive Diagrams**: Render flowcharts, sequence diagrams, class diagrams, and more using Mermaid syntax
+- **Theme-Aware Diagrams**: Mermaid diagrams automatically adapt to current theme (light/dark modes)
+- **Comprehensive Diagram Types**: Support for all major Mermaid diagram types including flowcharts, sequence, class, state, and more
+
+### New Features
+- **Mermaid Component**: Dedicated React component for rendering Mermaid diagrams with error handling
+- **Automatic Theme Detection**: Diagrams use appropriate light/dark theme based on current editor theme
+- **Language Detection**: Automatic recognition of `mermaid` code blocks for diagram rendering
+- **Error Handling**: Graceful fallback when diagram syntax is invalid with clear error messages
+
+### Technical Improvements
+- **Mermaid Integration**: Added `mermaid@^10.9.1` dependency for diagram rendering capabilities
+- **Security Features**: Strict security level configuration for safe diagram rendering
+- **Theme Synchronization**: Background luminance detection for optimal diagram theme selection
+- **Component Architecture**: Clean separation of diagram rendering logic in dedicated Mermaid component
+
+### User Experience
+- **Visual Documentation**: Create flowcharts, diagrams, and visual documentation directly in markdown
+- **Professional Diagrams**: High-quality SVG diagram output with crisp rendering at any scale
+- **Consistent Theming**: Diagrams match the overall application theme automatically
+- **Enhanced Documentation**: Better support for technical documentation with visual elements
+
+### Developer Experience
+- **Standard Mermaid Syntax**: Use familiar Mermaid syntax in fenced code blocks with `mermaid` language
+- **Real-Time Rendering**: Diagrams render immediately as you type in the editor
+- **Error Feedback**: Clear error messages when diagram syntax is invalid
+- **Theme Integration**: Seamless integration with existing theme system
+
 ## [1.18.1] - 2025-08-21
 
 ### Fixed

@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.15.3] - 2025-08-21
+
+### Fixed
+- **Authentication Flow**: Fixed component order to ensure authentication is checked before theme initialization
+- **App Initialization**: AuthGate now properly wraps ThemeProvider for correct startup sequence
+
+### Technical Improvements
+- **Provider Order**: Reordered React providers to ensure authentication state is available before theme context
+- **Security**: Authentication checks now happen earlier in the component hierarchy
+- **Initialization Flow**: Improved app startup reliability with correct provider nesting
+
 ## [1.15.2] - 2025-08-21
 
 ### Added

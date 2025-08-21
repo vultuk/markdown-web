@@ -6,11 +6,11 @@ import { AuthGate } from './components/AuthGate.tsx'
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <ThemeProvider>
-      <AuthGate>
+    <AuthGate>
+      <ThemeProvider>
         <App />
-      </AuthGate>
-    </ThemeProvider>
+      </ThemeProvider>
+    </AuthGate>
   </React.StrictMode>,
 )
 

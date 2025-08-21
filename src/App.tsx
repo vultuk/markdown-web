@@ -516,7 +516,7 @@ function App() {
         <div className={styles.main}>
           {(isPreviewMode && !isMobile) ? (
             <div className={styles.splitMain} ref={mainRef}>
-              <div className={styles.pane} style={{ width: splitWidth }}>
+              <div className={styles.pane} style={{ width: splitWidth, flex: '0 0 auto' }}>
                 <Editor
                   content={fileContent}
                   onChange={setFileContent}

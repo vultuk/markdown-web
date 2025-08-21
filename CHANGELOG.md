@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.12.6] - 2025-08-21
+
+### Fixed
+- **Split-View Layout**: Fixed flex layout properties for split-view panes to prevent layout issues
+- **Editor Pane Sizing**: Added explicit flex properties (`flex: '0 0 auto'`) to editor pane for consistent width behavior  
+- **CSS Flex Consistency**: Updated CSS flex properties (`flex: 1 1 auto`) for preview pane to match layout expectations
+
+### Technical Improvements
+- **Layout Stability**: Enhanced split-view layout with proper flex box constraints
+- **Responsive Behavior**: Better split pane sizing behavior across different screen sizes
+- **CSS Architecture**: Improved flex layout consistency between inline styles and CSS modules
+
 ## [1.12.5] - 2025-08-21
 
 ### Improved

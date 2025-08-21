@@ -91,7 +91,13 @@ html { scroll-behavior: smooth; }
   .nav.open { display: grid; gap: 8px; }
   .nav a { margin: 0; padding: 8px 10px; }
   .cta { grid-template-columns: 1fr; }
-  .code { width: 100%; justify-content: space-between; }
+  .code { width: 100%; justify-content: space-between; flex-wrap: wrap; }
   .cta-links { flex-wrap: wrap; }
   .hero { padding-top: 48px; }
+  .hero-card { max-width: 100%; }
+}
+
+@media (max-width: 600px) {
+  .badges { gap: 6px; }
+  .cta-links { gap: 8px; }
 }

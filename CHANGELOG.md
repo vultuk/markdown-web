@@ -2,6 +2,42 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.11.0] - 2025-08-21
+
+### Added
+- **Git Workflow Operations**: Complete Git workflow with staging, committing, and pushing capabilities
+- **Interactive Git Modals**: Dedicated modals for commit creation and repository cloning
+- **Git Context Menu Actions**: Context-aware Git operations integrated into file explorer context menus
+- **Repository Cloning**: Full Git clone functionality with URL input and directory selection
+
+### New Features
+- **Git Add/Stage Operations**: "Add to Git" and "Stage changes" context menu options for files with Git status
+- **Commit Modal**: Professional commit interface with title and optional message fields
+- **Push Operations**: One-click push functionality for Git repositories from context menu
+- **Clone Repository Modal**: Clone any Git repository directly into file explorer directories
+- **Automatic File Refresh**: File explorer refreshes automatically after Git operations
+
+### Technical Improvements
+- **Git API Endpoints**: Added `/api/git/add`, `/api/git/commit`, `/api/git/push`, and `/api/git/clone` endpoints
+- **Git Root Detection**: Smart Git repository root finding for operations in subdirectories
+- **Error Handling**: Comprehensive error handling with detailed Git command feedback
+- **Path Security**: Secure path validation to prevent operations outside working directory
+- **Cross-Platform Git**: Native Git command execution with proper working directory handling
+
+### User Experience
+- **Seamless Git Workflow**: Complete Git workflow from file explorer without external tools
+- **Professional Git Interface**: Clean, VS Code-inspired Git modals and interactions
+- **Context-Aware Actions**: Git options only appear for relevant files and repositories
+- **Immediate Feedback**: Real-time file status updates after Git operations
+- **Intuitive Git Operations**: Familiar Git workflow with guided UI interactions
+
+### Developer Experience
+- **Complete Git Integration**: Full Git workflow integration from status to push operations
+- **Repository Management**: Easy repository cloning and management within the editor
+- **Git Command Abstraction**: High-level Git operations with proper error handling
+- **Workflow Automation**: Streamlined Git operations with automatic file refresh
+- **Professional Development**: Industry-standard Git workflow support
+
 ## [2.10.0] - 2025-08-21
 
 ### Added

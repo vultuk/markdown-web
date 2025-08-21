@@ -648,6 +648,7 @@ function App() {
               onOpenSettings={() => setSettingsOpen(true)}
               expandedDirs={expandedDirs}
               onExpandedChange={setExpandedDirs}
+              onRefreshFiles={loadFiles}
             />
           </div>
           {(sidebarMode === 'inline' && !isMobile) && (

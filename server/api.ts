@@ -562,6 +562,128 @@ fileRouter.post('/settings', async (req, res) => {
   }
 });
 
+// Find nearest git root by walking up from a path
+async function findGitRoot(startPath: string): Promise<string | null> {
+  try {
+    let dir = startPath;
+    const root = path.parse(dir).root;
+    while (true) {
+      try {
+        const s = await fs.stat(path.join(dir, '.git'));
+        if (s.isDirectory()) return dir;
+      } catch {}
+      if (dir === root) break;
+      dir = path.dirname(dir);
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+// Git: add (stage) a file
+fileRouter.post('/git/add', async (req, res) => {
+  try {
+    const workingDir = getWorkingDir();
+    const relPath = String((req.body || {}).path || '');
+    if (!relPath) return res.status(400).json({ error: 'path is required' });
+    const absPath = path.join(workingDir, relPath);
+    if (!absPath.startsWith(workingDir)) return res.status(403).json({ error: 'Access denied' });
+    const repoRoot = await findGitRoot(absPath);
+    if (!repoRoot) return res.status(400).json({ error: 'Not inside a git repository' });
+    const relToRepo = path.relative(repoRoot, absPath).replace(/\\/g, '/');
+    try {
+      const { stdout, stderr } = await execFileAsync('git', ['add', '--', relToRepo], { cwd: repoRoot });
+      return res.json({ success: true, stdout, stderr });
+    } catch (e: any) {
+      return res.status(502).json({ error: 'git add failed', details: e?.stderr || e?.message || String(e) });
+    }
+  } catch (e) {
+    return res.status(500).json({ error: 'git add failed' });
+  }
+});
+
+// Git: commit (from a repo folder)
+fileRouter.post('/git/commit', async (req, res) => {
+  try {
+    const workingDir = getWorkingDir();
+    const { repoPath, title, message } = (req.body || {}) as { repoPath?: string; title?: string; message?: string };
+    if (!repoPath || !title) return res.status(400).json({ error: 'repoPath and title are required' });
+    const absRepo = path.join(workingDir, repoPath);
+    if (!absRepo.startsWith(workingDir)) return res.status(403).json({ error: 'Access denied' });
+    const repoRoot = await findGitRoot(absRepo);
+    if (!repoRoot) return res.status(400).json({ error: 'Not a git repository' });
+    const args = ['commit', '-m', String(title)];
+    if (message && String(message).trim()) args.push('-m', String(message));
+    try {
+      const { stdout, stderr } = await execFileAsync('git', args, { cwd: repoRoot });
+      return res.json({ success: true, stdout, stderr });
+    } catch (e: any) {
+      return res.status(502).json({ error: 'git commit failed', details: e?.stderr || e?.message || String(e) });
+    }
+  } catch (e) {
+    return res.status(500).json({ error: 'git commit failed' });
+  }
+});
+
+// Git: push
+fileRouter.post('/git/push', async (req, res) => {
+  try {
+    const workingDir = getWorkingDir();
+    const { repoPath } = (req.body || {}) as { repoPath?: string };
+    if (!repoPath) return res.status(400).json({ error: 'repoPath is required' });
+    const absRepo = path.join(workingDir, repoPath);
+    if (!absRepo.startsWith(workingDir)) return res.status(403).json({ error: 'Access denied' });
+    const repoRoot = await findGitRoot(absRepo);
+    if (!repoRoot) return res.status(400).json({ error: 'Not a git repository' });
+    try {
+      const { stdout, stderr } = await execFileAsync('git', ['push'], { cwd: repoRoot });
+      return res.json({ success: true, stdout, stderr });
+    } catch (e: any) {
+      return res.status(502).json({ error: 'git push failed', details: e?.stderr || e?.message || String(e) });
+    }
+  } catch (e) {
+    return res.status(500).json({ error: 'git push failed' });
+  }
+});
+
+// Git: clone a repository into a directory (relative to working dir)
+fileRouter.post('/git/clone', async (req, res) => {
+  try {
+    const workingDir = getWorkingDir();
+    const { url, directory, name } = (req.body || {}) as { url?: string; directory?: string; name?: string };
+    if (!url || typeof url !== 'string') return res.status(400).json({ error: 'url is required' });
+    const baseRel = typeof directory === 'string' ? directory : '';
+    const baseAbs = path.join(workingDir, baseRel);
+    if (!baseAbs.startsWith(workingDir)) return res.status(403).json({ error: 'Access denied' });
+    try { await fs.mkdir(baseAbs, { recursive: true }); } catch {}
+    const derivedName = ((): string => {
+      if (typeof name === 'string' && name.trim()) return name.trim();
+      try {
+        const u = new URL(url);
+        const last = u.pathname.split('/').filter(Boolean).pop() || 'repo';
+        return last.replace(/\.git$/i, '') || 'repo';
+      } catch {
+        const m = url.split('/').filter(Boolean).pop() || 'repo';
+        return m.replace(/\.git$/i, '') || 'repo';
+      }
+    })();
+    const target = path.join(baseAbs, derivedName);
+    // Prevent cloning over existing folder
+    try {
+      const s = await fs.stat(target);
+      return res.status(409).json({ error: 'Target already exists' });
+    } catch {}
+    try {
+      const { stdout, stderr } = await execFileAsync('git', ['clone', url, derivedName], { cwd: baseAbs });
+      return res.json({ success: true, stdout, stderr, path: path.relative(workingDir, target) });
+    } catch (e: any) {
+      return res.status(502).json({ error: 'git clone failed', details: e?.stderr || e?.message || String(e) });
+    }
+  } catch {
+    return res.status(500).json({ error: 'git clone failed' });
+  }
+});
 type GitFileStatus = 'untracked' | 'modified' | 'deleted';
 type GitContext = { root: string; map: Map<string, GitFileStatus>; hasUnstaged: boolean; hasStaged: boolean } | null;
 

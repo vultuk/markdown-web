@@ -23,6 +23,7 @@ interface FileExplorerProps {
   onOpenSettings?: () => void;
   expandedDirs?: string[];
   onExpandedChange?: (paths: string[]) => void;
+  onRefreshFiles?: () => void;
 }
 
 export function FileExplorer({ 
@@ -37,6 +38,7 @@ export function FileExplorer({
   onOpenSettings,
   expandedDirs: expandedDirsProp,
   onExpandedChange,
+  onRefreshFiles,
 }: FileExplorerProps) {
   const [expandedDirsSet, setExpandedDirsSet] = useState<Set<string>>(() => new Set(expandedDirsProp || []));
   React.useEffect(() => {
@@ -52,6 +54,8 @@ export function FileExplorer({
   const [renameValue, setRenameValue] = useState('');
   const [menu, setMenu] = useState<{ open: boolean; x: number; y: number; type: 'file' | 'directory' | 'root'; path?: string } | null>(null);
   const [isMobile, setIsMobile] = useState<boolean>(typeof window !== 'undefined' ? window.innerWidth <= 768 : false);
+  const [commitModal, setCommitModal] = useState<{ open: boolean; repoPath: string; title: string; message: string } | null>(null);
+  const [cloneModal, setCloneModal] = useState<{ open: boolean; baseDir: string; url: string; name: string } | null>(null);
 
   React.useEffect(() => {
     const onResize = () => setIsMobile(window.innerWidth <= 768);
@@ -89,6 +93,16 @@ export function FileExplorer({
 
   const basename = (p: string) => p.split('/').pop() || p;
   const isAncestor = (parent: string, child: string) => child.startsWith(parent + '/');
+  const findNodeByPath = (list: FileItem[], p: string): FileItem | null => {
+    for (const it of list) {
+      if (it.path === p) return it;
+      if (it.children) {
+        const sub = findNodeByPath(it.children, p);
+        if (sub) return sub;
+      }
+    }
+    return null;
+  };
 
   const toggleDirectory = (path: string) => {
     const newExpanded = new Set(expandedDirsSet);
@@ -470,6 +484,12 @@ export function FileExplorer({
               </button>
               <button
                 className={styles.contextItem}
+                onClick={() => { setMenu(null); setCloneModal({ open: true, baseDir: menu.path || '', url: '', name: '' }); }}
+              >
+                Clone Repository…
+              </button>
+              <button
+                className={styles.contextItem}
                 onClick={() => {
                   setMenu(null);
                   if (menu.path) { setRenamingPath(menu.path); setRenameValue(basename(menu.path)); }
@@ -477,6 +497,36 @@ export function FileExplorer({
               >
                 Rename Folder
               </button>
+              {(() => {
+                const repoPath = menu.path || '';
+                const node = findNodeByPath(files, repoPath);
+                if (node && node.isGitRepo) {
+                  return (
+                    <>
+                      <button
+                        className={styles.contextItem}
+                        onClick={() => {
+                          setMenu(null);
+                          setCommitModal({ open: true, repoPath, title: '', message: '' });
+                        }}
+                      >
+                        Commit…
+                      </button>
+                      <button
+                        className={styles.contextItem}
+                        onClick={async () => { setMenu(null); try {
+                          const res = await fetch('/api/git/push', { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin', body: JSON.stringify({ repoPath }) });
+                          const data = await res.json().catch(() => ({}));
+                          if (!res.ok) alert(data.error || 'Push failed'); else alert('Push complete');
+                        } catch { alert('Push failed'); } }}
+                      >
+                        Push
+                      </button>
+                    </>
+                  );
+                }
+                return null;
+              })()}
               <button
                 className={`${styles.contextItem} ${styles.danger}`}
                 onClick={() => { setMenu(null); if (menu.path) onDeleteDirectory(menu.path); }}
@@ -487,6 +537,30 @@ export function FileExplorer({
           )}
           {menu.type === 'file' && (
             <>
+              {(() => {
+                const p = menu.path || '';
+                const node = findNodeByPath(files, p);
+                if (node && typeof node.gitStatus !== 'undefined') {
+                  const label = node.gitStatus === 'untracked' ? 'Add to Git' : 'Stage changes';
+                  return (
+                    <button
+                      className={styles.contextItem}
+                      onClick={async () => {
+                        setMenu(null);
+                        try {
+                          const res = await fetch('/api/git/add', { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin', body: JSON.stringify({ path: p }) });
+                          const data = await res.json().catch(() => ({}));
+                          if (!res.ok) alert(data.error || 'Failed to stage');
+                          onRefreshFiles && onRefreshFiles();
+                        } catch { alert('Failed to stage'); }
+                      }}
+                    >
+                      {label}
+                    </button>
+                  );
+                }
+                return null;
+              })()}
               <button
                 className={styles.contextItem}
                 onClick={() => {
@@ -518,8 +592,110 @@ export function FileExplorer({
               >
                 New Folder in root
               </button>
+              <button
+                className={styles.contextItem}
+                onClick={() => { setMenu(null); setCloneModal({ open: true, baseDir: '', url: '', name: '' }); }}
+              >
+                Clone Repository…
+              </button>
             </>
           )}
+        </div>
+      )}
+
+      {commitModal?.open && (
+        <div className={styles.modalBackdrop} onClick={() => setCommitModal(null)}>
+          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.modalHeader}>Commit Changes</div>
+            <div className={styles.modalBody}>
+              <label className={styles.modalLabel}>Title</label>
+              <input
+                className={styles.modalInput}
+                type="text"
+                value={commitModal.title}
+                onChange={(e) => setCommitModal({ ...commitModal, title: e.target.value })}
+                placeholder="Short summary"
+                autoFocus
+              />
+              <label className={styles.modalLabel}>Message (optional)</label>
+              <textarea
+                className={styles.modalTextarea}
+                value={commitModal.message}
+                onChange={(e) => setCommitModal({ ...commitModal, message: e.target.value })}
+                placeholder="Details"
+              />
+            </div>
+            <div className={styles.modalActions}>
+              <button className={styles.actionButton} onClick={() => setCommitModal(null)}>Cancel</button>
+              <button
+                className={styles.primaryButton}
+                onClick={async () => {
+                  if (!commitModal.title.trim()) { alert('Title is required'); return; }
+                  try {
+                    const res = await fetch('/api/git/commit', {
+                      method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin',
+                      body: JSON.stringify({ repoPath: commitModal.repoPath, title: commitModal.title, message: commitModal.message })
+                    });
+                    const data = await res.json().catch(() => ({}));
+                    if (!res.ok) { alert(data.error || 'Commit failed'); return; }
+                    setCommitModal(null);
+                    onRefreshFiles && onRefreshFiles();
+                  } catch { alert('Commit failed'); }
+                }}
+              >
+                Commit
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {cloneModal?.open && (
+        <div className={styles.modalBackdrop} onClick={() => setCloneModal(null)}>
+          <div className={styles.modal} onClick={(e) => e.stopPropagation()}>
+            <div className={styles.modalHeader}>Clone Repository</div>
+            <div className={styles.modalBody}>
+              <label className={styles.modalLabel}>Repository URL</label>
+              <input
+                className={styles.modalInput}
+                type="text"
+                value={cloneModal.url}
+                onChange={(e) => setCloneModal({ ...cloneModal, url: e.target.value })}
+                placeholder="https://github.com/user/repo.git"
+                autoFocus
+              />
+              <label className={styles.modalLabel}>Folder name (optional)</label>
+              <input
+                className={styles.modalInput}
+                type="text"
+                value={cloneModal.name}
+                onChange={(e) => setCloneModal({ ...cloneModal, name: e.target.value })}
+                placeholder="Defaults to repository name"
+              />
+            </div>
+            <div className={styles.modalActions}>
+              <button className={styles.actionButton} onClick={() => setCloneModal(null)}>Cancel</button>
+              <button
+                className={styles.primaryButton}
+                onClick={async () => {
+                  const url = cloneModal.url.trim();
+                  if (!url) { alert('Repository URL is required'); return; }
+                  try {
+                    const res = await fetch('/api/git/clone', {
+                      method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin',
+                      body: JSON.stringify({ url, directory: cloneModal.baseDir, name: cloneModal.name.trim() || undefined })
+                    });
+                    const data = await res.json().catch(() => ({}));
+                    if (!res.ok) { alert(data.error || 'Clone failed'); return; }
+                    setCloneModal(null);
+                    onRefreshFiles && onRefreshFiles();
+                  } catch { alert('Clone failed'); }
+                }}
+              >
+                Clone
+              </button>
+            </div>
+          </div>
         </div>
       )}
 

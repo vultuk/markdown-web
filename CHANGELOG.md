@@ -2,6 +2,37 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.7.0] - 2025-08-21
+
+### Added
+- **Visual Text Selection Highlighting**: New highlight overlay system that shows selected text when AI modal is open
+- **Real-time Selection Feedback**: Visual indication of selected text during AI operations for better user awareness
+- **Synchronized Scroll Overlay**: Highlight overlay scrolls in sync with textarea for consistent visual feedback
+- **Enhanced AI Workflow**: Users can now see exactly which text is selected for AI processing
+
+### New Features
+- **Selection Overlay Component**: Dedicated overlay system that renders above textarea to highlight selected text
+- **Dynamic Selection Rendering**: Real-time highlighting that updates as user changes text selection
+- **AI-Context Visual Cues**: Highlight only appears when AI modal is open to provide contextual feedback
+- **Responsive Highlight Design**: Highlight overlay adapts to mobile screen sizes and font scaling
+
+### Technical Improvements
+- **Overlay Architecture**: Added `textareaWrap` container with positioned highlight overlay system
+- **Scroll Synchronization**: Implemented scroll sync between textarea and highlight overlay for consistent positioning
+- **Performance Optimization**: Highlight overlay only renders when AI modal is active to minimize performance impact
+- **CSS Layer Management**: Proper z-index and positioning for overlay system without interfering with text input
+
+### User Experience
+- **Better AI Interaction**: Users can clearly see which text will be processed by AI operations
+- **Visual Selection Clarity**: Semi-transparent blue highlight (rgba(95, 157, 215, 0.35)) provides clear visual indication
+- **Non-Intrusive Design**: Highlight overlay doesn't interfere with typing or text selection functionality
+- **Context-Aware Display**: Highlight only shows when relevant (AI modal open and text selected)
+
+### Accessibility
+- **Screen Reader Friendly**: Highlight overlay marked with `aria-hidden` to prevent screen reader interference
+- **Color Contrast**: Highlight color chosen for good visibility without overwhelming text readability
+- **Pointer Events**: Overlay configured with `pointer-events: none` to maintain normal text interaction
+
 ## [2.6.3] - 2025-08-21
 
 ### Enhanced

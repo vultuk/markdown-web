@@ -284,3 +284,39 @@
     padding: 14px;
   }
 }
+
+/* Wrap to host the highlight overlay */
+.textareaWrap {
+  position: relative;
+}
+
+.highlightOverlay {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  overflow: auto;
+  /* no background; sits above textarea */
+  z-index: 1;
+}
+
+.textHighlightContent {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 14px;
+  line-height: 1.5;
+  padding: 16px;
+  color: transparent; /* let the real textarea text show through */
+}
+
+.textHighlightSelection {
+  background: rgba(95, 157, 215, 0.35); /* themed-looking blue highlight */
+  border-radius: 3px;
+}
+
+@media (max-width: 768px) {
+  .textHighlightContent {
+    font-size: 16px;
+    padding: 14px;
+  }
+}

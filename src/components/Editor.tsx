@@ -38,6 +38,7 @@ export function Editor({
   const [mode, setMode] = useState<'adjust' | 'ask'>('adjust');
   const [answer, setAnswer] = useState<string | null>(null);
   const textRef = useRef<HTMLTextAreaElement | null>(null);
+  const overlayRef = useRef<HTMLDivElement | null>(null);
   const [selStart, setSelStart] = useState<number | null>(null);
   const [selEnd, setSelEnd] = useState<number | null>(null);
 
@@ -87,6 +88,13 @@ export function Editor({
   }, []);
 
   // Scroll sync removed (reverted)
+  // Keep highlight overlay scroll in sync with textarea
+  useEffect(() => {
+    const ta = textRef.current;
+    const ov = overlayRef.current;
+    if (!ta || !ov) return;
+    ov.scrollTop = ta.scrollTop;
+  }, [aiOpen, selStart, selEnd, content]);
 
   return (
     <div className={styles.editor}>
@@ -98,27 +106,53 @@ export function Editor({
             <p>Select a file from the sidebar to start editing, or create a new one.</p>
           </div>
         ) : (
-          <textarea
-            className={styles.textarea}
-            value={content}
-            onChange={(e) => {
-              onChange(e.target.value);
-              // keep latest caret as selection if none
-              try {
-                setSelStart(e.currentTarget.selectionStart ?? null);
-                setSelEnd(e.currentTarget.selectionEnd ?? null);
-              } catch {}
-            }}
-            placeholder="Start typing your markdown..."
-            spellCheck={false}
-            ref={textRef}
-            onSelect={(e) => {
-              try {
-                setSelStart(e.currentTarget.selectionStart ?? null);
-                setSelEnd(e.currentTarget.selectionEnd ?? null);
-              } catch {}
-            }}
-          />
+          <div className={styles.textareaWrap}>
+            {/* Selection highlight overlay (visible only while AI modal open) */}
+            {(() => {
+              const start = selStart ?? textRef.current?.selectionStart ?? null;
+              const end = selEnd ?? textRef.current?.selectionEnd ?? null;
+              const hasSel = aiOpen && typeof start === 'number' && typeof end === 'number' && start !== end;
+              if (!hasSel) return null;
+              const s = Math.min(start as number, end as number);
+              const e = Math.max(start as number, end as number);
+              return (
+                <div className={styles.highlightOverlay} ref={overlayRef} aria-hidden>
+                  <div className={styles.textHighlightContent}>
+                    <span>{content.slice(0, s)}</span>
+                    <span className={styles.textHighlightSelection}>{content.slice(s, e)}</span>
+                    <span>{content.slice(e)}</span>
+                  </div>
+                </div>
+              );
+            })()}
+            <textarea
+              className={styles.textarea}
+              value={content}
+              onChange={(e) => {
+                onChange(e.target.value);
+                // keep latest caret as selection if none
+                try {
+                  setSelStart(e.currentTarget.selectionStart ?? null);
+                  setSelEnd(e.currentTarget.selectionEnd ?? null);
+                } catch {}
+              }}
+              placeholder="Start typing your markdown..."
+              spellCheck={false}
+              ref={textRef}
+              onSelect={(e) => {
+                try {
+                  setSelStart(e.currentTarget.selectionStart ?? null);
+                  setSelEnd(e.currentTarget.selectionEnd ?? null);
+                } catch {}
+              }}
+              onScroll={(e) => {
+                try {
+                  const ov = overlayRef.current;
+                  if (ov) ov.scrollTop = (e.currentTarget as HTMLTextAreaElement).scrollTop;
+                } catch {}
+              }}
+            />
+          </div>
         )}
       </div>
       {aiEnabled && aiOpen && (

@@ -7,6 +7,8 @@ interface FileItem {
   path: string;
   children?: FileItem[];
   isGitRepo?: boolean;
+  gitStatus?: 'untracked' | 'modified' | 'deleted';
+  gitSummary?: { hasUnstaged?: boolean; hasStaged?: boolean };
 }
 
 interface FileExplorerProps {
@@ -169,7 +171,15 @@ export function FileExplorer({
               }}
             >
               <div 
-                className={`${styles.directory} ${draggingPath === item.path ? styles.dragging : ''} ${dragOverDir === item.path ? styles.dropTarget : ''}`}
+                className={
+                  [
+                    styles.directory,
+                    draggingPath === item.path ? styles.dragging : '',
+                    dragOverDir === item.path ? styles.dropTarget : '',
+                    item.isGitRepo && item.gitSummary?.hasUnstaged ? styles.gitRepoUnstaged : '',
+                    item.isGitRepo && !item.gitSummary?.hasUnstaged && item.gitSummary?.hasStaged ? styles.gitRepoStaged : '',
+                  ].filter(Boolean).join(' ')
+                }
                 onClick={() => toggleDirectory(item.path)}
                 draggable
                 onDragStart={(e) => {
@@ -278,7 +288,15 @@ export function FileExplorer({
           ) : (
             <div className={styles.fileContainer}>
               <div 
-                className={`${styles.file} ${draggingPath === item.path ? styles.dragging : ''}`}
+                className={
+                  [
+                    styles.file,
+                    draggingPath === item.path ? styles.dragging : '',
+                    item.gitStatus === 'untracked' ? styles.gitUntracked : '',
+                    item.gitStatus === 'modified' ? styles.gitModified : '',
+                    item.gitStatus === 'deleted' ? styles.gitDeleted : '',
+                  ].filter(Boolean).join(' ')
+                }
                 onClick={() => onFileSelect(item.path)}
                 draggable
                 onDragStart={(e) => {

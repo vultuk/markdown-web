@@ -2,6 +2,38 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.10.0] - 2025-08-21
+
+### Added
+- **Git Status Integration**: Real-time Git status indicators for files and directories
+- **Color-Coded File Status**: Visual indicators for untracked, modified, and deleted files
+- **Repository-Level Git Status**: Visual status indicators for Git repositories showing staged/unstaged changes
+- **Enhanced Git Workflow**: Complete Git integration with file-level and repository-level status visualization
+
+### New Features
+- **Per-File Git Status**: Individual files show color-coded status (green for untracked, yellow for modified, red for deleted)
+- **Repository Status Indicators**: Git repositories display overall status with color coding for staged/unstaged changes
+- **Real-Time Git Monitoring**: Automatic Git status detection and updating in file explorer
+- **Git Status API**: Server-side Git status integration using `git status --porcelain` command
+
+### Technical Improvements
+- **Git Status Command Integration**: Added `git status --porcelain` execution for accurate status detection
+- **Enhanced API Layer**: Extended file API to include Git status information for files and directories
+- **Git Context Management**: Sophisticated Git repository context handling with status mapping
+- **Performance Optimized**: Efficient Git status detection with proper error handling and fallbacks
+
+### User Experience
+- **Visual Git Integration**: Immediate visual feedback for Git file status in file explorer
+- **Developer-Friendly**: Enhanced Git workflow with clear visual indicators for repository and file status
+- **Color-Coded Interface**: Intuitive color system for different Git states (untracked/modified/deleted)
+- **Repository Awareness**: Easy identification of Git repository status at a glance
+
+### Developer Experience
+- **Complete Git Integration**: Full Git status integration from API to UI with comprehensive status tracking
+- **Enhanced File Explorer**: Git-aware file explorer with sophisticated status visualization
+- **Professional Git Workflow**: Industry-standard Git status indicators for improved development experience
+- **Cross-Platform Git Support**: Robust Git integration that works across different operating systems
+
 ## [2.9.0] - 2025-08-21
 
 ### Added

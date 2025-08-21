@@ -15,6 +15,8 @@ interface FileItem {
   path: string;
   children?: FileItem[];
   isGitRepo?: boolean;
+  gitStatus?: 'untracked' | 'modified' | 'deleted';
+  gitSummary?: { hasUnstaged?: boolean; hasStaged?: boolean };
 }
 
 function App() {

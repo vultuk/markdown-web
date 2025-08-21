@@ -207,6 +207,14 @@
   font-size: 13px;
 }
 
+/* Git color coding */
+.gitUntracked { color: #6a9955; }
+.gitModified { color: #d7ba7d; }
+.gitDeleted { color: #f48771; }
+
+.gitRepoStaged { color: #d7ba7d; }
+.gitRepoUnstaged { color: #f48771; }
+
 .icon {
   margin-right: 6px;
   font-size: 14px;

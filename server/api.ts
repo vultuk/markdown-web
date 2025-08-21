@@ -4,6 +4,9 @@ import path from 'path';
 import os from 'os';
 import { ThemeManager } from './themeManager';
 import OpenAI from 'openai';
+import { execFile } from 'child_process';
+import { promisify } from 'util';
+const execFileAsync = promisify(execFile);
 
 export const fileRouter = express.Router();
 
@@ -559,7 +562,50 @@ fileRouter.post('/settings', async (req, res) => {
   }
 });
 
-async function getDirectoryContents(dirPath: string): Promise<any[]> {
+type GitFileStatus = 'untracked' | 'modified' | 'deleted';
+type GitContext = { root: string; map: Map<string, GitFileStatus>; hasUnstaged: boolean; hasStaged: boolean } | null;
+
+async function getGitStatusMap(repoRoot: string): Promise<GitContext> {
+  try {
+    const { stdout } = await execFileAsync('git', ['status', '--porcelain'], { cwd: repoRoot });
+    const map = new Map<string, GitFileStatus>();
+    let hasUnstaged = false;
+    let hasStaged = false;
+    const lines = String(stdout || '').split(/\r?\n/).filter(Boolean);
+    for (const line of lines) {
+      // Format: XY <path> (XY can be '??' for untracked)
+      if (line.length < 3) continue;
+      const x = line[0];
+      const y = line[1];
+      const rest = line.slice(3);
+      let rel = rest;
+      // handle rename format: old -> new (take new)
+      const arrowIdx = rest.indexOf(' -> ');
+      if (arrowIdx !== -1) {
+        rel = rest.slice(arrowIdx + 4);
+      }
+      // Normalize to posix-style
+      const key = rel.replace(/\\/g, '/');
+      let kind: GitFileStatus | null = null;
+      if (x === '?' && y === '?') {
+        kind = 'untracked';
+      } else if (x === 'D' || y === 'D') {
+        kind = 'deleted';
+      } else if (x !== ' ' || y !== ' ') {
+        kind = 'modified';
+      }
+      if (kind) map.set(key, kind);
+      if (y !== ' ') hasUnstaged = true; // work tree changes
+      if (x !== ' ') hasStaged = true;   // index changes
+    }
+    return { root: repoRoot, map, hasUnstaged, hasStaged };
+  } catch (e) {
+    // best-effort: git may not be installed or repo may be inaccessible
+    return { root: repoRoot, map: new Map(), hasUnstaged: false, hasStaged: false };
+  }
+}
+
+async function getDirectoryContents(dirPath: string, gitCtx: GitContext = null): Promise<any[]> {
   const items = await fs.readdir(dirPath, { withFileTypes: true });
   const result = [];
   
@@ -570,25 +616,40 @@ async function getDirectoryContents(dirPath: string): Promise<any[]> {
     const relativePath = path.relative(getWorkingDir(), itemPath);
     
     if (item.isDirectory()) {
-      const children = await getDirectoryContents(itemPath);
       // Detect if this folder is a Git repository (contains a .git directory)
       let isGitRepo = false;
       try {
         const gitStat = await fs.stat(path.join(itemPath, '.git'));
         isGitRepo = gitStat.isDirectory();
       } catch {}
+      let folderGitCtx: GitContext = gitCtx;
+      let gitSummary: { hasUnstaged?: boolean; hasStaged?: boolean } | undefined = undefined;
+      if (isGitRepo) {
+        folderGitCtx = await getGitStatusMap(itemPath);
+        gitSummary = { hasUnstaged: !!folderGitCtx?.hasUnstaged, hasStaged: !!folderGitCtx?.hasStaged };
+      }
+      const children = await getDirectoryContents(itemPath, folderGitCtx);
       result.push({
         name: item.name,
         type: 'directory',
         path: relativePath,
         children: children,
         isGitRepo,
+        gitSummary,
       });
     } else if (item.name.endsWith('.md')) {
+      // Attach per-file git status if we are inside a repo context
+      let gitStatus: GitFileStatus | undefined = undefined;
+      if (gitCtx && gitCtx.root) {
+        const relToRepo = path.relative(gitCtx.root, itemPath).replace(/\\/g, '/');
+        const st = gitCtx.map.get(relToRepo);
+        if (st) gitStatus = st;
+      }
       result.push({
         name: item.name,
         type: 'file',
-        path: relativePath
+        path: relativePath,
+        gitStatus,
       });
     }
   }

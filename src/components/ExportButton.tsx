@@ -145,8 +145,10 @@ export function ExportButton({ content, fileName, isPreviewMode }: ExportButtonP
         className={styles.exportButton}
         onClick={downloadMarkdown}
         title="Export markdown file"
+        aria-label="Export markdown file"
       >
-        Export
+        <span className={styles.exportIcon} aria-hidden>⤓</span>
+        <span className={styles.exportLabel}>Export</span>
       </button>
       
       <button 
@@ -154,7 +156,8 @@ export function ExportButton({ content, fileName, isPreviewMode }: ExportButtonP
         onClick={() => setIsDropdownOpen(!isDropdownOpen)}
         title="Export options"
       >
-        ▼
+        <span className={styles.exportCaret} aria-hidden>▼</span>
+        <span className={styles.exportCaretLabel}>Options</span>
       </button>
 
       {isDropdownOpen && (

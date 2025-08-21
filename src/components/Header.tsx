@@ -56,16 +56,45 @@ export function Header({
             <button 
               className={styles.toggleButton}
               onClick={onTogglePreview}
+              aria-label={isPreviewMode ? 'Switch to Edit' : 'Switch to Preview'}
+              title={isPreviewMode ? 'Edit' : 'Preview'}
             >
-              {isPreviewMode ? 'Edit' : 'Preview'}
+              <span className={styles.btnIcon} aria-hidden>
+                {isPreviewMode ? '✏️' : '👁️'}
+              </span>
+              <span className={styles.btnLabel}>{isPreviewMode ? 'Edit' : 'Preview'}</span>
             </button>
             {showAiReview ? (
               <>
-                <button className={styles.toggleButton} onClick={onAcceptAI}>Accept</button>
-                <button className={styles.toggleButton} onClick={onRejectAI}>Revert</button>
+                <button 
+                  className={styles.toggleButton}
+                  onClick={onAcceptAI}
+                  aria-label="Accept changes"
+                  title="Accept changes"
+                >
+                  <span className={styles.btnIcon} aria-hidden>✅</span>
+                  <span className={styles.btnLabel}>Accept</span>
+                </button>
+                <button 
+                  className={styles.toggleButton}
+                  onClick={onRejectAI}
+                  aria-label="Revert changes"
+                  title="Revert changes"
+                >
+                  <span className={styles.btnIcon} aria-hidden>↩️</span>
+                  <span className={styles.btnLabel}>Revert</span>
+                </button>
               </>
             ) : (
-              <button className={styles.toggleButton} onClick={onOpenAI} title="Open AI assistant">✨ AI</button>
+              <button 
+                className={styles.toggleButton}
+                onClick={onOpenAI}
+                aria-label="Open AI assistant"
+                title="Open AI assistant"
+              >
+                <span className={styles.btnIcon} aria-hidden>✨</span>
+                <span className={styles.btnLabel}>AI</span>
+              </button>
             )}
             <ExportButton content={fileContent} fileName={fileName} isPreviewMode={isPreviewMode} />
           </>

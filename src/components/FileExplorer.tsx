@@ -38,6 +38,11 @@ export function FileExplorer({
   const [newDirName, setNewDirName] = useState('');
   const [renamingPath, setRenamingPath] = useState<string | null>(null);
   const [renameValue, setRenameValue] = useState('');
+  const [draggingPath, setDraggingPath] = useState<string | null>(null);
+  const [dragOverDir, setDragOverDir] = useState<string | null>(null);
+
+  const basename = (p: string) => p.split('/').pop() || p;
+  const isAncestor = (parent: string, child: string) => child.startsWith(parent + '/');
 
   const toggleDirectory = (path: string) => {
     const newExpanded = new Set(expandedDirs);
@@ -110,8 +115,42 @@ export function FileExplorer({
           {item.type === 'directory' ? (
             <div className={styles.directoryContainer}>
               <div 
-                className={styles.directory}
+                className={`${styles.directory} ${draggingPath === item.path ? styles.dragging : ''} ${dragOverDir === item.path ? styles.dropTarget : ''}`}
                 onClick={() => toggleDirectory(item.path)}
+                draggable
+                onDragStart={(e) => {
+                  setDraggingPath(item.path);
+                  try { e.dataTransfer.setData('text/plain', item.path); } catch {}
+                  try { e.dataTransfer.effectAllowed = 'move'; } catch {}
+                }}
+                onDragEnd={() => { setDraggingPath(null); setDragOverDir(null); }}
+                onDragOver={(e) => {
+                  if (!draggingPath) return;
+                  if (item.path === draggingPath) return;
+                  e.preventDefault();
+                  try { e.dataTransfer.dropEffect = 'move'; } catch {}
+                  setDragOverDir(item.path);
+                  // auto-expand on hover
+                  if (!expandedDirs.has(item.path)) {
+                    const next = new Set(expandedDirs); next.add(item.path); setExpandedDirs(next);
+                  }
+                }}
+                onDragLeave={() => {
+                  setDragOverDir((curr) => (curr === item.path ? null : curr));
+                }}
+                onDrop={async (e) => {
+                  e.preventDefault();
+                  const src = ((): string | null => {
+                    try { return e.dataTransfer.getData('text/plain') || draggingPath; } catch { return draggingPath; }
+                  })();
+                  setDragOverDir(null);
+                  if (!src) return;
+                  // prevent dropping a folder into itself or its descendants
+                  if (src === item.path || isAncestor(src, item.path)) { setDraggingPath(null); return; }
+                  const dest = `${item.path}/${basename(src)}`;
+                  await onRenamePath(src, dest);
+                  setDraggingPath(null);
+                }}
               >
                 <span className={styles.icon}>
                   {isExpanded ? '📂' : '📁'}
@@ -168,8 +207,15 @@ export function FileExplorer({
           ) : (
             <div className={styles.fileContainer}>
               <div 
-                className={styles.file}
+                className={`${styles.file} ${draggingPath === item.path ? styles.dragging : ''}`}
                 onClick={() => onFileSelect(item.path)}
+                draggable
+                onDragStart={(e) => {
+                  setDraggingPath(item.path);
+                  try { e.dataTransfer.setData('text/plain', item.path); } catch {}
+                  try { e.dataTransfer.effectAllowed = 'move'; } catch {}
+                }}
+                onDragEnd={() => { setDraggingPath(null); setDragOverDir(null); }}
               >
                 <span className={styles.icon}>📄</span>
                 {isRenaming ? (

@@ -62,6 +62,9 @@
   color: white;
   cursor: pointer;
   font-size: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .toggleButton:hover {
@@ -79,7 +82,22 @@
   }
 
   .toggleButton {
-    padding: 6px 10px;
+    padding: 6px;
     font-size: 12px;
+    min-width: 34px;
+    justify-content: center;
   }
+
+  .btnLabel {
+    display: none;
+  }
+}
+
+.btnIcon {
+  font-size: 14px;
+  line-height: 1;
+}
+
+.btnLabel {
+  line-height: 1;
 }

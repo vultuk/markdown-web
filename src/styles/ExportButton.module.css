@@ -14,6 +14,9 @@
   font-size: 12px;
   line-height: 1;
   border-right: 1px solid #1177bb;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .exportButton:hover {
@@ -76,4 +79,16 @@
 
 .dropdownItem:last-child {
   border-radius: 0 0 3px 3px;
+}
+
+.exportIcon { font-size: 14px; line-height: 1; }
+.exportLabel { line-height: 1; }
+.exportCaret { font-size: 10px; }
+.exportCaretLabel { display: inline; }
+
+@media (max-width: 768px) {
+  .exportButton { padding: 6px; min-width: 34px; justify-content: center; }
+  .dropdownToggle { padding: 6px; min-width: 28px; }
+  .exportLabel { display: none; }
+  .exportCaretLabel { display: none; }
 }

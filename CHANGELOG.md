@@ -2,6 +2,47 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.6.0] - 2025-08-21
+
+### Added
+- **Drag and Drop File Management**: Full drag-and-drop support for moving files and folders within the file explorer
+- **Enhanced Mobile UX**: Responsive button layouts with icons-only display on mobile devices
+- **Accessibility Improvements**: Comprehensive ARIA labels, screen reader support, and semantic HTML
+- **Visual Button Enhancement**: Added icons to all header and export buttons for better visual identification
+
+### New Features
+- **File/Folder Drag & Drop**: Click and drag files or folders to move them between directories
+- **Auto-expand on Hover**: Folders automatically expand when dragging items over them
+- **Smart Drop Prevention**: Prevents dropping folders into themselves or their descendants
+- **Mobile-First Button Design**: Buttons adapt to screen size - show icons on mobile, full labels on desktop
+- **Visual Drag Feedback**: Dragged items become semi-transparent with visual drop target indicators
+
+### User Experience Improvements
+- **Intuitive File Management**: Move files and folders with simple drag-and-drop gestures
+- **Better Mobile Navigation**: Compact button layout optimized for touch interfaces
+- **Enhanced Accessibility**: All buttons have proper ARIA labels and screen reader support
+- **Visual Clarity**: Icons provide immediate visual recognition of button functions
+- **Responsive Design**: Interface adapts seamlessly between desktop and mobile layouts
+
+### Technical Enhancements
+- **Drag & Drop API**: Full HTML5 drag-and-drop implementation with cross-browser compatibility
+- **State Management**: Sophisticated drag state tracking with visual feedback systems
+- **CSS Media Queries**: Advanced responsive design with mobile/desktop-specific styling
+- **Accessibility Standards**: WCAG-compliant ARIA attributes and semantic markup
+- **Error Prevention**: Smart logic prevents invalid drag-and-drop operations
+
+### Mobile Optimizations
+- **Touch-Friendly Design**: Optimized touch targets and button sizing for mobile devices
+- **Icon-Only Buttons**: Space-efficient button layout showing only essential icons on small screens
+- **Responsive Export**: Export button adapts to mobile layout with icon-first design
+- **Better Touch Feedback**: Enhanced visual feedback for touch interactions
+
+### Accessibility Features
+- **Screen Reader Support**: All interactive elements properly labeled for assistive technologies
+- **Keyboard Navigation**: Full keyboard accessibility for drag-and-drop alternative workflows
+- **ARIA Live Regions**: Dynamic content changes announced to screen readers
+- **Semantic HTML**: Proper HTML structure and landmark elements for better navigation
+
 ## [2.5.0] - 2025-08-21
 
 ### Added

@@ -114,7 +114,14 @@ export function Editor({
                       body: JSON.stringify({ prompt: p, content }),
                     });
                     if (!res.ok) {
-                      alert('AI request failed');
+                      let msg = 'AI request failed';
+                      try {
+                        const err = await res.json();
+                        if (err && (err.error || err.details)) {
+                          msg = `${err.error || 'AI error'}: ${err.details || ''}`;
+                        }
+                      } catch {}
+                      alert(msg);
                       return;
                     }
                     const data = await res.json();

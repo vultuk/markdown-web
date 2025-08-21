@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.16.1] - 2025-08-21
+
+### Improved
+- **OpenAI Integration**: Updated to use official OpenAI JavaScript SDK for better reliability and performance
+- **Enhanced Error Handling**: Improved AI error messages with detailed feedback for troubleshooting
+- **API Reliability**: More robust OpenAI API integration with better error recovery
+
+### Technical Improvements
+- **OpenAI SDK**: Added `openai@^4.57.0` dependency for official SDK integration
+- **Error Details**: Enhanced error reporting with specific OpenAI error messages and details
+- **Code Quality**: Refactored AI API calls to use official SDK patterns and best practices
+
+### Bug Fixes
+- **AI Error Messages**: Fixed generic "AI request failed" messages to show specific error details
+- **API Response Parsing**: Improved handling of OpenAI API response structures
+- **Error Recovery**: Better error handling for various OpenAI API failure scenarios
+
 ## [1.16.0] - 2025-08-21
 
 ### Added

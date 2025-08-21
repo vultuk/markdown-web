@@ -2,6 +2,7 @@ import express from 'express';
 import fs from 'fs/promises';
 import path from 'path';
 import { ThemeManager } from './themeManager';
+import OpenAI from 'openai';
 
 export const fileRouter = express.Router();
 
@@ -301,32 +302,36 @@ fileRouter.post('/ai/apply', async (req, res) => {
       }
     } catch {}
 
-    const system = 'You are a precise markdown editor. Apply the user\'s requested changes to the provided markdown and return ONLY the full updated markdown. Do not include any explanation, code fences, or pre/post text — only the final markdown document.';
-    const user = `Current Markdown:\n\n---BEGIN---\n${content}\n---END---\n\nInstructions:\n${prompt}\n\nReturn only the updated markdown.`;
+    const instruction = 'You are a precise markdown editor. Apply the user\'s requested changes to the provided markdown and return ONLY the full updated markdown. Do not include any explanation, code fences, or pre/post text — only the final markdown document.';
+    const input = `${instruction}\n\nCurrent Markdown:\n\n---BEGIN---\n${content}\n---END---\n\nInstructions:\n${prompt}\n\nReturn only the updated markdown.`;
 
-    const resp = await fetch('https://api.openai.com/v1/chat/completions', {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
+    const client = new OpenAI({ apiKey });
+    let data: any;
+    try {
+      data = await client.responses.create({
         model,
-        messages: [
-          { role: 'system', content: system },
-          { role: 'user', content: user }
-        ],
-        temperature: 0.2,
-        max_tokens: 4096
-      })
-    });
-
-    if (!resp.ok) {
-      const errText = await resp.text().catch(() => '');
-      return res.status(502).json({ error: 'OpenAI request failed', details: errText.slice(0, 1000) });
+        input,
+      });
+    } catch (e: any) {
+      const details = e?.message || e?.response?.data || 'Unknown error';
+      return res.status(502).json({ error: 'OpenAI request failed', details: String(details).slice(0, 2000) });
     }
-    const data = await resp.json() as any;
-    const updated = data?.choices?.[0]?.message?.content;
+
+    let updated: string | undefined = data?.output_text;
+    if (!updated) {
+      try {
+        const pieces: string[] = [];
+        const out = Array.isArray(data?.output) ? data.output : [];
+        for (const item of out) {
+          const contentArr = Array.isArray((item as any)?.content) ? (item as any).content : [];
+          for (const c of contentArr) {
+            if (typeof (c as any)?.text === 'string') pieces.push((c as any).text);
+            else if ((c as any)?.text?.value) pieces.push(String((c as any).text.value));
+          }
+        }
+        updated = pieces.join('');
+      } catch {}
+    }
     if (typeof updated !== 'string' || !updated.trim()) {
       return res.status(502).json({ error: 'Invalid response from OpenAI' });
     }

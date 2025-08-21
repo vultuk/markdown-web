@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.12.2] - 2025-08-20
+
+### Fixed
+- **Static File Serving**: Fixed route ordering in HTTP and HTTPS servers to properly serve static files after API routes
+- **Authentication Cookies**: Added `credentials: 'same-origin'` to fetch requests for better cookie handling
+- **Server Routing**: Corrected catch-all route placement to prevent conflicts with API endpoints
+
+### Documentation
+- **Enhanced README**: Added comprehensive authentication documentation and CLI options
+- **Usage Instructions**: Improved setup guide with password authentication examples
+- **Security Guidelines**: Added security best practices and HTTPS recommendations
+
+### Technical Improvements
+- Fixed static file serving order in both development and production servers
+- Improved cookie handling for authentication requests
+- Better route organization for API endpoints and static content
+
 ## [1.12.1] - 2025-08-20
 
 ### Fixed
@@ -456,6 +473,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Clean, responsive interface
 - GitHub Flavored Markdown support
 
+[1.12.2]: https://github.com/vultuk/markdown-web/compare/v1.12.1...v1.12.2
 [1.12.1]: https://github.com/vultuk/markdown-web/compare/v1.12.0...v1.12.1
 [1.12.0]: https://github.com/vultuk/markdown-web/compare/v1.11.0...v1.12.0
 [1.11.0]: https://github.com/vultuk/markdown-web/compare/v1.10.0...v1.11.0

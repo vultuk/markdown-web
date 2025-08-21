@@ -56,6 +56,14 @@ export async function startHttpsServer(workingDirectory: string, domain: string 
     app.use('/api', fileRouter);
   }
 
+  // Serve static files from the React app build directory (after API routes)
+  app.use(express.static(path.join(__dirname, './client')));
+
+  // Catch all handler for React Router (after API + auth)
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, './client/index.html'));
+  });
+
   const certPath = `/etc/letsencrypt/live/${domain}/cert.pem`;
   const keyPath = `/etc/letsencrypt/live/${domain}/privkey.pem`;
   const chainPath = `/etc/letsencrypt/live/${domain}/chain.pem`;

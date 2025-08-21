@@ -14,7 +14,7 @@ export function AuthGate({ children }: Props) {
     let cancelled = false;
     const run = async () => {
       try {
-        const res = await fetch('/auth/status');
+        const res = await fetch('/auth/status', { credentials: 'same-origin' });
         const data = await res.json().catch(() => ({}));
         if (!cancelled) setStatus(data.authenticated ? 'ok' : 'need');
       } catch {
@@ -33,6 +33,7 @@ export function AuthGate({ children }: Props) {
       const res = await fetch('/auth/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
         body: JSON.stringify({ password }),
       });
       if (res.ok) {
@@ -84,4 +85,3 @@ export function AuthGate({ children }: Props) {
     </div>
   );
 }
-

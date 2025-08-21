@@ -39,6 +39,14 @@ export async function startServer(workingDirectory: string, options?: { disableA
   } else {
     app.use('/api', fileRouter);
   }
+
+  // Serve static files from the React app build directory
+  app.use(express.static(path.join(__dirname, './client')));
+
+  // Catch all handler for React Router (must be after API + auth routes)
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, './client/index.html'));
+  });
   
   const server = app.listen(PORT, () => {
     console.log(`Markdown Web Editor running on http://localhost:${PORT}`);

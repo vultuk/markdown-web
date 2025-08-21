@@ -2,6 +2,37 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.0] - 2025-08-21
+
+### Added
+- **Configurable Mermaid Diagrams**: New toggle in settings to enable/disable Mermaid diagram rendering
+- **Mermaid Settings Persistence**: Mermaid preference saved to server settings and localStorage
+- **Granular Control**: Users can now choose whether to render Mermaid diagrams or show them as code blocks
+
+### New Features
+- **Settings Toggle**: Added "Render Mermaid code blocks (experimental)" checkbox in settings modal
+- **Fallback Behavior**: When disabled, Mermaid code blocks display as regular code blocks
+- **User Choice**: Allow users to disable potentially resource-intensive diagram rendering if desired
+- **Seamless Integration**: Mermaid setting integrates with existing settings persistence system
+
+### Technical Improvements
+- **Server API**: Extended settings API to support `mermaidEnabled` boolean parameter
+- **Default Values**: Mermaid rendering defaults to `false` for better performance out-of-the-box
+- **Type Safety**: Added proper TypeScript interfaces for mermaidEnabled setting
+- **Validation**: Server-side validation for mermaidEnabled setting parameter
+
+### User Experience
+- **Performance Control**: Users can disable Mermaid rendering for better performance with large documents
+- **Flexibility**: Choose between diagram rendering or raw code display based on preference
+- **Settings Organization**: Mermaid toggle logically grouped in settings modal
+- **Immediate Effect**: Setting changes take effect immediately without page refresh
+
+### Settings Management
+- **Persistent Preference**: Mermaid setting saved across browser sessions
+- **Server Sync**: Setting synchronized between client and server storage
+- **Default Behavior**: Conservative default (disabled) for better initial performance
+- **Error Handling**: Graceful fallbacks for settings loading failures
+
 ## [2.0.3] - 2025-08-21
 
 ### Improved

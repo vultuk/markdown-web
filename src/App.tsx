@@ -107,6 +107,9 @@ function App() {
       return 'gpt-5-mini';
     }
   });
+  const [mermaidEnabled, setMermaidEnabled] = useState<boolean>(() => {
+    try { const v = localStorage.getItem('mermaidEnabled'); return v ? v === 'true' : false; } catch { return false; }
+  });
 
   // Load persisted settings from server
   useEffect(() => {
@@ -121,6 +124,7 @@ function App() {
         if (s && (s.sidebarMode === 'overlay' || s.sidebarMode === 'inline')) setSidebarMode(s.sidebarMode);
         if (s && typeof s.openAiModel === 'string') setOpenAiModel(s.openAiModel);
         if (s && typeof s.scrollSync === 'boolean') setScrollSync(s.scrollSync);
+        if (s && typeof s.mermaidEnabled === 'boolean') setMermaidEnabled(s.mermaidEnabled);
       } catch {}
       finally {
         if (!cancelled) setSettingsLoaded(true);
@@ -473,6 +477,11 @@ function App() {
     if (settingsLoaded) queueSettingsUpdate({ scrollSync });
   }, [scrollSync]);
 
+  useEffect(() => {
+    try { localStorage.setItem('mermaidEnabled', String(mermaidEnabled)); } catch {}
+    if (settingsLoaded) queueSettingsUpdate({ mermaidEnabled });
+  }, [mermaidEnabled]);
+
   const flushSettings = useCallback(async () => {
     const payload = pendingSettingsRef.current;
     pendingSettingsRef.current = {};
@@ -699,13 +708,14 @@ function App() {
                   <MarkdownPreview
                     content={fileContent}
                     registerSetScroll={(fn) => { setPreviewScrollRef.current = fn; }}
+                    mermaidEnabled={mermaidEnabled}
                   />
                 ) : null}
               </div>
             </div>
           ) : isPreviewMode ? (
             // Mobile: show preview full width
-            <MarkdownPreview content={fileContent} />
+            <MarkdownPreview content={fileContent} mermaidEnabled={mermaidEnabled} />
           ) : (
             <Editor
               content={fileContent}
@@ -736,6 +746,8 @@ function App() {
         onPersistSettings={(partial) => queueSettingsUpdate(partial)}
         scrollSync={scrollSync}
         onChangeScrollSync={setScrollSync}
+        mermaidEnabled={mermaidEnabled}
+        onChangeMermaidEnabled={setMermaidEnabled}
       />
 
       <ConfirmationModal

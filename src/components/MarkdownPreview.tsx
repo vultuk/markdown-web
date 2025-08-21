@@ -19,9 +19,10 @@ interface MarkdownPreviewProps {
   onScrollRatio?: (r: number) => void;
   registerSetScroll?: (fn: (r: number) => void) => void;
   enableScrollSync?: boolean;
+  mermaidEnabled?: boolean;
 }
 
-export function MarkdownPreview({ content, onScrollRatio, registerSetScroll, enableScrollSync = false }: MarkdownPreviewProps) {
+export function MarkdownPreview({ content, onScrollRatio, registerSetScroll, enableScrollSync = false, mermaidEnabled = false }: MarkdownPreviewProps) {
   const contentRef = useRef<HTMLDivElement>(null);
   const { currentTheme, generateCSS } = useTheme();
   const programmaticScrollRef = useRef(false);
@@ -198,6 +199,11 @@ export function MarkdownPreview({ content, onScrollRatio, registerSetScroll, ena
             const match = /language-(\w+)/.exec(className || '');
             const code = String(children || '');
             if (!inline && match && match[1].toLowerCase() === 'mermaid') {
+              if (!mermaidEnabled) {
+                return (
+                  <pre><code className={className}>{children}</code></pre>
+                );
+              }
               const dark = isDarkBackground((currentTheme as any)?.preview?.background);
               return <Mermaid code={code} theme={dark ? 'dark' : 'default'} />;
             }

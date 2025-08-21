@@ -469,6 +469,9 @@ fileRouter.post('/settings', async (req, res) => {
     if ('scrollSync' in incoming && typeof incoming.scrollSync !== 'boolean') {
       return res.status(400).json({ error: 'scrollSync must be a boolean' });
     }
+    if ('mermaidEnabled' in incoming && typeof incoming.mermaidEnabled !== 'boolean') {
+      return res.status(400).json({ error: 'mermaidEnabled must be a boolean' });
+    }
 
     const merged = { ...current, ...incoming };
     await themeManager.saveSettings(merged);

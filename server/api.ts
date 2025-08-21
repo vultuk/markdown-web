@@ -9,6 +9,16 @@ const themeManager = new ThemeManager();
 
 const getWorkingDir = () => process.env.WORKING_DIR || process.cwd();
 
+// AI status endpoint
+fileRouter.get('/ai/status', async (req, res) => {
+  try {
+    const enabled = !!process.env.OPENAI_KEY;
+    res.json({ enabled });
+  } catch (e) {
+    res.json({ enabled: false });
+  }
+});
+
 // Get directory structure
 fileRouter.get('/files', async (req, res) => {
   try {
@@ -269,6 +279,64 @@ fileRouter.get('/themes/:name', async (req, res) => {
   }
 });
 
+// Apply AI transformation to markdown
+fileRouter.post('/ai/apply', async (req, res) => {
+  try {
+    const apiKey = process.env.OPENAI_KEY;
+    if (!apiKey) {
+      return res.status(400).json({ error: 'OpenAI key not configured' });
+    }
+
+    const { prompt, content } = req.body || {};
+    if (typeof prompt !== 'string' || typeof content !== 'string') {
+      return res.status(400).json({ error: 'prompt and content are required' });
+    }
+
+    // Load preferred model from settings; default to gpt-5-mini if absent
+    let model = 'gpt-5-mini';
+    try {
+      const settings = await themeManager.getSettings();
+      if (settings.openAiModel && typeof settings.openAiModel === 'string') {
+        model = settings.openAiModel;
+      }
+    } catch {}
+
+    const system = 'You are a precise markdown editor. Apply the user\'s requested changes to the provided markdown and return ONLY the full updated markdown. Do not include any explanation, code fences, or pre/post text — only the final markdown document.';
+    const user = `Current Markdown:\n\n---BEGIN---\n${content}\n---END---\n\nInstructions:\n${prompt}\n\nReturn only the updated markdown.`;
+
+    const resp = await fetch('https://api.openai.com/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${apiKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model,
+        messages: [
+          { role: 'system', content: system },
+          { role: 'user', content: user }
+        ],
+        temperature: 0.2,
+        max_tokens: 4096
+      })
+    });
+
+    if (!resp.ok) {
+      const errText = await resp.text().catch(() => '');
+      return res.status(502).json({ error: 'OpenAI request failed', details: errText.slice(0, 1000) });
+    }
+    const data = await resp.json();
+    const updated = data?.choices?.[0]?.message?.content;
+    if (typeof updated !== 'string' || !updated.trim()) {
+      return res.status(502).json({ error: 'Invalid response from OpenAI' });
+    }
+    return res.json({ content: updated });
+  } catch (error) {
+    console.error('AI apply failed:', error);
+    return res.status(500).json({ error: 'AI apply failed' });
+  }
+});
+
 fileRouter.post('/themes/:name', async (req, res) => {
   try {
     const { name } = req.params;
@@ -298,13 +366,24 @@ fileRouter.get('/settings', async (req, res) => {
 
 fileRouter.post('/settings', async (req, res) => {
   try {
-    const settings = req.body;
-    
-    if (!settings || typeof settings.selectedTheme !== 'string') {
-      return res.status(400).json({ error: 'Invalid settings data' });
+    const incoming = req.body || {};
+    const current = await themeManager.getSettings();
+    // Basic validation: when provided, ensure correct types
+    if ('selectedTheme' in incoming && typeof incoming.selectedTheme !== 'string') {
+      return res.status(400).json({ error: 'selectedTheme must be a string' });
     }
-    
-    await themeManager.saveSettings(settings);
+    if ('previewLayout' in incoming && !['full', 'split'].includes(String(incoming.previewLayout))) {
+      return res.status(400).json({ error: 'previewLayout must be "full" or "split"' });
+    }
+    if ('sidebarMode' in incoming && !['overlay', 'inline'].includes(String(incoming.sidebarMode))) {
+      return res.status(400).json({ error: 'sidebarMode must be "overlay" or "inline"' });
+    }
+    if ('openAiModel' in incoming && typeof incoming.openAiModel !== 'string') {
+      return res.status(400).json({ error: 'openAiModel must be a string' });
+    }
+
+    const merged = { ...current, ...incoming };
+    await themeManager.saveSettings(merged);
     res.json({ success: true });
   } catch (error) {
     console.error('Error saving settings:', error);

@@ -51,6 +51,9 @@ export interface Theme {
 
 export interface Settings {
   selectedTheme: string;
+  previewLayout?: 'full' | 'split';
+  sidebarMode?: 'overlay' | 'inline';
+  openAiModel?: string;
 }
 
 export class ThemeManager {
@@ -115,10 +118,13 @@ export class ThemeManager {
   async getSettings(): Promise<Settings> {
     try {
       const settingsData = await fs.readFile(this.settingsFile, 'utf-8');
-      return JSON.parse(settingsData);
+      const parsed = JSON.parse(settingsData);
+      // Fill defaults for any missing keys to keep behavior consistent
+      const defaults: Settings = { selectedTheme: 'dark', previewLayout: 'full', sidebarMode: 'overlay', openAiModel: 'gpt-5-mini' };
+      return { ...defaults, ...parsed };
     } catch (error) {
       // Return default settings if file doesn't exist
-      return { selectedTheme: 'dark' };
+      return { selectedTheme: 'dark', previewLayout: 'full', sidebarMode: 'overlay', openAiModel: 'gpt-5-mini' };
     }
   }
 
@@ -151,7 +157,7 @@ export class ThemeManager {
       await fs.access(this.settingsFile);
     } catch {
       // File doesn't exist, create it
-      const defaultSettings: Settings = { selectedTheme: 'dark' };
+      const defaultSettings: Settings = { selectedTheme: 'dark', previewLayout: 'full', sidebarMode: 'overlay', openAiModel: 'gpt-5-mini' };
       await fs.writeFile(this.settingsFile, JSON.stringify(defaultSettings, null, 2));
     }
   }

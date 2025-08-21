@@ -158,18 +158,9 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
   }, [selectedTheme]);
 
   const changeTheme = useCallback(async (themeName: string) => {
+    // Only update local state; persistence is handled by the caller (Settings modal)
     try {
-      // Save the new theme selection
-      const response = await fetch('/api/settings', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'same-origin',
-        body: JSON.stringify({ selectedTheme: themeName }),
-      });
-
-      if (response.ok) {
-        setSelectedTheme(themeName);
-      }
+      setSelectedTheme(themeName);
     } catch (error) {
       console.error('Failed to change theme:', error);
     }

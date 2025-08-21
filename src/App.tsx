@@ -57,7 +57,10 @@ function App() {
   });
   const mainRef = useRef<HTMLDivElement | null>(null);
   const [toast, setToast] = useState<{ message: string; type?: 'info' | 'error' | 'success' } | null>(null);
+  const pendingSettingsRef = useRef<Record<string, unknown>>({});
+  const settingsTimerRef = useRef<number | null>(null);
   const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
+  const [settingsLoaded, setSettingsLoaded] = useState<boolean>(false);
   const [previewLayout, setPreviewLayout] = useState<PreviewLayout>(() => {
     try {
       const v = localStorage.getItem('previewLayout');
@@ -74,6 +77,33 @@ function App() {
       return 'overlay';
     }
   });
+  const [openAiModel, setOpenAiModel] = useState<string>(() => {
+    try {
+      return localStorage.getItem('openAiModel') || 'gpt-5-mini';
+    } catch {
+      return 'gpt-5-mini';
+    }
+  });
+
+  // Load persisted settings from server
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await fetch('/api/settings', { credentials: 'same-origin' });
+        if (!res.ok) throw new Error('settings load failed');
+        const s = await res.json();
+        if (cancelled) return;
+        if (s && (s.previewLayout === 'full' || s.previewLayout === 'split')) setPreviewLayout(s.previewLayout);
+        if (s && (s.sidebarMode === 'overlay' || s.sidebarMode === 'inline')) setSidebarMode(s.sidebarMode);
+        if (s && typeof s.openAiModel === 'string') setOpenAiModel(s.openAiModel);
+      } catch {}
+      finally {
+        if (!cancelled) setSettingsLoaded(true);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, []);
 
   const showToast = useCallback((message: string, type: 'info' | 'error' | 'success' = 'info') => {
     setToast({ message, type });
@@ -395,13 +425,57 @@ function App() {
     try {
       localStorage.setItem('previewLayout', previewLayout);
     } catch {}
+    // Queue a debounced settings persist
+    if (settingsLoaded) queueSettingsUpdate({ previewLayout });
   }, [previewLayout]);
 
   useEffect(() => {
     try {
       localStorage.setItem('sidebarMode', sidebarMode);
     } catch {}
+    if (settingsLoaded) queueSettingsUpdate({ sidebarMode });
   }, [sidebarMode]);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem('openAiModel', openAiModel);
+    } catch {}
+    if (settingsLoaded) queueSettingsUpdate({ openAiModel });
+  }, [openAiModel]);
+
+  const flushSettings = useCallback(async () => {
+    const payload = pendingSettingsRef.current;
+    pendingSettingsRef.current = {};
+    settingsTimerRef.current = null;
+    if (!payload || Object.keys(payload).length === 0) return;
+    try {
+      const res = await fetch('/api/settings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) {
+        showToast('Settings saved', 'success');
+      }
+    } catch {}
+  }, [showToast]);
+
+  const queueSettingsUpdate = useCallback((partial: Record<string, unknown>) => {
+    pendingSettingsRef.current = { ...pendingSettingsRef.current, ...partial };
+    if (settingsTimerRef.current) {
+      window.clearTimeout(settingsTimerRef.current);
+    }
+    settingsTimerRef.current = window.setTimeout(flushSettings, 600);
+  }, [flushSettings]);
+
+  useEffect(() => {
+    return () => {
+      if (settingsTimerRef.current) {
+        window.clearTimeout(settingsTimerRef.current);
+      }
+    };
+  }, []);
 
   // Handle drag-to-resize events
   useEffect(() => {
@@ -610,6 +684,9 @@ function App() {
         onChangePreviewLayout={setPreviewLayout}
         sidebarMode={sidebarMode}
         onChangeSidebarMode={setSidebarMode}
+        openAiModel={openAiModel}
+        onChangeOpenAiModel={setOpenAiModel}
+        onPersistSettings={(partial) => queueSettingsUpdate(partial)}
       />
 
       <ConfirmationModal

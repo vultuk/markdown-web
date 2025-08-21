@@ -10,8 +10,14 @@ async function main() {
   const disableAuth = argv.includes('--disable-auth');
   const authIndex = argv.indexOf('--auth');
   const providedPassword = authIndex !== -1 ? argv[authIndex + 1] : undefined;
+  const openAiIndex = argv.indexOf('--openai-key');
+  const openAiKey = openAiIndex !== -1 ? argv[openAiIndex + 1] : undefined;
   if (authIndex !== -1 && !providedPassword) {
     console.error('Error: --auth requires a password value');
+    process.exit(1);
+  }
+  if (openAiIndex !== -1 && !openAiKey) {
+    console.error('Error: --openai-key requires a value');
     process.exit(1);
   }
   
@@ -22,6 +28,7 @@ async function main() {
     const server = startServer(workingDirectory, {
       disableAuth: disableAuth,
       password: providedPassword,
+      openaiKey: openAiKey,
     });
     
     // Open browser after a short delay to ensure server is ready

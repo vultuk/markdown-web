@@ -12,9 +12,12 @@ interface SettingsModalProps {
   onChangePreviewLayout: (layout: PreviewLayout) => void;
   sidebarMode: SidebarMode;
   onChangeSidebarMode: (mode: SidebarMode) => void;
+  openAiModel: string;
+  onChangeOpenAiModel: (model: string) => void;
+  onPersistSettings?: (partial: Record<string, unknown>) => void;
 }
 
-export function SettingsModal({ isOpen, onClose, previewLayout, onChangePreviewLayout, sidebarMode, onChangeSidebarMode }: SettingsModalProps) {
+export function SettingsModal({ isOpen, onClose, previewLayout, onChangePreviewLayout, sidebarMode, onChangeSidebarMode, openAiModel, onChangeOpenAiModel, onPersistSettings }: SettingsModalProps) {
   const { availableThemes, selectedTheme, loading, changeTheme } = useTheme();
   useEffect(() => {
     if (!isOpen) return;
@@ -90,7 +93,11 @@ export function SettingsModal({ isOpen, onClose, previewLayout, onChangePreviewL
             ) : (
               <select
                 value={selectedTheme}
-                onChange={(e) => changeTheme(e.target.value)}
+                onChange={(e) => {
+                  const v = e.target.value;
+                  changeTheme(v);
+                  onPersistSettings?.({ selectedTheme: v });
+                }}
                 style={{
                   width: '100%',
                   padding: '8px 10px',
@@ -105,6 +112,26 @@ export function SettingsModal({ isOpen, onClose, previewLayout, onChangePreviewL
                 ))}
               </select>
             )}
+          </fieldset>
+
+          <fieldset style={{ border: 'none', padding: 0, margin: 0, marginTop: 16 }}>
+            <legend style={{ color: '#bbb', marginBottom: 8, fontSize: 13 }}>OpenAI model</legend>
+            <select
+              value={openAiModel}
+              onChange={(e) => onChangeOpenAiModel(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '8px 10px',
+                borderRadius: 4,
+                border: '1px solid #3e3e42',
+                background: '#1e1e1e',
+                color: '#ddd'
+              }}
+            >
+              <option value="gpt-5">gpt-5</option>
+              <option value="gpt-5-mini">gpt-5-mini</option>
+              <option value="gpt-5-nano">gpt-5-nano</option>
+            </select>
           </fieldset>
         </div>
         <div className={styles.footer}>

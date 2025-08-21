@@ -5,6 +5,40 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.16.0] - 2025-08-21
+
+### Added
+- **AI-Powered Editing**: OpenAI integration for intelligent markdown transformation and editing assistance
+- **AI Prompt Interface**: Inline AI prompt system with undo/redo functionality for editor transformations
+- **OpenAI Configuration**: `--openai-key` CLI parameter for enabling AI features with API key
+- **Model Selection**: Configurable OpenAI model selection with gpt-5-mini default
+- **AI Status Detection**: Automatic detection and UI adaptation when AI features are available
+
+### New Features
+- **Smart AI Button**: Contextual AI button appears in editor when OpenAI key is configured
+- **Prompt-Based Editing**: Natural language prompts to transform markdown content (e.g., "make this more formal", "add bullet points")
+- **Content Transformation**: AI-powered content improvement, formatting, and style adjustments
+- **Undo/Redo Support**: Full undo/redo functionality for AI-generated changes
+- **Server-Side Settings**: Enhanced settings persistence with OpenAI model preferences
+
+### Technical Improvements
+- **New API Endpoints**: `/api/ai/status` for feature detection, `/api/ai/apply` for content transformation
+- **Enhanced CLI**: Added `--openai-key` parameter with validation and error handling
+- **Settings Architecture**: Server-side settings storage and synchronization with client preferences
+- **AI Integration Layer**: Secure OpenAI API integration with configurable models
+- **State Management**: Enhanced state management for AI features and settings persistence
+
+### User Experience
+- **Seamless Integration**: AI features appear automatically when API key is configured
+- **Visual Feedback**: Clear loading states and success/error messaging for AI operations
+- **Non-Disruptive**: AI features are additive and don't interfere with existing workflows
+- **Accessible Interface**: Keyboard shortcuts and proper ARIA labels for AI controls
+
+### Command Line Interface
+- **New Flag**: `--openai-key <key>` to enable AI features with your OpenAI API key
+- **Error Handling**: Clear error messages for missing or invalid OpenAI key configurations
+- **Backward Compatibility**: All existing commands work unchanged without AI features
+
 ## [1.15.3] - 2025-08-21
 
 ### Fixed

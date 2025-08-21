@@ -2,6 +2,7 @@
   height: 100%;
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
 .placeholder {
@@ -23,6 +24,84 @@
   flex: 1;
   overflow: hidden;
 }
+
+.aiButton {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: #0e639c;
+  border: none;
+  color: white;
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border-radius: 16px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.aiButton:hover { background: #1177bb; }
+
+.aiModal {
+  position: absolute;
+  left: 50%;
+  bottom: 12px;
+  transform: translateX(-50%);
+  z-index: 30;
+}
+
+.aiModalInner {
+  width: min(720px, 90vw);
+  background: #252526;
+  border: 1px solid #3e3e42;
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+  padding: 12px;
+}
+
+.aiTextarea {
+  width: 100%;
+  min-height: 80px;
+  background: #1e1e1e;
+  color: #ddd;
+  border: 1px solid #3e3e42;
+  border-radius: 6px;
+  padding: 10px 12px;
+  resize: vertical;
+}
+
+.aiActions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 8px;
+  }
+
+.aiClose {
+  background: #5a5a5a;
+  color: #eee;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.aiClose:hover { background: #6a6a6a; }
+
+.revertButton {
+  position: absolute;
+  top: 8px;
+  right: 48px;
+  background: #c5282f;
+  color: #fff;
+  border: none;
+  padding: 6px 10px;
+  border-radius: 4px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.revertButton:hover { background: #d73a41; }
 
 .textarea {
   width: 100%;

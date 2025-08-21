@@ -15,9 +15,12 @@ app.use(express.json({ limit: JSON_LIMIT }));
 // Serve static files from the React app build directory
 // (Static and catch-all are configured inside startServer after auth + API)
 
-export async function startServer(workingDirectory: string, options?: { disableAuth?: boolean; password?: string }) {
+export async function startServer(workingDirectory: string, options?: { disableAuth?: boolean; password?: string; openaiKey?: string }) {
   // Set the working directory for file operations
   process.env.WORKING_DIR = workingDirectory;
+  if (options?.openaiKey) {
+    process.env.OPENAI_KEY = options.openaiKey;
+  }
   
   // Initialize themes
   const themeManager = new ThemeManager();

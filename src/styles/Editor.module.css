@@ -288,6 +288,7 @@
 /* Wrap to host the highlight overlay */
 .textareaWrap {
   position: relative;
+  height: 100%;
 }
 
 .highlightOverlay {

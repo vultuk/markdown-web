@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.7.1] - 2025-08-21
+
+### Fixed
+- **Textarea Layout**: Fixed textarea wrapper height to properly fill container space
+- **Editor Layout Stability**: Improved layout consistency by ensuring textarea wrapper takes full available height
+- **Visual Text Selection**: Enhanced overlay positioning by ensuring proper container height
+
+### Technical Improvements
+- **CSS Layout Fix**: Added `height: 100%` to `.textareaWrap` class for proper container sizing
+- **Layout Consistency**: Improved editor layout behavior in various screen sizes and container contexts
+- **Overlay Architecture**: Better foundation for visual text selection highlighting system
+
+### Bug Fixes
+- **Container Height**: Fixed potential layout issues where textarea wrapper might not expand to full container height
+- **Editor Display**: Resolved visual inconsistencies in editor area layout
+- **Layout Responsiveness**: Improved layout stability across different viewport sizes
+
 ## [2.7.0] - 2025-08-21
 
 ### Added

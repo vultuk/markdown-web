@@ -2,6 +2,37 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.14.0] - 2025-08-21
+
+### Added
+- **Enhanced AI Cost Tracking**: Comprehensive cost tracking for both OpenAI and Anthropic models with accurate pricing
+- **Model Alias System**: Backward-compatible model name mapping for seamless transitions
+- **Path-Based AI Logging**: Enhanced AI usage logging with file path context for better analytics
+
+### New Features
+- **Accurate Pricing Data**: Updated OpenAI pricing based on latest model costs (GPT-5: $1.25/$10 per 1M tokens)
+- **Anthropic Cost Calculation**: Full cost tracking for Claude models (Opus 4.1: $15/$75, Sonnet 4: $3/$15 per 1K tokens)
+- **Model Name Improvements**: Clean, professional model names in UI (GPT-5, Claude Sonnet 4, Claude Opus 4.1)
+- **Smart Model Migration**: Automatic mapping of legacy model names to current versions
+
+### Technical Improvements
+- **Enhanced AI Ask Endpoint**: Added path parameter and cost tracking to question-answering functionality
+- **Unified Cost Architecture**: Consistent cost calculation across both AI providers
+- **Model Compatibility Layer**: Seamless handling of model name changes with alias mapping
+- **Improved Logging**: Better AI usage analytics with file-specific cost tracking
+
+### User Experience
+- **Professional Model Names**: Cleaner, more readable model selection interface
+- **Transparent Pricing**: Accurate cost tracking for both content modification and Q&A operations
+- **Seamless Upgrades**: Existing model selections automatically migrate to new naming scheme
+- **Better Analytics**: Enhanced cost visibility with per-file usage tracking
+
+### API Enhancements
+- **Cost-Aware Responses**: All AI endpoints now return accurate cost information
+- **Path Context**: AI operations include file path for better usage tracking
+- **Pricing Updates**: Accurate, up-to-date pricing for all supported models
+- **Unified Response Format**: Consistent cost and usage data across all AI operations
+
 ## [2.13.1] - 2025-08-21
 
 ### Fixed

@@ -126,13 +126,13 @@ export function SettingsModal({ isOpen, onClose, previewLayout, onChangePreviewL
             <legend style={{ color: '#bbb', marginBottom: 8, fontSize: 13 }}>Default Model</legend>
             {(() => {
               const openaiModels = [
-                { id: 'gpt-5', label: 'gpt-5' },
-                { id: 'gpt-5-mini', label: 'gpt-5-mini' },
-                { id: 'gpt-5-nano', label: 'gpt-5-nano' },
+                { id: 'gpt-5', label: 'GPT-5' },
+                { id: 'gpt-5-mini', label: 'GPT-5 Mini' },
+                { id: 'gpt-5-nano', label: 'GPT-5 Nano' },
               ];
               const anthropicModels = [
-                { id: 'claude-sonnet-4-20250514', label: 'claude-sonnet-4-20250514' },
-                { id: 'claude-opus-4-1-20250805', label: 'claude-opus-4-1-20250805' },
+                { id: 'claude-sonnet-4-0', label: 'Claude Sonnet 4' },
+                { id: 'claude-opus-4-1', label: 'Claude Opus 4.1' },
               ];
               const items = [
                 ...(openAiKey ? openaiModels : []),

@@ -95,13 +95,22 @@ export function Editor({
           setHasOpenAiKey(hasOA);
           setHasAnthropicKey(hasAN);
           // Ensure selected model is valid for available keys
+          const mapAlias = (m: string): string => {
+            if (m === 'claude-opus-4-1-20250805') return 'claude-opus-4-1';
+            if (m === 'claude-sonnet-4-20250514') return 'claude-sonnet-4-0';
+            return m;
+          };
           const opts: string[] = [
             ...(hasOA ? ['gpt-5', 'gpt-5-mini', 'gpt-5-nano'] : []),
-            ...(hasAN ? ['claude-sonnet-4-20250514', 'claude-opus-4-1-20250805'] : []),
+            ...(hasAN ? ['claude-sonnet-4-0', 'claude-opus-4-1'] : []),
           ];
-          const current = (defaultModel || model);
-          if (opts.length > 0 && !opts.includes(current)) {
-            setModel(opts[0]);
+          const current = mapAlias(defaultModel || model);
+          if (opts.length > 0) {
+            if (opts.includes(current)) {
+              if (current !== model) setModel(current);
+            } else {
+              setModel(opts[0]);
+            }
           }
         }
       } catch {}
@@ -226,15 +235,15 @@ export function Editor({
                   <select id="ai-model" value={model} onChange={(e) => setModel(e.currentTarget.value)} disabled={aiLoading} style={{ background: '#1e1e1e', color: '#e6e6e6', border: '1px solid #3e3e42', borderRadius: 6, padding: '6px 8px' }}>
                     {hasOpenAiKey && (
                       <>
-                        <option value="gpt-5">gpt-5</option>
-                        <option value="gpt-5-mini">gpt-5-mini</option>
-                        <option value="gpt-5-nano">gpt-5-nano</option>
+                        <option value="gpt-5">GPT-5</option>
+                        <option value="gpt-5-mini">GPT-5 Mini</option>
+                        <option value="gpt-5-nano">GPT-5 Nano</option>
                       </>
                     )}
                     {hasAnthropicKey && (
                       <>
-                        <option value="claude-sonnet-4-20250514">claude-sonnet-4-20250514</option>
-                        <option value="claude-opus-4-1-20250805">claude-opus-4-1-20250805</option>
+                        <option value="claude-sonnet-4-0">Claude Sonnet 4</option>
+                        <option value="claude-opus-4-1">Claude Opus 4.1</option>
                       </>
                     )}
                   </select>
@@ -344,7 +353,7 @@ export function Editor({
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         credentials: 'same-origin',
-                        body: JSON.stringify({ prompt: p, content: selectedText, model }),
+                        body: JSON.stringify({ prompt: p, content: selectedText, model, path: fileName || '' }),
                       });
                       if (!res.ok) {
                         let msg = 'AI request failed';
@@ -363,6 +372,7 @@ export function Editor({
                         return;
                       }
                       setAnswer(data.answer);
+                      try { window.dispatchEvent(new CustomEvent('ai-cost-updated', { detail: { path: fileName || '' } })); } catch {}
                     }
                   } catch (e) {
                     alert('AI request failed');

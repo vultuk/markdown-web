@@ -120,8 +120,16 @@ function App() {
         if (cancelled) return;
         if (s && (s.previewLayout === 'full' || s.previewLayout === 'split')) setPreviewLayout(s.previewLayout);
         if (s && (s.sidebarMode === 'overlay' || s.sidebarMode === 'inline')) setSidebarMode(s.sidebarMode);
-        if (s && typeof s.defaultModel === 'string') setDefaultModel(s.defaultModel);
-        else if (s && typeof s.openAiModel === 'string') setDefaultModel(s.openAiModel);
+        if (s && typeof s.defaultModel === 'string') {
+          const mapAlias = (m: string): string => {
+            if (m === 'claude-opus-4-1-20250805') return 'claude-opus-4-1';
+            if (m === 'claude-sonnet-4-20250514') return 'claude-sonnet-4-0';
+            return m;
+          };
+          setDefaultModel(mapAlias(s.defaultModel));
+        } else if (s && typeof s.openAiModel === 'string') {
+          setDefaultModel(s.openAiModel);
+        }
         if (s && (s.defaultModelProvider === 'openai' || s.defaultModelProvider === 'anthropic')) setDefaultModelProvider(s.defaultModelProvider);
         else setDefaultModelProvider(((s?.defaultModel || s?.openAiModel || 'gpt-5-mini') as string).startsWith('claude-') ? 'anthropic' : 'openai');
         if (s && typeof s.openAiKey === 'string') setOpenAiKey(s.openAiKey);

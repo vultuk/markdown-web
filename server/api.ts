@@ -344,6 +344,13 @@ fileRouter.post('/ai/apply', async (req, res) => {
       const inputTokens = Number(usageA?.input_tokens || 0);
       const outputTokens = Number(usageA?.output_tokens || 0);
       const totalTokens = inputTokens + outputTokens;
+      // Anthropic pricing (USD per 1K tokens)
+      const anthropicPricing: Record<string, { input: number; output: number }> = {
+        'claude-opus-4-1': { input: 15, output: 75 },
+        'claude-sonnet-4-0': { input: 3, output: 15 },
+      };
+      const rateA = anthropicPricing[model] || anthropicPricing[(model.startsWith('claude-opus-4-1') ? 'claude-opus-4-1' : (model.startsWith('claude-sonnet-4-0') ? 'claude-sonnet-4-0' : ''))] || null;
+      const costUsd = rateA ? ((inputTokens / 1000) * rateA.input + (outputTokens / 1000) * rateA.output) : null;
       if (typeof updated === 'string') {
         updated = updated.replace(/```[a-z]*\n([\s\S]*?)\n```/gi, '$1');
         updated = updated.replace(/\n?\s*---BEGIN---\s*\n?/gi, '');
@@ -361,11 +368,11 @@ fileRouter.post('/ai/apply', async (req, res) => {
         await fs.mkdir(logDir, { recursive: true });
         let arr: any[] = [];
         try { const existing = await fs.readFile(logPath, 'utf-8'); arr = JSON.parse(existing); if (!Array.isArray(arr)) arr = []; } catch {}
-        const entry = { ts: new Date().toISOString(), model, prompt: String(prompt).slice(0,4000), usage: { inputTokens, outputTokens, totalTokens }, costUsd: null };
+        const entry = { ts: new Date().toISOString(), model, prompt: String(prompt).slice(0,4000), usage: { inputTokens, outputTokens, totalTokens }, costUsd };
         arr.push(entry);
         await fs.writeFile(logPath, JSON.stringify(arr, null, 2));
       } catch {}
-      return res.json({ content: updated, usage: { inputTokens, outputTokens, totalTokens }, model, costUsd: null });
+      return res.json({ content: updated, usage: { inputTokens, outputTokens, totalTokens }, model, costUsd });
     }
 
     // OpenAI branch
@@ -408,10 +415,13 @@ fileRouter.post('/ai/apply', async (req, res) => {
     const totalTokens = Number(usage.total_tokens || inputTokens + outputTokens);
 
     // Estimate cost if pricing is known; allow override via env OPENAI_PRICING JSON
+    // OpenAI default pricing (USD per 1K tokens)
+    // Based on: GPT-5 $1.250/$10.000 per 1M (input/output),
+    // GPT-5 Mini $0.250/$2.000 per 1M, GPT-5 Nano $0.050/$0.400 per 1M
     const defaultPricing: Record<string, { input: number; output: number }> = {
-      'gpt-5': { input: 0.01, output: 0.03 },
-      'gpt-5-mini': { input: 0.005, output: 0.015 },
-      'gpt-5-nano': { input: 0.002, output: 0.006 },
+      'gpt-5': { input: 0.00125, output: 0.01 },
+      'gpt-5-mini': { input: 0.00025, output: 0.002 },
+      'gpt-5-nano': { input: 0.00005, output: 0.0004 },
     };
     let pricing = defaultPricing;
     try {
@@ -469,7 +479,7 @@ fileRouter.post('/ai/apply', async (req, res) => {
 // Ask questions about current markdown (no file modification)
 fileRouter.post('/ai/ask', async (req, res) => {
   try {
-    const { prompt, content, model: overrideModel } = (req.body || {}) as { prompt?: string; content?: string; model?: string };
+    const { prompt, content, model: overrideModel, path: relPath } = (req.body || {}) as { prompt?: string; content?: string; model?: string; path?: string };
     if (typeof prompt !== 'string' || typeof content !== 'string') {
       return res.status(400).json({ error: 'prompt and content are required' });
     }
@@ -487,6 +497,7 @@ fileRouter.post('/ai/ask', async (req, res) => {
     const instruction = 'You are a helpful documentation assistant. Answer the user\'s question about the provided markdown. Be concise and use markdown formatting in your answer when appropriate. Do not include code fences that wrap the entire answer.';
     const input = `${instruction}\n\nMarkdown:\n\n${content}\n\nQuestion:\n${prompt}`;
 
+    let costUsd: number | null = null;
     if (provider === 'openai') {
       let apiKey = process.env.OPENAI_KEY; try { const s = await themeManager.getSettings(); if (s.openAiKey?.trim()) apiKey = s.openAiKey.trim(); } catch {}
       if (!apiKey) return res.status(400).json({ error: 'OpenAI key not configured' });
@@ -497,7 +508,30 @@ fileRouter.post('/ai/ask', async (req, res) => {
       if (typeof answer === 'string') { answer = answer.replace(/```[a-z]*\n([\s\S]*?)\n```/gi, '$1'); answer = answer.replace(/\n?\s*---BEGIN---\s*\n?/gi, ''); answer = answer.replace(/\n?\s*---END---\s*\n?/gi, ''); }
       if (!answer || typeof answer !== 'string' || !answer.trim()) return res.status(502).json({ error: 'Invalid response from model' });
       const usage = (data as any)?.usage || {}; const inputTokens = Number(usage.input_tokens || usage.prompt_tokens || 0); const outputTokens = Number(usage.output_tokens || usage.completion_tokens || 0); const totalTokens = Number(usage.total_tokens || inputTokens + outputTokens);
-      return res.json({ answer, usage: { inputTokens, outputTokens, totalTokens }, model });
+      // OpenAI pricing (per 1K tokens), override via OPENAI_PRICING if provided
+      // OpenAI default pricing (USD per 1K tokens)
+      const defaultPricing: Record<string, { input: number; output: number }> = {
+        'gpt-5': { input: 0.00125, output: 0.01 },
+        'gpt-5-mini': { input: 0.00025, output: 0.002 },
+        'gpt-5-nano': { input: 0.00005, output: 0.0004 },
+      };
+      let pricing = defaultPricing; try { if (process.env.OPENAI_PRICING) pricing = JSON.parse(process.env.OPENAI_PRICING); } catch {}
+      const rate = pricing[model]; costUsd = rate ? ((inputTokens / 1000) * rate.input + (outputTokens / 1000) * rate.output) : null;
+      // Log to file if path provided
+      try {
+        if (relPath) {
+          const home = os.homedir();
+          const logsRoot = path.join(home, '.markdown-web', 'logs');
+          const safeFolder = encodeURIComponent(String(relPath));
+          const logDir = path.join(logsRoot, safeFolder);
+          const logPath = path.join(logDir, 'ai.json');
+          await fs.mkdir(logDir, { recursive: true });
+          let arr: any[] = []; try { const existing = await fs.readFile(logPath, 'utf-8'); arr = JSON.parse(existing); if (!Array.isArray(arr)) arr = []; } catch {}
+          arr.push({ ts: new Date().toISOString(), model, prompt: String(prompt).slice(0,4000), usage: { inputTokens, outputTokens, totalTokens }, costUsd });
+          await fs.writeFile(logPath, JSON.stringify(arr, null, 2));
+        }
+      } catch {}
+      return res.json({ answer, usage: { inputTokens, outputTokens, totalTokens }, model, costUsd });
     } else {
       let apiKey = process.env.ANTHROPIC_API_KEY; try { const s = await themeManager.getSettings(); if (s.anthropicKey?.trim()) apiKey = s.anthropicKey.trim(); } catch {}
       if (!apiKey) return res.status(400).json({ error: 'Anthropic key not configured' });
@@ -507,7 +541,27 @@ fileRouter.post('/ai/ask', async (req, res) => {
       if (typeof answer === 'string') { answer = answer.replace(/```[a-z]*\n([\s\S]*?)\n```/gi, '$1'); answer = answer.replace(/\n?\s*---BEGIN---\s*\n?/gi, ''); answer = answer.replace(/\n?\s*---END---\s*\n?/gi, ''); }
       if (!answer || typeof answer !== 'string' || !answer.trim()) return res.status(502).json({ error: 'Invalid response from model' });
       const usage = (data as any)?.usage || {}; const inputTokens = Number(usage?.input_tokens || 0); const outputTokens = Number(usage?.output_tokens || 0); const totalTokens = inputTokens + outputTokens;
-      return res.json({ answer, usage: { inputTokens, outputTokens, totalTokens }, model });
+      // Anthropic pricing (USD per 1K tokens)
+      const anthropicPricing: Record<string, { input: number; output: number }> = {
+        'claude-opus-4-1': { input: 15, output: 75 },
+        'claude-sonnet-4-0': { input: 3, output: 15 },
+      };
+      const rateA = anthropicPricing[model] || anthropicPricing[(model.startsWith('claude-opus-4-1') ? 'claude-opus-4-1' : (model.startsWith('claude-sonnet-4-0') ? 'claude-sonnet-4-0' : ''))] || null;
+      costUsd = rateA ? ((inputTokens / 1000) * rateA.input + (outputTokens / 1000) * rateA.output) : null;
+      try {
+        if (relPath) {
+          const home = os.homedir();
+          const logsRoot = path.join(home, '.markdown-web', 'logs');
+          const safeFolder = encodeURIComponent(String(relPath));
+          const logDir = path.join(logsRoot, safeFolder);
+          const logPath = path.join(logDir, 'ai.json');
+          await fs.mkdir(logDir, { recursive: true });
+          let arr: any[] = []; try { const existing = await fs.readFile(logPath, 'utf-8'); arr = JSON.parse(existing); if (!Array.isArray(arr)) arr = []; } catch {}
+          arr.push({ ts: new Date().toISOString(), model, prompt: String(prompt).slice(0,4000), usage: { inputTokens, outputTokens, totalTokens }, costUsd });
+          await fs.writeFile(logPath, JSON.stringify(arr, null, 2));
+        }
+      } catch {}
+      return res.json({ answer, usage: { inputTokens, outputTokens, totalTokens }, model, costUsd });
     }
   } catch (error) {
     console.error('AI ask failed:', error);

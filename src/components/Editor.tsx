@@ -107,7 +107,19 @@ export function Editor({
       {aiEnabled && aiOpen && (
         <div className={styles.aiModal} role="dialog" aria-modal="true" aria-label="AI prompt">
           <div className={styles.aiModalInner}>
-            <div className={styles.aiHeader}>✨ AI Assistant</div>
+            <div className={styles.aiHeader}>
+              <span>✨ AI Assistant</span>
+              <button
+                type="button"
+                className={styles.aiClose}
+                aria-label="Close"
+                onClick={() => { setAiOpen(false); setAnswer(null); }}
+                disabled={aiLoading}
+                title="Close"
+              >
+                ×
+              </button>
+            </div>
             <div className={styles.aiBody}>
               <div style={{ display: 'flex', gap: 12, alignItems: 'center', marginBottom: 8, justifyContent: 'space-between', flexWrap: 'wrap' }}>
                 <div className={styles.aiModeToggle} role="tablist" aria-label="AI mode">
@@ -249,7 +261,6 @@ export function Editor({
                   </span>
                 ) : (mode === 'adjust' ? 'Apply' : 'Ask')}
               </button>
-              <button className={styles.aiButtonSecondary} onClick={() => { setAiOpen(false); setAnswer(null); }} disabled={aiLoading}>Close</button>
             </div>
           </div>
         </div>

@@ -28,7 +28,17 @@ function App() {
       return false;
     }
   });
-  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(() => {
+    try {
+      const isDesktop = typeof window !== 'undefined' ? window.innerWidth > 768 : true;
+      const hash = typeof window !== 'undefined' ? window.location.hash : '';
+      const hasFile = hash.startsWith('#/') && decodeURIComponent(hash.slice(2)).length > 0;
+      const storedMode = typeof window !== 'undefined' ? localStorage.getItem('sidebarMode') : null;
+      const mode = (storedMode === 'overlay' || storedMode === 'inline') ? storedMode : 'overlay';
+      if (isDesktop && hasFile && mode === 'overlay') return false; // avoid flashing overlay when a file is already loaded
+    } catch {}
+    return true;
+  });
   const MIN_SIDEBAR_WIDTH = 200;
   const MAX_SIDEBAR_WIDTH = 600;
   const [sidebarWidth, setSidebarWidth] = useState<number>(() => {
@@ -540,7 +550,7 @@ function App() {
         const ok = await loadFileContent(filePath);
         if (ok) {
           setSelectedFile(filePath);
-          if (isMobile) {
+          if (isMobile || sidebarMode === 'overlay') {
             setIsSidebarOpen(false);
           }
         } else {
@@ -562,7 +572,7 @@ function App() {
         const ok = await loadFileContent(filePath);
         if (ok) {
           setSelectedFile(filePath);
-          if (isMobile) {
+          if (isMobile || sidebarMode === 'overlay') {
             setIsSidebarOpen(false);
           }
         } else {
@@ -581,7 +591,7 @@ function App() {
     return () => {
       window.removeEventListener('popstate', handlePopState);
     };
-  }, [getFilePathFromURL, loadFileContent, selectedFile, updateURL, showToast, isMobile]);
+  }, [getFilePathFromURL, loadFileContent, selectedFile, updateURL, showToast, isMobile, sidebarMode]);
 
   return (
     <div className={styles.app}>

@@ -2,6 +2,44 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.4.0] - 2025-08-21
+
+### Added
+- **AI Modal Close Button**: Added dedicated close button (×) to AI modal header for better accessibility
+- **Responsive Status Bar**: Mobile-optimized status bar with adaptive stat display
+- **Smart Sidebar Initialization**: Enhanced sidebar state initialization with context awareness
+- **Mobile-First Status Display**: Optimized status information layout for different screen sizes
+
+### New Features
+- **Enhanced AI Modal**: Close button in header eliminates need for separate close action
+- **Adaptive Stats Display**: Status bar shows relevant information based on screen size
+- **Intelligent Sidebar Behavior**: Smart sidebar opening based on file loading and device context
+- **Mobile Status Optimization**: Compact status display with essential information on mobile
+
+### User Experience Improvements
+- **Better AI Modal UX**: More intuitive close functionality with header-placed × button
+- **Cleaner AI Interface**: Streamlined AI modal with dedicated close button instead of action button
+- **Mobile-Friendly Stats**: Optimized information density for small screens
+- **Context-Aware Sidebar**: Sidebar behavior adapts to user context and device capabilities
+
+### Technical Improvements
+- **Enhanced Modal Design**: Improved AI modal header layout with flex justify-between
+- **Responsive CSS**: Added mobile/desktop-specific classes for conditional stat display
+- **Smart State Management**: Context-aware sidebar initialization based on URL, device, and settings
+- **Better Mobile Layout**: Optimized spacing and information hierarchy for mobile devices
+
+### Responsive Design
+- **Mobile Status Bar**: Compact layout with essential stats (AI cost, words)
+- **Desktop Status Bar**: Full information display (lines, words, characters, AI cost)
+- **Adaptive Behavior**: UI elements adapt automatically to screen size
+- **Better Information Hierarchy**: Most important stats prioritized on smaller screens
+
+### Accessibility Enhancements
+- **Dedicated Close Button**: Clear, accessible close action in AI modal header
+- **Better ARIA Support**: Enhanced accessibility attributes for modal interactions
+- **Improved Navigation**: More intuitive modal interaction patterns
+- **Touch-Friendly Design**: Better touch targets and mobile interaction patterns
+
 ## [2.3.0] - 2025-08-21
 
 ### Added

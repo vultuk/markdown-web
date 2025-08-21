@@ -44,13 +44,17 @@ export function StatusBar({ content, fileName }: StatusBarProps) {
       <div className={styles.left}>
         {fileName && <span className={styles.fileName}>{fileName}</span>}
         {fileName && aiCost !== null && (
-          <span className={styles.stat} style={{ marginLeft: 12 }}>AI Cost: ${aiCost.toFixed(2)}</span>
+          <span className={`${styles.stat} ${styles.desktopOnly}`} style={{ marginLeft: 12 }}>AI Cost: ${aiCost.toFixed(2)}</span>
         )}
       </div>
       <div className={styles.right}>
-        <span className={styles.stat}>Lines: {lineCount}</span>
-        <span className={styles.stat}>Words: {wordCount}</span>
-        <span className={styles.stat}>Characters: {charCount} ({charCountNoSpaces} no spaces)</span>
+        {fileName && aiCost !== null && (
+          <span className={`${styles.stat} ${styles.mobileOnly}`}>AI ${aiCost.toFixed(2)}</span>
+        )}
+        <span className={`${styles.stat} ${styles.desktopOnly}`}>Words: {wordCount}</span>
+        <span className={`${styles.stat} ${styles.mobileOnly}`}>Words {wordCount}</span>
+        <span className={`${styles.stat} ${styles.optionalStat}`}>Lines: {lineCount}</span>
+        <span className={`${styles.stat} ${styles.optionalStat}`}>Characters: {charCount} ({charCountNoSpaces} no spaces)</span>
       </div>
     </div>
   );

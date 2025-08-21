@@ -75,6 +75,9 @@
   font-weight: 600;
   font-size: 14px;
   border-bottom: 1px solid #3e3e42;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
 .aiBody { padding: 12px; }
@@ -100,7 +103,9 @@
   display: flex;
   justify-content: flex-end;
   margin-top: 8px;
-  }
+  padding: 8px 12px 12px 12px; /* give space from right and bottom edges */
+  gap: 8px;
+}
 
 .aiModeToggle {
   display: inline-flex;
@@ -191,6 +196,26 @@
   border-radius: 50%;
   animation: spin 0.9s linear infinite;
   display: inline-block;
+}
+
+.aiClose {
+  background: transparent;
+  color: #cfcfcf;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  width: 28px;
+  height: 28px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.aiClose:hover {
+  background: rgba(255,255,255,0.06);
+  border-color: #3e3e42;
 }
 
 @keyframes spin {

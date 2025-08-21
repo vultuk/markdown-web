@@ -30,3 +30,15 @@
 .stat {
   color: #888;
 }
+
+.mobileOnly { display: none; }
+.desktopOnly { display: inline; }
+.optionalStat { display: inline; }
+
+@media (max-width: 768px) {
+  .statusBar { padding: 4px 10px; }
+  .right { gap: 8px; }
+  .mobileOnly { display: inline; }
+  .desktopOnly { display: none; }
+  .optionalStat { display: none; }
+}

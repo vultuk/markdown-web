@@ -2,6 +2,44 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.3.0] - 2025-08-21
+
+### Added
+- **AI Ask Mode**: New Q&A functionality to ask questions about markdown content without modification
+- **Dual-Mode AI Interface**: Enhanced AI modal with toggle between "Adjust" and "Ask" modes
+- **AI Q&A API**: New `/api/ai/ask` endpoint for question-answering functionality
+- **Answer Display**: Interactive answer display with markdown rendering, copy, and clear actions
+
+### New Features
+- **Mode Toggle**: Switch between content modification (Adjust) and information retrieval (Ask) in AI modal
+- **Question Interface**: Dedicated interface for asking questions about current markdown content  
+- **Answer Rendering**: Formatted answer display with full markdown support using ReactMarkdown
+- **Answer Actions**: Copy answer to clipboard and clear answer functionality
+- **Smart Placeholders**: Context-aware placeholder text based on selected mode
+
+### Enhanced AI Capabilities
+- **Improved Prompts**: Cleaner prompt formatting without BEGIN/END markers for better AI responses
+- **Response Sanitization**: Enhanced cleanup of AI responses to remove accidental code wrappers
+- **Better Error Handling**: More robust error handling for both adjust and ask operations
+- **Usage Tracking**: Token usage tracking for both content modification and Q&A operations
+
+### User Experience
+- **Intuitive Mode Switching**: Clear visual distinction between Adjust and Ask modes
+- **Contextual Interface**: UI adapts based on selected mode with appropriate prompts and actions
+- **Enhanced Workflow**: Ask questions about content before or after making adjustments
+- **Improved Accessibility**: Proper ARIA attributes and role definitions for new interface elements
+
+### Technical Improvements
+- **New API Endpoint**: `/api/ai/ask` for question-answering without content modification
+- **Enhanced CSS**: New styling for mode toggles, answer display, and action buttons
+- **Component State**: Better state management for dual-mode AI functionality
+- **Modal Enhancement**: Improved modal layout and interaction patterns
+
+### Developer Experience
+- **API Consistency**: Both AI endpoints follow similar patterns and error handling
+- **Response Format**: Standardized response structures for both modify and ask operations
+- **Better Documentation**: Enhanced API interface with clearer parameter handling
+
 ## [2.2.0] - 2025-08-21
 
 ### Enhanced Features

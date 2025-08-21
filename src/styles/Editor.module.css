@@ -102,6 +102,63 @@
   margin-top: 8px;
   }
 
+.aiModeToggle {
+  display: inline-flex;
+  background: #1b1d20;
+  border: 1px solid #3e3e42;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.aiToggleButton {
+  background: transparent;
+  color: #cfcfcf;
+  border: none;
+  padding: 6px 10px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+.aiToggleButton:hover { background: rgba(255,255,255,0.04); }
+.aiToggleActive { background: #2a2d31; color: #fff; }
+
+.aiAnswer {
+  margin-top: 10px;
+  background: #1b1d20;
+  border: 1px solid #3e3e42;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.aiAnswerHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 10px;
+  color: #e6e6e6;
+  background: #23252b;
+  border-bottom: 1px solid #3e3e42;
+  font-size: 13px;
+}
+
+.aiAnswerAction {
+  background: #3b3b3d;
+  color: #e6e6e6;
+  border: 1px solid #4a4a4e;
+  border-radius: 6px;
+  padding: 4px 8px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.aiAnswerAction:hover { background: #47474a; }
+
+.aiAnswerContent {
+  padding: 10px 12px;
+  max-height: 260px;
+  overflow: auto;
+}
+
 .aiButtonPrimary {
   background: #0e639c;
   color: #fff;

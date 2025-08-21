@@ -15,13 +15,11 @@ interface SettingsModalProps {
   openAiModel: string;
   onChangeOpenAiModel: (model: string) => void;
   onPersistSettings?: (partial: Record<string, unknown>) => void;
-  scrollSync: boolean;
-  onChangeScrollSync: (value: boolean) => void;
   mermaidEnabled: boolean;
   onChangeMermaidEnabled: (value: boolean) => void;
 }
 
-export function SettingsModal({ isOpen, onClose, previewLayout, onChangePreviewLayout, sidebarMode, onChangeSidebarMode, openAiModel, onChangeOpenAiModel, onPersistSettings, scrollSync, onChangeScrollSync, mermaidEnabled, onChangeMermaidEnabled }: SettingsModalProps) {
+export function SettingsModal({ isOpen, onClose, previewLayout, onChangePreviewLayout, sidebarMode, onChangeSidebarMode, openAiModel, onChangeOpenAiModel, onPersistSettings, mermaidEnabled, onChangeMermaidEnabled }: SettingsModalProps) {
   const { availableThemes, selectedTheme, loading, changeTheme } = useTheme();
   useEffect(() => {
     if (!isOpen) return;

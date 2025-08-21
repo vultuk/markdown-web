@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.2] - 2025-08-21
+
+### Fixed
+- **Scroll Sync Cleanup**: Removed remaining scroll sync props and references from SettingsModal component
+- **Interface Cleanup**: Cleaned up TypeScript interfaces to remove unused scroll sync parameters
+- **Component Props**: Fixed SettingsModal props to match actual implementation after scroll sync removal
+
+### Technical Improvements
+- **Type Safety**: Removed orphaned scroll sync TypeScript interface definitions
+- **Code Consistency**: Ensured all components align with the scroll sync removal from v2.1.1
+- **Parameter Cleanup**: Eliminated unused props that were causing potential type errors
+
+### Code Quality
+- **Dead Code Removal**: Removed all remaining references to scroll sync functionality
+- **Interface Alignment**: Fixed component interfaces to match actual usage patterns
+- **Maintainability**: Improved code maintainability by removing inconsistent references
+
 ## [2.1.1] - 2025-08-21
 
 ### Removed

@@ -716,8 +716,6 @@ function App() {
         openAiModel={openAiModel}
         onChangeOpenAiModel={setOpenAiModel}
         onPersistSettings={(partial) => queueSettingsUpdate(partial)}
-        scrollSync={scrollSync}
-        onChangeScrollSync={setScrollSync}
         mermaidEnabled={mermaidEnabled}
         onChangeMermaidEnabled={setMermaidEnabled}
       />

@@ -70,7 +70,7 @@ export function Editor({
           onClick={() => setAiOpen((v) => !v)}
           aria-label="Open AI prompt"
         >
-          🤖
+          ✨
         </button>
       )}
       <div className={styles.content}>
@@ -92,15 +92,19 @@ export function Editor({
       {aiEnabled && aiOpen && (
         <div className={styles.aiModal} role="dialog" aria-modal="true" aria-label="AI prompt">
           <div className={styles.aiModalInner}>
-            <textarea
-              className={styles.aiTextarea}
-              placeholder="Ask AI…"
-              value={prompt}
-              onChange={(e) => setPrompt(e.currentTarget.value)}
-            />
+            <div className={styles.aiHeader}>✨ AI Assistant</div>
+            <div className={styles.aiBody}>
+              <textarea
+                className={styles.aiTextarea}
+                placeholder="Describe the changes you want to apply to this markdown…"
+                value={prompt}
+                onChange={(e) => setPrompt(e.currentTarget.value)}
+                disabled={aiLoading}
+              />
+            </div>
             <div className={styles.aiActions}>
               <button
-                className={styles.aiClose}
+                className={`${styles.aiButtonPrimary}`}
                 onClick={async () => {
                   if (!fileName) { setAiOpen(false); return; }
                   const p = prompt.trim();
@@ -141,9 +145,14 @@ export function Editor({
                 }}
                 disabled={aiLoading}
               >
-                {aiLoading ? 'Applying…' : 'Apply'}
+                {aiLoading ? (
+                  <span className={styles.spinnerWrap}>
+                    <span className={styles.spinner} aria-hidden />
+                    Applying…
+                  </span>
+                ) : 'Apply'}
               </button>
-              <button className={styles.aiClose} onClick={() => setAiOpen(false)}>Close</button>
+              <button className={styles.aiButtonSecondary} onClick={() => setAiOpen(false)} disabled={aiLoading}>Close</button>
             </div>
           </div>
         </div>

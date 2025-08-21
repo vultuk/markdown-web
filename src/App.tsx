@@ -62,24 +62,7 @@ function App() {
   const openAiModal = () => {
     try { window.dispatchEvent(new CustomEvent('open-ai-modal')); } catch {}
   };
-  // Scroll sync refs
-  const setEditorScrollRef = useRef<(r: number) => void>(() => {});
-  const setPreviewScrollRef = useRef<(r: number) => void>(() => {});
-  const [scrollSync, setScrollSync] = useState<boolean>(() => {
-    try { const v = localStorage.getItem('scrollSync'); return v ? v === 'true' : true; } catch { return true; }
-  });
-  const canSync = (isPreviewMode && !isMobile && previewLayout === 'split' && scrollSync);
-  const lastScrollRatioRef = useRef(0);
-  const syncRafRef = useRef<number | null>(null);
-  const handleEditorScrollRatio = (r: number) => {
-    if (!canSync) return;
-    lastScrollRatioRef.current = r;
-    if (syncRafRef.current) cancelAnimationFrame(syncRafRef.current);
-    syncRafRef.current = requestAnimationFrame(() => {
-      try { setPreviewScrollRef.current && setPreviewScrollRef.current(lastScrollRatioRef.current); } catch {}
-      syncRafRef.current = null;
-    });
-  };
+  // Scroll sync fully disabled (reverted)
   const pendingSettingsRef = useRef<Record<string, unknown>>({});
   const settingsTimerRef = useRef<number | null>(null);
   const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
@@ -472,10 +455,7 @@ function App() {
     if (settingsLoaded) queueSettingsUpdate({ openAiModel });
   }, [openAiModel]);
 
-  useEffect(() => {
-    try { localStorage.setItem('scrollSync', String(scrollSync)); } catch {}
-    if (settingsLoaded) queueSettingsUpdate({ scrollSync });
-  }, [scrollSync]);
+  // removed scrollSync persistence
 
   useEffect(() => {
     try { localStorage.setItem('mermaidEnabled', String(mermaidEnabled)); } catch {}
@@ -685,9 +665,6 @@ function App() {
                   onAiPendingChange={setAiPending}
                   defaultModel={openAiModel}
                   onAiApply={(newContent) => { setAiPrevContent(fileContent); setFileContent(newContent); setAiPending(true); }}
-                  enableScrollSync={canSync}
-                  onScrollRatio={handleEditorScrollRatio}
-                  registerSetScroll={(fn) => { setEditorScrollRef.current = fn; }}
                 />
               </div>
               <div
@@ -705,11 +682,7 @@ function App() {
               />
               <div className={styles.pane}>
                 {selectedFile ? (
-                  <MarkdownPreview
-                    content={fileContent}
-                    registerSetScroll={(fn) => { setPreviewScrollRef.current = fn; }}
-                    mermaidEnabled={mermaidEnabled}
-                  />
+                  <MarkdownPreview content={fileContent} mermaidEnabled={mermaidEnabled} />
                 ) : null}
               </div>
             </div>
@@ -728,7 +701,6 @@ function App() {
               onAiPendingChange={setAiPending}
               defaultModel={openAiModel}
               onAiApply={(newContent) => { setAiPrevContent(fileContent); setFileContent(newContent); setAiPending(true); }}
-              enableScrollSync={false}
             />
           )}
         </div>

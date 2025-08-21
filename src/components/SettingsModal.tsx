@@ -66,17 +66,7 @@ export function SettingsModal({ isOpen, onClose, previewLayout, onChangePreviewL
             <div style={{ color: '#888', fontSize: 12, marginTop: 6 }}>Mobile always uses overlay.</div>
           </fieldset>
 
-          <fieldset style={{ border: 'none', padding: 0, margin: 0, marginBottom: 16 }}>
-            <legend style={{ color: '#bbb', marginBottom: 8, fontSize: 13 }}>Editor/Preview scroll sync (desktop split)</legend>
-            <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
-              <input
-                type="checkbox"
-                checked={scrollSync}
-                onChange={(e) => { onChangeScrollSync(e.currentTarget.checked); onPersistSettings?.({ scrollSync: e.currentTarget.checked }); }}
-              />
-              <span>Keep scroll positions linked</span>
-            </label>
-          </fieldset>
+          
 
           <fieldset style={{ border: 'none', padding: 0, margin: 0, marginBottom: 16 }}>
             <legend style={{ color: '#bbb', marginBottom: 8, fontSize: 13 }}>Mermaid diagrams</legend>

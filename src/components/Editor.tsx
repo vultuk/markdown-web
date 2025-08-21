@@ -12,11 +12,6 @@ interface EditorProps {
   fileName: string | null;
   onAiPendingChange?: (pending: boolean) => void;
   defaultModel?: string;
-  // Scroll sync
-  onScrollRatio?: (ratio: number) => void;
-  registerSetScroll?: (fn: (ratio: number) => void) => void;
-  enableScrollSync?: boolean;
-  // AI apply callback
   onAiApply?: (newContent: string) => void;
 }
 
@@ -30,9 +25,6 @@ export function Editor({
   fileName,
   onAiPendingChange,
   defaultModel,
-  onScrollRatio,
-  registerSetScroll,
-  enableScrollSync = false,
   onAiApply,
 }: EditorProps) {
   const [aiEnabled, setAiEnabled] = useState<boolean>(false);
@@ -82,31 +74,7 @@ export function Editor({
     return () => window.removeEventListener('open-ai-modal', handler as EventListener);
   }, []);
 
-  // Scroll sync support
-  const textareaRef = React.useRef<HTMLTextAreaElement | null>(null);
-  const programmaticScrollRef = React.useRef(false);
-  React.useEffect(() => {
-    if (!registerSetScroll) return;
-    const setter = (ratio: number) => {
-      const ta = textareaRef.current;
-      if (!ta) return;
-      const max = ta.scrollHeight - ta.clientHeight;
-      programmaticScrollRef.current = true;
-      ta.scrollTop = Math.max(0, Math.min(max, ratio * max));
-      requestAnimationFrame(() => { programmaticScrollRef.current = false; });
-    };
-    registerSetScroll(setter);
-  }, [registerSetScroll]);
-
-  const onEditorScroll = () => {
-    if (!enableScrollSync || !onScrollRatio) return;
-    if (programmaticScrollRef.current) return;
-    const ta = textareaRef.current;
-    if (!ta) return;
-    const max = ta.scrollHeight - ta.clientHeight;
-    const ratio = max > 0 ? ta.scrollTop / max : 0;
-    onScrollRatio(ratio);
-  };
+  // Scroll sync removed (reverted)
 
   return (
     <div className={styles.editor}>
@@ -120,12 +88,10 @@ export function Editor({
         ) : (
           <textarea
             className={styles.textarea}
-            ref={textareaRef}
             value={content}
             onChange={(e) => onChange(e.target.value)}
             placeholder="Start typing your markdown..."
             spellCheck={false}
-            onScroll={onEditorScroll}
           />
         )}
       </div>

@@ -2,6 +2,36 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.1.1] - 2025-08-21
+
+### Removed
+- **Scroll Sync Feature**: Completely removed scroll synchronization between editor and preview panes
+- **Settings Toggle**: Removed scroll sync toggle from settings modal
+- **Complex State Management**: Eliminated scroll sync state management and event handlers
+
+### Simplified
+- **Editor Component**: Removed scroll sync related props and event handlers
+- **App Component**: Eliminated scroll sync refs, state, and synchronization logic
+- **Settings Modal**: Streamlined interface by removing scroll sync configuration
+
+### Technical Improvements
+- **Code Cleanup**: Removed over 50 lines of complex scroll synchronization code
+- **Performance**: Eliminated scroll event listeners and requestAnimationFrame usage
+- **Maintainability**: Simplified codebase by removing feature that was causing complexity
+- **State Management**: Reduced application state complexity
+
+### User Experience
+- **Simplified Interface**: Cleaner settings modal without experimental features
+- **Focused Experience**: Users can focus on core editing functionality
+- **Reduced Complexity**: Eliminated potential scroll sync conflicts and edge cases
+- **Better Performance**: Removed performance overhead from scroll event handling
+
+### Rationale
+- **Complexity vs Value**: Scroll sync added significant complexity for limited user benefit
+- **Edge Cases**: Feature had potential for conflicts and unexpected behavior
+- **Performance Impact**: Continuous scroll event handling impacted editor responsiveness
+- **User Feedback**: Feature was not widely used and caused confusion
+
 ## [2.1.0] - 2025-08-21
 
 ### Added

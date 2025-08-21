@@ -6,8 +6,9 @@ import { requireAuth, setupAuth } from './auth';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
+const JSON_LIMIT = process.env.JSON_LIMIT || '50mb';
 
-app.use(express.json());
+app.use(express.json({ limit: JSON_LIMIT }));
 
 // Auth endpoints and API protection are configured in startServer()
 
@@ -46,6 +47,7 @@ export async function startServer(workingDirectory: string, options?: { disableA
   const server = app.listen(PORT, () => {
     console.log(`Markdown Web Editor running on http://localhost:${PORT}`);
     console.log(`Working directory: ${workingDirectory}`);
+    console.log(`Request JSON limit: ${JSON_LIMIT}`);
     if (enabled) {
       console.log('Authentication: ENABLED');
       if (password) {

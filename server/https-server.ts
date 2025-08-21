@@ -10,8 +10,9 @@ import { requireAuth, setupAuth } from './auth';
 const app = express();
 const HTTP_PORT = process.env.HTTP_PORT || 80;
 const HTTPS_PORT = process.env.HTTPS_PORT || 443;
+const JSON_LIMIT = process.env.JSON_LIMIT || '50mb';
 
-app.use(express.json());
+app.use(express.json({ limit: JSON_LIMIT }));
 // Auth and API protection are configured in startHttpsServer()
 
 // (Static and catch-all are configured inside startHttpsServer after auth + API)

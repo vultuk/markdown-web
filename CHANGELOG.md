@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.15.2] - 2025-08-21
+
+### Added
+- **Configurable Request Size Limit**: Added `JSON_LIMIT` environment variable support with 50mb default
+- **Request Limit Logging**: Server now displays current JSON limit setting on startup
+
+### Technical Improvements
+- **Environment Configuration**: JSON request body size can now be configured via `JSON_LIMIT` environment variable
+- **Server Flexibility**: Both HTTP and HTTPS servers support configurable request limits
+- **Enhanced Logging**: Added request limit information to server startup messages for better debugging
+
+### Performance
+- **Large File Support**: Configurable limits allow handling larger markdown files and assets
+- **Memory Management**: Administrators can adjust request limits based on system resources
+- **Production Ready**: Default 50mb limit provides generous capacity while preventing abuse
+
 ## [1.15.1] - 2025-08-21
 
 ### Fixed

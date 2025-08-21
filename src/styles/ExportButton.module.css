@@ -86,6 +86,9 @@
 .exportCaret { line-height: 0; display: inline-flex; }
 .exportCaretLabel { display: none; }
 
+/* Desktop: keep caret icon smaller to match text height */
+.exportCaret svg { width: 12px; height: 12px; }
+
 @media (max-width: 768px) {
   .exportButton { padding: 6px; min-width: 34px; justify-content: center; }
   .dropdownToggle { padding: 6px; min-width: 28px; }
@@ -93,4 +96,5 @@
   .exportCaretLabel { display: none; }
   .exportIcon { display: inline-flex; }
   .exportCaret { display: inline-flex; }
+  .exportCaret svg { width: 16px; height: 16px; }
 }

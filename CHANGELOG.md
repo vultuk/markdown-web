@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.6.3] - 2025-08-21
+
+### Enhanced
+- **Responsive Icon Sizing**: Optimized export button dropdown caret icon sizing for better visual hierarchy
+- **Desktop Icon Optimization**: Reduced desktop caret icon size to 12px to better match text height
+- **Mobile Icon Enhancement**: Maintained 16px caret icon size on mobile for optimal touch accessibility
+
+### Technical Improvements
+- **CSS Media Query Refinement**: Added precise desktop/mobile icon sizing rules for export button dropdown
+- **Visual Hierarchy**: Improved text-to-icon proportion on desktop displays
+- **Responsive Design**: Enhanced mobile-first approach with appropriate icon scaling
+
+### User Experience
+- **Better Visual Balance**: Desktop caret icons now proportionally match surrounding text elements
+- **Consistent Mobile Experience**: Preserved larger mobile icons for better touch interaction
+- **Improved Typography**: Enhanced visual harmony between text and iconography
+
 ## [2.6.2] - 2025-08-21
 
 ### Enhanced

@@ -2,6 +2,38 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.2.0] - 2025-08-21
+
+### Enhanced Features
+- **Always-On Mermaid**: Mermaid diagram rendering is now permanently enabled for all users
+- **Improved Mermaid Loading**: Enhanced loading strategy with local assets first, CDN fallback for better reliability
+- **Simplified Settings**: Removed Mermaid configuration toggle for a cleaner, more streamlined settings interface
+
+### New Features
+- **Smart Asset Loading**: Mermaid component now tries local bundled assets before falling back to CDN
+- **Better Performance**: Local asset loading reduces network dependency and improves rendering speed
+- **Zero Configuration**: Mermaid diagrams work out-of-the-box without user configuration
+
+### User Experience
+- **Consistent Mermaid**: All users now have access to Mermaid diagrams without needing to enable a setting
+- **Cleaner Settings Modal**: Removed experimental Mermaid toggle for simpler configuration
+- **Improved Reliability**: Enhanced loading strategy prevents Mermaid loading failures
+
+### Technical Improvements
+- **Dual Loading Strategy**: Local UMD assets with CDN fallback for maximum compatibility
+- **Settings Cleanup**: Removed mermaidEnabled from server settings interface and validation
+- **Code Simplification**: Eliminated conditional Mermaid rendering logic throughout the application
+- **Better Error Handling**: Enhanced error handling for both local and CDN loading scenarios
+
+### Breaking Changes
+- **Mermaid Always Enabled**: Users can no longer disable Mermaid diagram rendering (now permanently enabled)
+- **Settings Interface**: Removed Mermaid toggle from settings modal (affects saved preferences)
+
+### Migration Notes
+- Existing users with Mermaid disabled will now have it automatically enabled
+- Settings files will no longer store mermaidEnabled preferences
+- No action required - all Mermaid diagrams will render automatically
+
 ## [2.1.2] - 2025-08-21
 
 ### Fixed

@@ -15,11 +15,9 @@ interface SettingsModalProps {
   openAiModel: string;
   onChangeOpenAiModel: (model: string) => void;
   onPersistSettings?: (partial: Record<string, unknown>) => void;
-  mermaidEnabled: boolean;
-  onChangeMermaidEnabled: (value: boolean) => void;
 }
 
-export function SettingsModal({ isOpen, onClose, previewLayout, onChangePreviewLayout, sidebarMode, onChangeSidebarMode, openAiModel, onChangeOpenAiModel, onPersistSettings, mermaidEnabled, onChangeMermaidEnabled }: SettingsModalProps) {
+export function SettingsModal({ isOpen, onClose, previewLayout, onChangePreviewLayout, sidebarMode, onChangeSidebarMode, openAiModel, onChangeOpenAiModel, onPersistSettings }: SettingsModalProps) {
   const { availableThemes, selectedTheme, loading, changeTheme } = useTheme();
   useEffect(() => {
     if (!isOpen) return;
@@ -66,17 +64,7 @@ export function SettingsModal({ isOpen, onClose, previewLayout, onChangePreviewL
 
           
 
-          <fieldset style={{ border: 'none', padding: 0, margin: 0, marginBottom: 16 }}>
-            <legend style={{ color: '#bbb', marginBottom: 8, fontSize: 13 }}>Mermaid diagrams</legend>
-            <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
-              <input
-                type="checkbox"
-                checked={mermaidEnabled}
-                onChange={(e) => { onChangeMermaidEnabled(e.currentTarget.checked); onPersistSettings?.({ mermaidEnabled: e.currentTarget.checked }); }}
-              />
-              <span>Render Mermaid code blocks (experimental)</span>
-            </label>
-          </fieldset>
+          
 
           <fieldset style={{ border: 'none', padding: 0, margin: 0, marginBottom: 16 }}>
             <legend style={{ color: '#bbb', marginBottom: 8, fontSize: 13 }}>Preview layout</legend>

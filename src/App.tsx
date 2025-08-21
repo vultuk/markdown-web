@@ -90,9 +90,7 @@ function App() {
       return 'gpt-5-mini';
     }
   });
-  const [mermaidEnabled, setMermaidEnabled] = useState<boolean>(() => {
-    try { const v = localStorage.getItem('mermaidEnabled'); return v ? v === 'true' : false; } catch { return false; }
-  });
+  // Mermaid always enabled
 
   // Load persisted settings from server
   useEffect(() => {
@@ -107,7 +105,7 @@ function App() {
         if (s && (s.sidebarMode === 'overlay' || s.sidebarMode === 'inline')) setSidebarMode(s.sidebarMode);
         if (s && typeof s.openAiModel === 'string') setOpenAiModel(s.openAiModel);
         if (s && typeof s.scrollSync === 'boolean') setScrollSync(s.scrollSync);
-        if (s && typeof s.mermaidEnabled === 'boolean') setMermaidEnabled(s.mermaidEnabled);
+        
       } catch {}
       finally {
         if (!cancelled) setSettingsLoaded(true);
@@ -457,10 +455,7 @@ function App() {
 
   // removed scrollSync persistence
 
-  useEffect(() => {
-    try { localStorage.setItem('mermaidEnabled', String(mermaidEnabled)); } catch {}
-    if (settingsLoaded) queueSettingsUpdate({ mermaidEnabled });
-  }, [mermaidEnabled]);
+  // Mermaid toggle removed (always on)
 
   const flushSettings = useCallback(async () => {
     const payload = pendingSettingsRef.current;
@@ -682,13 +677,13 @@ function App() {
               />
               <div className={styles.pane}>
                 {selectedFile ? (
-                  <MarkdownPreview content={fileContent} mermaidEnabled={mermaidEnabled} />
+                  <MarkdownPreview content={fileContent} />
                 ) : null}
               </div>
             </div>
           ) : isPreviewMode ? (
             // Mobile: show preview full width
-            <MarkdownPreview content={fileContent} mermaidEnabled={mermaidEnabled} />
+            <MarkdownPreview content={fileContent} />
           ) : (
             <Editor
               content={fileContent}
@@ -716,8 +711,7 @@ function App() {
         openAiModel={openAiModel}
         onChangeOpenAiModel={setOpenAiModel}
         onPersistSettings={(partial) => queueSettingsUpdate(partial)}
-        mermaidEnabled={mermaidEnabled}
-        onChangeMermaidEnabled={setMermaidEnabled}
+        
       />
 
       <ConfirmationModal

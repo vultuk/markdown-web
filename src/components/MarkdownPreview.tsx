@@ -16,29 +16,12 @@ import { Mermaid } from './Mermaid';
 
 interface MarkdownPreviewProps {
   content: string;
-  onScrollRatio?: (r: number) => void;
-  registerSetScroll?: (fn: (r: number) => void) => void;
-  enableScrollSync?: boolean;
-  mermaidEnabled?: boolean;
 }
 
-export function MarkdownPreview({ content, onScrollRatio, registerSetScroll, enableScrollSync = false, mermaidEnabled = false }: MarkdownPreviewProps) {
+export function MarkdownPreview({ content }: MarkdownPreviewProps) {
   const contentRef = useRef<HTMLDivElement>(null);
   const { currentTheme, generateCSS } = useTheme();
-  const programmaticScrollRef = useRef(false);
   
-  useEffect(() => {
-    if (!registerSetScroll) return;
-    const setter = (ratio: number) => {
-      const el = contentRef.current;
-      if (!el) return;
-      const max = el.scrollHeight - el.clientHeight;
-      programmaticScrollRef.current = true;
-      el.scrollTop = Math.max(0, Math.min(max, ratio * max));
-      requestAnimationFrame(() => { programmaticScrollRef.current = false; });
-    };
-    registerSetScroll(setter);
-  }, [registerSetScroll]);
 
   useEffect(() => {
     // Create print container on mount and update it when content changes
@@ -177,19 +160,7 @@ export function MarkdownPreview({ content, onScrollRatio, registerSetScroll, ena
   };
 
   return (
-    <div
-      ref={contentRef}
-      className={styles.preview}
-      onScroll={() => {
-        if (!enableScrollSync || !onScrollRatio) return;
-        if (programmaticScrollRef.current) return;
-        const el = contentRef.current;
-        if (!el) return;
-        const max = el.scrollHeight - el.clientHeight;
-        const ratio = max > 0 ? el.scrollTop / max : 0;
-        onScrollRatio(ratio);
-      }}
-    >
+    <div ref={contentRef} className={styles.preview}>
       <ReactMarkdown 
         key={currentTheme?.name || 'default'} 
         remarkPlugins={[remarkGfm]}
@@ -199,11 +170,6 @@ export function MarkdownPreview({ content, onScrollRatio, registerSetScroll, ena
             const match = /language-(\w+)/.exec(className || '');
             const code = String(children || '');
             if (!inline && match && match[1].toLowerCase() === 'mermaid') {
-              if (!mermaidEnabled) {
-                return (
-                  <pre><code className={className}>{children}</code></pre>
-                );
-              }
               const dark = isDarkBackground((currentTheme as any)?.preview?.background);
               return <Mermaid code={code} theme={dark ? 'dark' : 'default'} />;
             }

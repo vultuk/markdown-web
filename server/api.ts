@@ -466,12 +466,7 @@ fileRouter.post('/settings', async (req, res) => {
     if ('openAiModel' in incoming && typeof incoming.openAiModel !== 'string') {
       return res.status(400).json({ error: 'openAiModel must be a string' });
     }
-    if ('scrollSync' in incoming && typeof incoming.scrollSync !== 'boolean') {
-      return res.status(400).json({ error: 'scrollSync must be a boolean' });
-    }
-    if ('mermaidEnabled' in incoming && typeof incoming.mermaidEnabled !== 'boolean') {
-      return res.status(400).json({ error: 'mermaidEnabled must be a boolean' });
-    }
+    // removed handling for scrollSync and mermaidEnabled
 
     const merged = { ...current, ...incoming };
     await themeManager.saveSettings(merged);

@@ -12,12 +12,20 @@ async function main() {
   const providedPassword = authIndex !== -1 ? argv[authIndex + 1] : undefined;
   const openAiIndex = argv.indexOf('--openai-key');
   const openAiKey = openAiIndex !== -1 ? argv[openAiIndex + 1] : undefined;
+  const ngrokTokenIndex = argv.indexOf('--ngrok-auth-token');
+  const ngrokAuthToken = ngrokTokenIndex !== -1 ? argv[ngrokTokenIndex + 1] : undefined;
+  const ngrokDomainIndex = argv.indexOf('--ngrok-domain');
+  const ngrokDomain = ngrokDomainIndex !== -1 ? argv[ngrokDomainIndex + 1] : undefined;
   if (authIndex !== -1 && !providedPassword) {
     console.error('Error: --auth requires a password value');
     process.exit(1);
   }
   if (openAiIndex !== -1 && !openAiKey) {
     console.error('Error: --openai-key requires a value');
+    process.exit(1);
+  }
+  if ((ngrokTokenIndex !== -1 && !ngrokAuthToken) || (ngrokDomainIndex !== -1 && !ngrokDomain)) {
+    console.error('Error: --ngrok-auth-token and --ngrok-domain both require values');
     process.exit(1);
   }
   
@@ -31,8 +39,8 @@ async function main() {
       openaiKey: openAiKey,
     });
     
-    // Open browser after a short delay to ensure server is ready
-    if (shouldOpenBrowser) {
+    // Open browser to local URL only when not using ngrok
+    if (shouldOpenBrowser && !(ngrokAuthToken && ngrokDomain)) {
       setTimeout(async () => {
         try {
           const { default: open } = await import('open');
@@ -45,24 +53,50 @@ async function main() {
       }, 1000);
     } else {
       console.log('Server running on http://localhost:3001');
-      console.log('(Browser auto-opening disabled)');
+      if (!shouldOpenBrowser) console.log('(Browser auto-opening disabled)');
     }
     
+    let ngrokListener = null;
+    // Start ngrok tunnel if both token and domain provided
+    if (ngrokAuthToken && ngrokDomain) {
+      try {
+        const ngrok = await import('@ngrok/ngrok');
+        // Some environments require explicit authtoken setup
+        try { await ngrok.authtoken(ngrokAuthToken); } catch {}
+        const addr = 3001; // local server port
+        ngrokListener = await ngrok.connect({ addr, authtoken: ngrokAuthToken, domain: ngrokDomain });
+        const url = typeof ngrokListener?.url === 'function' ? ngrokListener.url() : (ngrokListener?.url || ngrokListener?.toString?.() || '');
+        console.log(`ngrok tunnel established: ${url || '(URL unavailable)'}`);
+        if (shouldOpenBrowser && url) {
+          try {
+            const { default: open } = await import('open');
+            await open(url);
+          } catch {}
+        }
+      } catch (e) {
+        console.warn('Failed to start ngrok tunnel:', e?.message || e);
+      }
+    }
+
     // Handle graceful shutdown
     process.on('SIGINT', () => {
       console.log('\nShutting down gracefully...');
-      server.close(() => {
-        console.log('Server closed');
-        process.exit(0);
-      });
+      const closeServer = () => server.close(() => { console.log('Server closed'); process.exit(0); });
+      if (ngrokListener && typeof ngrokListener.close === 'function') {
+        try { ngrokListener.close().then(closeServer).catch(closeServer); } catch { closeServer(); }
+      } else {
+        closeServer();
+      }
     });
     
     process.on('SIGTERM', () => {
       console.log('\nShutting down gracefully...');
-      server.close(() => {
-        console.log('Server closed');
-        process.exit(0);
-      });
+      const closeServer = () => server.close(() => { console.log('Server closed'); process.exit(0); });
+      if (ngrokListener && typeof ngrokListener.close === 'function') {
+        try { ngrokListener.close().then(closeServer).catch(closeServer); } catch { closeServer(); }
+      } else {
+        closeServer();
+      }
     });
     
   } catch (error) {

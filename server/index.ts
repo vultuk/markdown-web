@@ -12,12 +12,7 @@ app.use(express.json());
 // Auth endpoints and API protection are configured in startServer()
 
 // Serve static files from the React app build directory
-app.use(express.static(path.join(__dirname, './client')));
-
-// Catch all handler for React Router
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, './client/index.html'));
-});
+// (Static and catch-all are configured inside startServer after auth + API)
 
 export async function startServer(workingDirectory: string, options?: { disableAuth?: boolean; password?: string }) {
   // Set the working directory for file operations

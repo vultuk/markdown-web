@@ -5,6 +5,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.12.3] - 2025-08-20
+
+### Fixed
+- **Authentication Cookie Handling**: Added `credentials: 'same-origin'` to all API fetch requests for consistent authentication
+- **Server Route Organization**: Moved static file serving configuration inside server functions for better control flow
+- **API Credential Consistency**: Ensured all endpoints (files, themes, settings, CRUD operations) properly send credentials
+
+### Technical Improvements
+- **Comprehensive API Coverage**: Updated all client-side fetch requests to include proper credential handling
+- **File Operations**: Fixed authentication for create/delete file and directory operations
+- **Theme System**: Enhanced credential handling for theme loading and saving operations
+- **Settings Management**: Improved credential handling for settings API calls
+
+### Authentication Enhancements
+- **Consistent Cookie Support**: All API calls now properly send authentication cookies
+- **Session Reliability**: Improved session handling across all application features
+- **Better Server Organization**: Cleaner separation of concerns in server configuration
+
 ## [1.12.2] - 2025-08-20
 
 ### Fixed
@@ -473,6 +491,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Clean, responsive interface
 - GitHub Flavored Markdown support
 
+[1.12.3]: https://github.com/vultuk/markdown-web/compare/v1.12.2...v1.12.3
 [1.12.2]: https://github.com/vultuk/markdown-web/compare/v1.12.1...v1.12.2
 [1.12.1]: https://github.com/vultuk/markdown-web/compare/v1.12.0...v1.12.1
 [1.12.0]: https://github.com/vultuk/markdown-web/compare/v1.11.0...v1.12.0

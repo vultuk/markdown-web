@@ -88,7 +88,7 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
   useEffect(() => {
     const loadThemes = async () => {
       try {
-        const response = await fetch('/api/themes');
+        const response = await fetch('/api/themes', { credentials: 'same-origin' });
         if (response.ok) {
           const themeNames = await response.json();
           
@@ -96,7 +96,7 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
           const themes: ThemeOption[] = [];
           for (const name of themeNames) {
             try {
-              const themeResponse = await fetch(`/api/themes/${name}`);
+              const themeResponse = await fetch(`/api/themes/${name}`, { credentials: 'same-origin' });
               if (themeResponse.ok) {
                 const theme = await themeResponse.json();
                 themes.push({
@@ -123,7 +123,7 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
   useEffect(() => {
     const loadSettings = async () => {
       try {
-        const response = await fetch('/api/settings');
+        const response = await fetch('/api/settings', { credentials: 'same-origin' });
         if (response.ok) {
           const settings = await response.json();
           setSelectedTheme(settings.selectedTheme);
@@ -144,7 +144,7 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
       if (!selectedTheme) return;
       
       try {
-        const response = await fetch(`/api/themes/${selectedTheme}`);
+        const response = await fetch(`/api/themes/${selectedTheme}`, { credentials: 'same-origin' });
         if (response.ok) {
           const theme = await response.json();
           setCurrentTheme(theme);
@@ -163,6 +163,7 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
       const response = await fetch('/api/settings', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
         body: JSON.stringify({ selectedTheme: themeName }),
       });
 

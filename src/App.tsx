@@ -89,6 +89,7 @@ function App() {
     const response = await fetch(`/api/files/${filePath}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'same-origin',
       body: JSON.stringify({ content }),
     });
     
@@ -106,7 +107,7 @@ function App() {
 
   const loadFiles = useCallback(async () => {
     try {
-      const response = await fetch('/api/files');
+      const response = await fetch('/api/files', { credentials: 'same-origin' });
       const data = await response.json();
       setFiles(data);
     } catch (error) {
@@ -116,7 +117,7 @@ function App() {
 
   const loadFileContent = useCallback(async (filePath: string): Promise<boolean> => {
     try {
-      const response = await fetch(`/api/files/${filePath}`);
+      const response = await fetch(`/api/files/${filePath}`, { credentials: 'same-origin' });
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`);
       }
@@ -155,6 +156,7 @@ function App() {
       const response = await fetch('/api/create-file', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
         body: JSON.stringify({ fileName: fullPath }),
       });
       
@@ -180,6 +182,7 @@ function App() {
       const response = await fetch('/api/create-directory', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
         body: JSON.stringify({ dirName: fullPath }),
       });
       
@@ -205,6 +208,7 @@ function App() {
         try {
           const response = await fetch(`/api/files/${encodeURIComponent(filePath)}`, {
             method: 'DELETE',
+            credentials: 'same-origin',
           });
           
           if (response.ok) {
@@ -239,6 +243,7 @@ function App() {
         try {
           const response = await fetch(`/api/directories/${encodeURIComponent(dirPath)}`, {
             method: 'DELETE',
+            credentials: 'same-origin',
           });
           
           if (response.ok) {
@@ -268,6 +273,7 @@ function App() {
       const response = await fetch('/api/rename', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
+        credentials: 'same-origin',
         body: JSON.stringify({ oldPath, newPath }),
       });
       if (!response.ok) {

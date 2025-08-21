@@ -14,13 +14,7 @@ const HTTPS_PORT = process.env.HTTPS_PORT || 443;
 app.use(express.json());
 // Auth and API protection are configured in startHttpsServer()
 
-// Serve static files from the React app build directory
-app.use(express.static(path.join(__dirname, './client')));
-
-// Catch all handler for React Router
-app.get('*', (req, res) => {
-  res.sendFile(path.join(__dirname, './client/index.html'));
-});
+// (Static and catch-all are configured inside startHttpsServer after auth + API)
 
 // HTTP to HTTPS redirect middleware
 function redirectToHttps(req: express.Request, res: express.Response, next: express.NextFunction) {

@@ -1,5 +1,4 @@
 import React, { useEffect, useRef } from 'react';
-import mermaid from 'mermaid';
 
 interface MermaidProps {
   code: string;
@@ -14,8 +13,10 @@ export function Mermaid({ code, theme }: MermaidProps) {
     let cancelled = false;
     const render = async () => {
       try {
-        mermaid.initialize({ startOnLoad: false, securityLevel: 'strict', theme });
-        const { svg } = await mermaid.render(idRef.current, code);
+        const mod = await import('mermaid');
+        const m: any = (mod as any).default || mod;
+        m.initialize({ startOnLoad: false, securityLevel: 'strict', theme });
+        const { svg } = await m.render(idRef.current, code);
         if (!cancelled && containerRef.current) {
           containerRef.current.innerHTML = svg;
         }
@@ -33,4 +34,3 @@ export function Mermaid({ code, theme }: MermaidProps) {
 
   return <div ref={containerRef} aria-label="Mermaid diagram" />;
 }
-

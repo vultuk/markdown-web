@@ -4,6 +4,7 @@ import { Editor } from './components/Editor';
 import { MarkdownPreview } from './components/MarkdownPreview';
 import { Header } from './components/Header';
 import { ConfirmationModal } from './components/ConfirmationModal';
+import { SettingsModal, PreviewLayout } from './components/SettingsModal';
 import { useAutoSave } from './hooks/useAutoSave';
 import styles from './styles/App.module.css';
 import { Toast } from './components/Toast';
@@ -56,6 +57,15 @@ function App() {
   });
   const mainRef = useRef<HTMLDivElement | null>(null);
   const [toast, setToast] = useState<{ message: string; type?: 'info' | 'error' | 'success' } | null>(null);
+  const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
+  const [previewLayout, setPreviewLayout] = useState<PreviewLayout>(() => {
+    try {
+      const v = localStorage.getItem('previewLayout');
+      return (v === 'split' || v === 'full') ? (v as PreviewLayout) : 'full';
+    } catch {
+      return 'full';
+    }
+  });
 
   const showToast = useCallback((message: string, type: 'info' | 'error' | 'success' = 'info') => {
     setToast({ message, type });
@@ -369,6 +379,12 @@ function App() {
     } catch {}
   }, [isPreviewMode]);
 
+  useEffect(() => {
+    try {
+      localStorage.setItem('previewLayout', previewLayout);
+    } catch {}
+  }, [previewLayout]);
+
   // Handle drag-to-resize events
   useEffect(() => {
     if (!isResizing) return;
@@ -502,6 +518,7 @@ function App() {
               onDeleteDirectory={handleDeleteDirectory}
               selectedFile={selectedFile}
               onRenamePath={handleRenamePath}
+              onOpenSettings={() => setSettingsOpen(true)}
             />
           </div>
           <div 
@@ -514,7 +531,7 @@ function App() {
           </>
         )}
         <div className={styles.main}>
-          {(isPreviewMode && !isMobile) ? (
+          {(isPreviewMode && !isMobile && previewLayout === 'split') ? (
             <div className={styles.splitMain} ref={mainRef}>
               <div className={styles.pane} style={{ width: splitWidth, flex: '0 0 auto' }}>
                 <Editor
@@ -557,6 +574,13 @@ function App() {
         </div>
       </div>
       
+      <SettingsModal
+        isOpen={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
+        previewLayout={previewLayout}
+        onChangePreviewLayout={setPreviewLayout}
+      />
+
       <ConfirmationModal
         isOpen={confirmModal.isOpen}
         title={confirmModal.title}

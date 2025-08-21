@@ -17,6 +17,7 @@ interface FileExplorerProps {
   onDeleteDirectory: (dirPath: string) => void;
   selectedFile: string | null;
   onRenamePath: (oldPath: string, newPath: string) => Promise<boolean>;
+  onOpenSettings?: () => void;
 }
 
 export function FileExplorer({ 
@@ -27,7 +28,8 @@ export function FileExplorer({
   onDeleteFile,
   onDeleteDirectory,
   selectedFile,
-  onRenamePath
+  onRenamePath,
+  onOpenSettings
 }: FileExplorerProps) {
   const [expandedDirs, setExpandedDirs] = useState<Set<string>>(new Set());
   const [showCreateFile, setShowCreateFile] = useState<string | null>(null);
@@ -281,6 +283,17 @@ export function FileExplorer({
 
       <div className={styles.fileList}>
         {files.map(file => renderFileItem(file))}
+      </div>
+
+      <div className={styles.footer}>
+        <button 
+          className={styles.settingsButton}
+          onClick={() => onOpenSettings && onOpenSettings()}
+          title="Settings"
+          aria-label="Open settings"
+        >
+          ⚙️
+        </button>
       </div>
     </div>
   );

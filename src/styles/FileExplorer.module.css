@@ -155,6 +155,28 @@
   overflow-y: auto;
 }
 
+.footer {
+  border-top: 1px solid #3e3e42;
+  background-color: #2d2d30;
+  padding: 8px 12px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.settingsButton {
+  background: none;
+  border: 1px solid #3e3e42;
+  color: #cccccc;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+.settingsButton:hover {
+  background-color: #3e3e42;
+}
+
 @media (max-width: 768px) {
   .header {
     padding: 10px 12px;

@@ -5,6 +5,32 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.13.0] - 2025-08-21
+
+### Added
+- **Settings Modal**: New settings interface with configurable preview layout options
+- **Preview Layout Configuration**: Choose between "Full area" or "Resizable split" preview modes
+- **Settings Button**: Added settings button to file explorer footer for easy access
+- **Layout Persistence**: Preview layout preference is saved and restored across sessions
+
+### New Features
+- **Flexible Preview Display**: Configure how preview mode displays content (full area vs split view)
+- **User Preferences**: Centralized settings modal for application configuration
+- **Accessible Settings**: Settings modal with proper keyboard navigation and ARIA support
+- **Visual Settings UI**: Clean, modal-based settings interface with radio button selections
+
+### Technical Improvements
+- **Settings Modal Component**: New `SettingsModal` component with TypeScript definitions
+- **Preview Layout State**: New state management for `PreviewLayout` type (`'full' | 'split'`)
+- **localStorage Integration**: Automatic persistence of preview layout preferences
+- **Conditional Rendering**: Split-view now only renders when layout is set to 'split'
+
+### User Experience
+- **Customizable Workflow**: Users can choose their preferred preview layout
+- **Persistent Preferences**: Settings are remembered between browser sessions
+- **Easy Access**: Settings accessible via dedicated button in file explorer
+- **Keyboard Support**: Settings modal supports Escape key to close
+
 ## [1.12.6] - 2025-08-21
 
 ### Fixed

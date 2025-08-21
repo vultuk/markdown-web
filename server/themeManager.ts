@@ -54,6 +54,7 @@ export interface Settings {
   previewLayout?: 'full' | 'split';
   sidebarMode?: 'overlay' | 'inline';
   openAiModel?: string;
+  scrollSync?: boolean;
 }
 
 export class ThemeManager {
@@ -120,11 +121,11 @@ export class ThemeManager {
       const settingsData = await fs.readFile(this.settingsFile, 'utf-8');
       const parsed = JSON.parse(settingsData);
       // Fill defaults for any missing keys to keep behavior consistent
-      const defaults: Settings = { selectedTheme: 'dark', previewLayout: 'full', sidebarMode: 'overlay', openAiModel: 'gpt-5-mini' };
+      const defaults: Settings = { selectedTheme: 'dark', previewLayout: 'full', sidebarMode: 'overlay', openAiModel: 'gpt-5-mini', scrollSync: true };
       return { ...defaults, ...parsed };
     } catch (error) {
       // Return default settings if file doesn't exist
-      return { selectedTheme: 'dark', previewLayout: 'full', sidebarMode: 'overlay', openAiModel: 'gpt-5-mini' };
+      return { selectedTheme: 'dark', previewLayout: 'full', sidebarMode: 'overlay', openAiModel: 'gpt-5-mini', scrollSync: true };
     }
   }
 
@@ -157,7 +158,7 @@ export class ThemeManager {
       await fs.access(this.settingsFile);
     } catch {
       // File doesn't exist, create it
-      const defaultSettings: Settings = { selectedTheme: 'dark', previewLayout: 'full', sidebarMode: 'overlay', openAiModel: 'gpt-5-mini' };
+      const defaultSettings: Settings = { selectedTheme: 'dark', previewLayout: 'full', sidebarMode: 'overlay', openAiModel: 'gpt-5-mini', scrollSync: true };
       await fs.writeFile(this.settingsFile, JSON.stringify(defaultSettings, null, 2));
     }
   }

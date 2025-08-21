@@ -289,7 +289,7 @@ fileRouter.post('/ai/apply', async (req, res) => {
       return res.status(400).json({ error: 'OpenAI key not configured' });
     }
 
-    const { prompt, content, path: relPath } = req.body || {} as { prompt?: string; content?: string; path?: string };
+    const { prompt, content, path: relPath, model: overrideModel } = req.body || {} as { prompt?: string; content?: string; path?: string; model?: string };
     if (typeof prompt !== 'string' || typeof content !== 'string') {
       return res.status(400).json({ error: 'prompt and content are required' });
     }
@@ -302,6 +302,11 @@ fileRouter.post('/ai/apply', async (req, res) => {
         model = settings.openAiModel;
       }
     } catch {}
+    // Allow one-off override if provided and valid
+    const allowed = new Set(['gpt-5', 'gpt-5-mini', 'gpt-5-nano']);
+    if (overrideModel && allowed.has(overrideModel)) {
+      model = overrideModel;
+    }
 
     const instruction = 'You are a precise markdown editor. Apply the user\'s requested changes to the provided markdown and return ONLY the full updated markdown. Do not include any explanation, code fences, or pre/post text — only the final markdown document.';
     const input = `${instruction}\n\nCurrent Markdown:\n\n---BEGIN---\n${content}\n---END---\n\nInstructions:\n${prompt}\n\nReturn only the updated markdown.`;
@@ -460,6 +465,9 @@ fileRouter.post('/settings', async (req, res) => {
     }
     if ('openAiModel' in incoming && typeof incoming.openAiModel !== 'string') {
       return res.status(400).json({ error: 'openAiModel must be a string' });
+    }
+    if ('scrollSync' in incoming && typeof incoming.scrollSync !== 'boolean') {
+      return res.status(400).json({ error: 'scrollSync must be a boolean' });
     }
 
     const merged = { ...current, ...incoming };

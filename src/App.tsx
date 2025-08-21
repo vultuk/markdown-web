@@ -62,6 +62,21 @@ function App() {
   const openAiModal = () => {
     try { window.dispatchEvent(new CustomEvent('open-ai-modal')); } catch {}
   };
+  // Scroll sync refs
+  const setEditorScrollRef = useRef<(r: number) => void>(() => {});
+  const setPreviewScrollRef = useRef<(r: number) => void>(() => {});
+  const [scrollSync, setScrollSync] = useState<boolean>(() => {
+    try { const v = localStorage.getItem('scrollSync'); return v ? v === 'true' : true; } catch { return true; }
+  });
+  const canSync = (isPreviewMode && !isMobile && previewLayout === 'split' && scrollSync);
+  const handleEditorScrollRatio = (r: number) => {
+    if (!canSync) return;
+    setPreviewScrollRef.current && setPreviewScrollRef.current(r);
+  };
+  const handlePreviewScrollRatio = (r: number) => {
+    if (!canSync) return;
+    setEditorScrollRef.current && setEditorScrollRef.current(r);
+  };
   const pendingSettingsRef = useRef<Record<string, unknown>>({});
   const settingsTimerRef = useRef<number | null>(null);
   const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
@@ -102,6 +117,7 @@ function App() {
         if (s && (s.previewLayout === 'full' || s.previewLayout === 'split')) setPreviewLayout(s.previewLayout);
         if (s && (s.sidebarMode === 'overlay' || s.sidebarMode === 'inline')) setSidebarMode(s.sidebarMode);
         if (s && typeof s.openAiModel === 'string') setOpenAiModel(s.openAiModel);
+        if (s && typeof s.scrollSync === 'boolean') setScrollSync(s.scrollSync);
       } catch {}
       finally {
         if (!cancelled) setSettingsLoaded(true);
@@ -449,6 +465,11 @@ function App() {
     if (settingsLoaded) queueSettingsUpdate({ openAiModel });
   }, [openAiModel]);
 
+  useEffect(() => {
+    try { localStorage.setItem('scrollSync', String(scrollSync)); } catch {}
+    if (settingsLoaded) queueSettingsUpdate({ scrollSync });
+  }, [scrollSync]);
+
   const flushSettings = useCallback(async () => {
     const payload = pendingSettingsRef.current;
     pendingSettingsRef.current = {};
@@ -650,7 +671,11 @@ function App() {
                   onManualSave={saveNow}
                   fileName={selectedFile}
                   onAiPendingChange={setAiPending}
+                  defaultModel={openAiModel}
                   onAiApply={(newContent) => { setAiPrevContent(fileContent); setFileContent(newContent); setAiPending(true); }}
+                  enableScrollSync={canSync}
+                  onScrollRatio={handleEditorScrollRatio}
+                  registerSetScroll={(fn) => { setEditorScrollRef.current = fn; }}
                 />
               </div>
               <div
@@ -668,7 +693,12 @@ function App() {
               />
               <div className={styles.pane}>
                 {selectedFile ? (
-                  <MarkdownPreview content={fileContent} />
+                  <MarkdownPreview
+                    content={fileContent}
+                    enableScrollSync={canSync}
+                    onScrollRatio={handlePreviewScrollRatio}
+                    registerSetScroll={(fn) => { setPreviewScrollRef.current = fn; }}
+                  />
                 ) : null}
               </div>
             </div>
@@ -685,7 +715,9 @@ function App() {
               onManualSave={saveNow}
               fileName={selectedFile}
               onAiPendingChange={setAiPending}
+              defaultModel={openAiModel}
               onAiApply={(newContent) => { setAiPrevContent(fileContent); setFileContent(newContent); setAiPending(true); }}
+              enableScrollSync={false}
             />
           )}
         </div>
@@ -701,6 +733,8 @@ function App() {
         openAiModel={openAiModel}
         onChangeOpenAiModel={setOpenAiModel}
         onPersistSettings={(partial) => queueSettingsUpdate(partial)}
+        scrollSync={scrollSync}
+        onChangeScrollSync={setScrollSync}
       />
 
       <ConfirmationModal

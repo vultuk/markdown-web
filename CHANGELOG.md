@@ -5,6 +5,47 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.20.0] - 2025-08-21
+
+### Added
+- **Scroll Synchronization**: Advanced scroll sync between editor and preview panes in split-view mode
+- **AI Model Selection**: Enhanced AI interface with model selection dropdown (gpt-5, gpt-5-mini, gpt-5-nano)
+- **Configurable Scroll Sync**: New setting to enable/disable scroll synchronization between editor and preview
+- **Enhanced AI Controls**: Model selection and improved AI workflow with better state management
+
+### New Features
+- **Bidirectional Scroll Sync**: Editor and preview scroll positions stay synchronized in split-view mode
+- **Persistent Scroll Settings**: Scroll sync preference is saved and restored across sessions
+- **AI Model Choice**: Users can select their preferred OpenAI model for AI-powered editing
+- **Smart Scroll Detection**: Automatic detection of programmatic vs user-initiated scrolling
+- **Enhanced AI Modal**: Improved AI modal with model selection and better visual design
+
+### Technical Improvements
+- **Advanced Scroll Logic**: Sophisticated scroll ratio calculation and synchronization system
+- **Model Persistence**: AI model selection persisted in localStorage and server settings
+- **State Management**: Enhanced state management for scroll sync and AI model preferences
+- **Scroll Event Handling**: Optimized scroll event handling with programmatic scroll detection
+- **Settings Integration**: Full integration of scroll sync settings with existing settings system
+
+### User Experience
+- **Synchronized Editing**: Keep track of content position while switching between editor and preview
+- **Flexible AI Models**: Choose the right AI model for different tasks and performance needs
+- **Smooth Scrolling**: Seamless scroll synchronization without jarring jumps or conflicts
+- **Persistent Preferences**: All scroll and AI settings remembered between sessions
+- **Enhanced Workflow**: Better editing experience with coordinated editor and preview navigation
+
+### Settings Enhancements
+- **Scroll Sync Toggle**: New checkbox in settings modal to control scroll synchronization
+- **AI Model Setting**: Persistent AI model selection with dropdown interface
+- **Desktop-Specific**: Scroll sync only available in desktop split-view mode for optimal experience
+- **Settings Persistence**: All new settings automatically saved to server and localStorage
+
+### Performance Improvements
+- **Optimized Scroll Events**: Efficient scroll event handling with minimal performance impact
+- **Smart Updates**: Programmatic scroll detection prevents infinite scroll loops
+- **Responsive Design**: Scroll sync gracefully disabled on mobile devices
+- **Memory Efficient**: Proper cleanup of scroll event listeners and refs
+
 ## [1.19.0] - 2025-08-21
 
 ### Added

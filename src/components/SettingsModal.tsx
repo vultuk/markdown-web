@@ -15,9 +15,11 @@ interface SettingsModalProps {
   openAiModel: string;
   onChangeOpenAiModel: (model: string) => void;
   onPersistSettings?: (partial: Record<string, unknown>) => void;
+  scrollSync: boolean;
+  onChangeScrollSync: (value: boolean) => void;
 }
 
-export function SettingsModal({ isOpen, onClose, previewLayout, onChangePreviewLayout, sidebarMode, onChangeSidebarMode, openAiModel, onChangeOpenAiModel, onPersistSettings }: SettingsModalProps) {
+export function SettingsModal({ isOpen, onClose, previewLayout, onChangePreviewLayout, sidebarMode, onChangeSidebarMode, openAiModel, onChangeOpenAiModel, onPersistSettings, scrollSync, onChangeScrollSync }: SettingsModalProps) {
   const { availableThemes, selectedTheme, loading, changeTheme } = useTheme();
   useEffect(() => {
     if (!isOpen) return;
@@ -60,6 +62,18 @@ export function SettingsModal({ isOpen, onClose, previewLayout, onChangePreviewL
               <span>Inline (resizes content)</span>
             </label>
             <div style={{ color: '#888', fontSize: 12, marginTop: 6 }}>Mobile always uses overlay.</div>
+          </fieldset>
+
+          <fieldset style={{ border: 'none', padding: 0, margin: 0, marginBottom: 16 }}>
+            <legend style={{ color: '#bbb', marginBottom: 8, fontSize: 13 }}>Editor/Preview scroll sync (desktop split)</legend>
+            <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer' }}>
+              <input
+                type="checkbox"
+                checked={scrollSync}
+                onChange={(e) => { onChangeScrollSync(e.currentTarget.checked); onPersistSettings?.({ scrollSync: e.currentTarget.checked }); }}
+              />
+              <span>Keep scroll positions linked</span>
+            </label>
           </fieldset>
 
           <fieldset style={{ border: 'none', padding: 0, margin: 0, marginBottom: 16 }}>

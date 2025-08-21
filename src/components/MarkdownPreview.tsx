@@ -142,7 +142,7 @@ export function MarkdownPreview({ content }: MarkdownPreviewProps) {
       <ReactMarkdown 
         key={currentTheme?.name || 'default'} 
         remarkPlugins={[remarkGfm]}
-        rehypePlugins={[rehypeHighlight]}
+        rehypePlugins={[[rehypeHighlight, { ignoreMissing: true, detect: true }]]}
         components={{
           a: ({ node, ...props }) => (
             <a {...props} target="_blank" rel="noopener noreferrer" />

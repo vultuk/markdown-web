@@ -1,6 +1,6 @@
 {
   "name": "markdown-web",
-  "version": "1.18.0",
+  "version": "1.18.1",
   "description": "A modern, browser-based markdown editor that you can run in any directory. Edit .md files with live preview, auto-save, and a VS Code-inspired interface.",
   "main": "dist/server/index.js",
   "bin": {

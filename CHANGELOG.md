@@ -5,6 +5,23 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.18.1] - 2025-08-21
+
+### Fixed
+- **Enhanced Syntax Highlighting**: Added `ignoreMissing: true` and `detect: true` options to rehype-highlight plugin
+- **Improved Language Detection**: Automatic language detection for code blocks without explicit language specification
+- **Error Prevention**: Prevents errors when encountering unsupported or unknown programming languages in code blocks
+
+### Technical Improvements
+- **Robust Code Highlighting**: More resilient syntax highlighting that gracefully handles edge cases
+- **Better Language Support**: Enhanced support for detecting and highlighting various programming languages
+- **Error Handling**: Improved error handling for syntax highlighting edge cases
+
+### User Experience
+- **Reliable Code Display**: Code blocks now render consistently without breaking on unknown languages
+- **Automatic Detection**: Better automatic language detection for unlabeled code blocks
+- **Smoother Experience**: Eliminates potential rendering errors in technical documentation
+
 ## [1.18.0] - 2025-08-21
 
 ### Added

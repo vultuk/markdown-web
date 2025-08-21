@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.12.4] - 2025-08-20
+
+### Added
+- **Preview Mode Persistence**: Preview mode preference is now remembered across browser sessions
+- **localStorage Integration**: Preview mode setting is automatically saved and restored
+
+### Improved
+- **Better User Experience**: Users no longer need to re-enable preview mode after refreshing or reopening the app
+- **Consistent State Management**: Preview mode state properly initialized from localStorage on app startup
+- **Cleaner Navigation**: Removed unnecessary preview mode resets during file navigation
+
+### Technical Improvements
+- **State Persistence**: Added localStorage-based state management for preview mode preference
+- **Safe Error Handling**: Graceful fallbacks for localStorage access failures
+- **Optimized Initialization**: Preview mode state loaded efficiently during component initialization
+
 ## [1.12.3] - 2025-08-20
 
 ### Fixed
@@ -491,6 +507,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Clean, responsive interface
 - GitHub Flavored Markdown support
 
+[1.12.4]: https://github.com/vultuk/markdown-web/compare/v1.12.3...v1.12.4
 [1.12.3]: https://github.com/vultuk/markdown-web/compare/v1.12.2...v1.12.3
 [1.12.2]: https://github.com/vultuk/markdown-web/compare/v1.12.1...v1.12.2
 [1.12.1]: https://github.com/vultuk/markdown-web/compare/v1.12.0...v1.12.1

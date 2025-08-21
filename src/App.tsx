@@ -19,7 +19,14 @@ function App() {
   const [files, setFiles] = useState<FileItem[]>([]);
   const [selectedFile, setSelectedFile] = useState<string | null>(null);
   const [fileContent, setFileContent] = useState<string>('');
-  const [isPreviewMode, setIsPreviewMode] = useState<boolean>(false);
+  const [isPreviewMode, setIsPreviewMode] = useState<boolean>(() => {
+    try {
+      const stored = localStorage.getItem('previewMode');
+      return stored ? stored === 'true' : false;
+    } catch {
+      return false;
+    }
+  });
   const [isSidebarOpen, setIsSidebarOpen] = useState<boolean>(true);
   const MIN_SIDEBAR_WIDTH = 200;
   const MAX_SIDEBAR_WIDTH = 600;
@@ -355,6 +362,13 @@ function App() {
     } catch {}
   }, [splitWidth]);
 
+  // Persist preview mode preference
+  useEffect(() => {
+    try {
+      localStorage.setItem('previewMode', String(isPreviewMode));
+    } catch {}
+  }, [isPreviewMode]);
+
   // Handle drag-to-resize events
   useEffect(() => {
     if (!isResizing) return;
@@ -404,10 +418,8 @@ function App() {
         const ok = await loadFileContent(filePath);
         if (ok) {
           setSelectedFile(filePath);
-          setIsPreviewMode(false);
         } else {
           setSelectedFile(null);
-          setIsPreviewMode(false);
           setFileContent('');
           updateURL(null);
           showToast('Could not open file from URL. Returning to home.', 'error');
@@ -425,10 +437,8 @@ function App() {
         const ok = await loadFileContent(filePath);
         if (ok) {
           setSelectedFile(filePath);
-          setIsPreviewMode(false);
         } else {
           setSelectedFile(null);
-          setIsPreviewMode(false);
           setFileContent('');
           updateURL(null);
           showToast('Could not open file. Returning to home.', 'error');
@@ -436,7 +446,6 @@ function App() {
       } else if (!filePath && selectedFile) {
         setSelectedFile(null);
         setFileContent('');
-        setIsPreviewMode(false);
       }
     };
 

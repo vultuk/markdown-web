@@ -4,20 +4,23 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 
-A modern, browser-based markdown editor that you can run in any directory. Edit `.md` files with live preview, auto-save, and a VS Code-inspired interface.
+A modern, browser‑based Markdown editor you can run in any directory. Edit `.md` files with live preview, autosave, Git integration, and an optional AI assistant powered by OpenAI or Anthropic.
 
 ## ✨ Features
 
-- 📁 **File Explorer** - Browse and organize all `.md` files in your directory
-- ✏️ **Rich Text Editor** - Clean, distraction-free editing experience
-- 👁️ **Live Preview** - Toggle between edit and rendered markdown views
-- 💾 **Auto-save** - Files saved automatically (5 seconds after editing)
-- ⌨️ **Keyboard Shortcuts** - `Ctrl+S` / `Cmd+S` for instant save
-- 🔗 **URL Navigation** - Bookmarkable links to specific files
-- 📊 **Status Bar** - Word count, character count, and line count
-- 🎨 **VS Code Theme** - Dark theme with familiar interface
-- 🍔 **Collapsible Sidebar** - More space for writing when needed
-- 📂 **Directory Creation** - Create files and folders within subdirectories
+- 📁 File Explorer: Browse, create, rename, delete, and drag‑and‑drop files/folders
+- 🖱️ Context Menus: Right‑click actions; mobile double‑tap to open the menu
+- 🔀 Git Integration: Repo detection, color‑coded status, stage/add, commit (with message), push, and clone
+- ✨ AI Assistant: Ask/Adjust modes; selection‑aware; OpenAI and Anthropic models; per‑file cost tracking
+- 🔍 Selection Highlight: Keeps the selected range highlighted while the AI modal is open
+- 👁️ Live Preview: Toggle or split view; GFM + syntax highlighting
+- 💾 Autosave: Saves after you pause typing; manual save with Ctrl/Cmd+S
+- 📊 Status Bar: Words, lines, characters, and cumulative AI cost per file
+- 🧭 Deep Links: Direct URL to any file (`#/path/to/file.md`) with browser back/forward support
+- 📤 Export: Download Markdown or export to PDF (styled by your theme)
+- 🎨 Themes: VS Code‑inspired dark theme; pluggable theme system
+- 📱 Responsive UI: Mobile‑friendly header icons and status layout
+- 🌐 ngrok Support: Optional public URL via reserved domain when flags are provided
 
 ## 🚀 Quick Start
 
@@ -32,11 +35,14 @@ npm install -g markdown-web
 markdown-web
 ```
 
-### Options
+### CLI Options
 
-- `--no-open` — Don't open browser automatically (useful for servers)
-- `--disable-auth` — Disable password protection (not recommended)
-- `--auth <password>` — Use a specific password instead of a random one
+- `--no-open`: Do not open the browser automatically
+- `--disable-auth`: Disable password protection (not recommended)
+- `--auth <password>`: Use a specific password instead of a random one
+- `--openai-key <key>`: Provide an OpenAI API key via CLI (alternative to Settings)
+- `--ngrok-auth-token <token>`: ngrok Authtoken (enables public tunnel when used with domain)
+- `--ngrok-domain <domain>`: Reserved ngrok domain (e.g. `yourname.ngrok.app`)
 
 ```bash
 # Do not auto-open browser
@@ -47,6 +53,11 @@ npx markdown-web --auth "S3cure-Long-Password!"
 
 # Disable auth entirely (local trusted environments only)
 npx markdown-web --disable-auth
+
+# Start with a public ngrok URL (requires reserved domain)
+npx markdown-web \
+  --ngrok-auth-token YOUR_TOKEN \
+  --ngrok-domain yourname.ngrok.app
 ```
 
 ## 📖 Usage
@@ -62,7 +73,15 @@ npx markdown-web --disable-auth
   - A strong random password is generated and printed in your terminal when the server starts.
   - You can supply your own with `--auth <password>`, or disable auth with `--disable-auth`.
 - Sessions are stored in a secure, HttpOnly cookie and last 24 hours.
-- For best security, use HTTPS in untrusted networks (see below).
+- For best security, use HTTPS in untrusted networks (see below) or run behind an ngrok reserved domain.
+
+### Settings
+- Open Settings from the gear icon in the sidebar footer.
+- Settings persist to `~/.markdown-web/settings.json` and include:
+  - `selectedTheme`, `previewLayout` (full/split), `sidebarMode` (overlay/inline)
+  - `openAiKey`, `anthropicKey` (store keys locally on your machine)
+  - `defaultModel`, `defaultModelProvider` (OpenAI or Anthropic)
+- You can also pass `--openai-key` to the CLI, or set env vars `OPENAI_KEY`/`ANTHROPIC_API_KEY`.
 
 ### URL Navigation
 - Direct file links: `http://localhost:3001/#/path/to/file.md`
@@ -74,6 +93,37 @@ npx markdown-web --disable-auth
 - `Ctrl+S` / `Cmd+S` - Save immediately
 - Toggle preview with header button
 - Use hamburger menu to hide/show sidebar
+
+## 🤖 AI Assistant
+
+- Modes:
+  - **Adjust**: Apply requested edits to the document (or just the selected text)
+  - **Ask**: Ask questions about the current document; answer is read‑only (rendered Markdown)
+- Selection‑aware: If text is selected, both Ask/Adjust operate only on that selection
+- Selection highlight: Your selection stays highlighted while the AI modal is open
+- Models in dropdown (only shown if you added the relevant key):
+  - OpenAI: **GPT‑5**, **GPT‑5 Mini**, **GPT‑5 Nano**
+  - Anthropic: **Claude Sonnet 4** (`claude-sonnet-4-0`), **Claude Opus 4.1** (`claude-opus-4-1`)
+- Costs: Token costs are computed per request and accumulated per file; the Status Bar shows totals
+
+Pricing (per 1K tokens; override via env if desired):
+- OpenAI: GPT‑5 $0.00125 in / $0.01000 out; GPT‑5 Mini $0.00025 in / $0.00200 out; GPT‑5 Nano $0.00005 in / $0.00040 out
+- Anthropic: Claude Opus 4.1 $15 in / $75 out; Claude Sonnet 4 $3 in / $15 out
+
+Implementation notes:
+- OpenAI via the `openai` SDK; Anthropic via `@anthropic-ai/sdk`
+- Per‑file cost logs are stored at `~/.markdown-web/logs/<file>/ai.json`
+
+## 🧩 Git Integration
+
+- Repos are auto‑detected; repo folders show a Git badge
+- Colors: repo red (unstaged), yellow (staged); files green (untracked), yellow (modified), red (deleted)
+- Right‑click (desktop) / double‑tap (mobile) context menus:
+  - File: Add to Git / Stage changes; Rename; Delete
+  - Repo folder: Commit… (title + message), Push; New File/Folder; Rename; Delete
+- Clone repositories: Right‑click root or a folder → Clone Repository…
+- Drag‑and‑drop: Move files/folders; target folders auto‑expand on hover
+- Expanded folders persist when closing the overlay sidebar
 
 ## 🛠️ Development
 
@@ -108,16 +158,16 @@ npm run typecheck
 - No external network access required
 - Password authentication is enabled by default; disable with `--disable-auth` or set with `--auth <password>`
 - Browser sessions are protected with HttpOnly, SameSite=Strict cookies
-- Use HTTPS (`npm run start:https`) to protect credentials in transit
+- Use HTTPS to protect credentials in transit (see `SSL_SETUP.md` and scripts under `scripts/`)
+- Be cautious when exposing publicly (e.g. with ngrok) — enable auth and prefer HTTPS
 
 ## 🏗️ Tech Stack
 
-- **Frontend**: React 18 with TypeScript
-- **Backend**: Express.js with Node.js
-- **Build Tool**: Vite 5
-- **Markdown Rendering**: react-markdown with remark-gfm
-- **Styling**: CSS Modules with VS Code-inspired dark theme
-- **File Operations**: Node.js fs/promises API
+- Frontend: React 18, TypeScript, Vite
+- Markdown: react‑markdown + remark‑gfm; syntax highlighting
+- Backend: Node.js + Express
+- AI: `openai` SDK and `@anthropic-ai/sdk`
+- Tunnel: `@ngrok/ngrok` (optional)
 
 ## 🤝 Contributing
 
@@ -127,17 +177,17 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed guidelines.
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+MIT — see [LICENSE](LICENSE)
+
+## 📊 Project Status
+
+- ✅ Stable and production‑ready
+- 🔄 Actively maintained
+- 🐛 Bug reports welcome
+- 💡 Feature requests encouraged
 
 ## 🙏 Acknowledgments
 
 - Inspired by VS Code's interface design
 - Built with modern web technologies
 - Thanks to the React and Node.js communities
-
-## 📊 Project Status
-
-- ✅ **Stable**: Ready for production use
-- 🔄 **Actively maintained**: Regular updates and improvements
-- 🐛 **Bug reports welcome**: Please open issues for any problems
-- 💡 **Feature requests**: Open to suggestions and improvements

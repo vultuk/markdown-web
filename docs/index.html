@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Markdown Web Editor</title>
+    <meta name="description" content="A modern, browser‑based Markdown editor with live preview, Git integration, and an optional AI assistant powered by OpenAI and Anthropic." />
+    <meta property="og:title" content="Markdown Web Editor" />
+    <meta property="og:description" content="A modern, browser‑based Markdown editor with live preview, Git integration, and an optional AI assistant powered by OpenAI and Anthropic." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://vultuk.github.io/markdown-web/" />
+    <link rel="stylesheet" href="styles.css" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  </head>
+  <body>
+    <header class="site-header">
+      <div class="container header-inner">
+        <a class="brand" href="#top">Markdown Web Editor</a>
+        <nav class="nav">
+          <a href="#features">Features</a>
+          <a href="#ai">AI Assistant</a>
+          <a href="#git">Git</a>
+          <a href="#usage">Install</a>
+          <a class="btn btn-ghost" href="https://github.com/vultuk/markdown-web" target="_blank" rel="noopener noreferrer">GitHub ↗</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="top">
+      <section class="hero">
+        <div class="container hero-inner">
+          <div class="hero-copy">
+            <h1>Edit Markdown. Locally. Beautifully.</h1>
+            <p class="lead">
+              A fast, browser‑based Markdown editor you can run in any folder — with live preview, autosave, Git integration, and an optional AI assistant (OpenAI + Anthropic).
+            </p>
+            <div class="cta">
+              <div class="code">
+                <code>npx markdown-web</code>
+                <button class="copy" data-copy="npx markdown-web" aria-label="Copy command">Copy</button>
+              </div>
+              <div class="cta-links">
+                <a class="btn" href="https://www.npmjs.com/package/markdown-web" target="_blank" rel="noopener noreferrer">View on npm</a>
+                <a class="btn btn-ghost" href="https://github.com/vultuk/markdown-web" target="_blank" rel="noopener noreferrer">GitHub</a>
+              </div>
+            </div>
+            <ul class="badges">
+              <li>⚡ Live Preview</li>
+              <li>🧠 AI Ask + Adjust</li>
+              <li>🔀 Git‑aware</li>
+              <li>🌐 Optional ngrok</li>
+            </ul>
+          </div>
+          <div class="hero-card" aria-hidden="true">
+            <div class="card-header">README.md</div>
+            <div class="card-body">
+              <pre><code># Hello, Markdown
+
+Write on the left, see your changes on the right.
+
+- Live Preview
+- Autosave
+- AI Ask/Adjust
+- Git Integration
+              </code></pre>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="features" class="section">
+        <div class="container">
+          <h2>Features</h2>
+          <div class="grid">
+            <div class="card feature">
+              <div class="icon">📁</div>
+              <h3>Explorer</h3>
+              <p>Browse, create, rename, delete, and drag‑and‑drop files and folders with a clean, VS Code‑inspired UI.</p>
+            </div>
+            <div class="card feature">
+              <div class="icon">👁️</div>
+              <h3>Live Preview</h3>
+              <p>GFM rendering with syntax highlighting. Toggle preview or use a resizable split view.</p>
+            </div>
+            <div class="card feature">
+              <div class="icon">💾</div>
+              <h3>Autosave</h3>
+              <p>Automatic save after you pause typing. Manual save with <kbd>Ctrl/Cmd</kbd>+<kbd>S</kbd>.</p>
+            </div>
+            <div class="card feature">
+              <div class="icon">🖱️</div>
+              <h3>Context Menus</h3>
+              <p>Right‑click on desktop or double‑tap on mobile for quick file and folder actions.</p>
+            </div>
+            <div class="card feature">
+              <div class="icon">🧭</div>
+              <h3>Deep Links</h3>
+              <p>Open files directly via URL (e.g. <code>#/docs/readme.md</code>) and use browser back/forward.</p>
+            </div>
+            <div class="card feature">
+              <div class="icon">📤</div>
+              <h3>Export</h3>
+              <p>Download the current file as Markdown or export a theme‑styled PDF in one click.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="ai" class="section alt">
+        <div class="container">
+          <h2>AI Assistant</h2>
+          <div class="grid two">
+            <div>
+              <h3>Ask & Adjust</h3>
+              <p>
+                Ask questions about your document or describe changes to apply. Both modes respect text selection — if you’ve highlighted text, the AI operates only on that range.
+              </p>
+              <ul class="list">
+                <li>Models: OpenAI (GPT‑5, Mini, Nano) and Anthropic (Claude Sonnet 4, Opus 4.1)</li>
+                <li>Selection‑aware and non‑destructive Ask mode</li>
+                <li>Per‑file cost tracking and running totals</li>
+              </ul>
+            </div>
+            <div class="card code-card">
+              <div class="card-header">Quick Start</div>
+              <div class="card-body">
+                <pre><code># Open Settings → paste your API keys
+# Choose a Default Model (only providers with keys appear)
+
+# Use the ✨ AI button in the header
+# Ask: Get a read‑only answer (markdown rendered)
+# Adjust: Applies AI edits to your doc (or selection)
+                </code></pre>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="git" class="section">
+        <div class="container">
+          <h2>Git Integration</h2>
+          <div class="grid two">
+            <div class="card feature">
+              <div class="icon">🔀</div>
+              <h3>Status Colors</h3>
+              <p>Repos are auto‑detected. Folders show red (unstaged) or yellow (staged). Files show green (untracked), yellow (modified), red (deleted).</p>
+            </div>
+            <div class="card feature">
+              <div class="icon">✅</div>
+              <h3>Stage & Commit</h3>
+              <p>Stage new/changed/deleted files and commit with a title and optional message. Push with one click.</p>
+            </div>
+          </div>
+          <div class="grid two">
+            <div class="card feature">
+              <div class="icon">📥</div>
+              <h3>Clone</h3>
+              <p>Right‑click the root (or a folder) → Clone Repository… Paste a URL and you’re set.</p>
+            </div>
+            <div class="card feature">
+              <div class="icon">📂</div>
+              <h3>Drag & Drop</h3>
+              <p>Move files/folders between directories; targets auto‑expand on hover. Expanded folders persist.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="usage" class="section alt">
+        <div class="container">
+          <h2>Install & Run</h2>
+          <div class="grid two">
+            <div>
+              <h3>One‑liner</h3>
+              <div class="code">
+                <code>npx markdown-web</code>
+                <button class="copy" data-copy="npx markdown-web" aria-label="Copy command">Copy</button>
+              </div>
+              <p class="hint">By default, a strong random password is generated on startup.</p>
+              <h3>Common Flags</h3>
+              <ul class="list">
+                <li><code>--auth &lt;password&gt;</code> set a custom password</li>
+                <li><code>--disable-auth</code> disable authentication (local only)</li>
+                <li><code>--openai-key &lt;key&gt;</code> provide an OpenAI key via CLI</li>
+                <li><code>--ngrok-auth-token &lt;token&gt;</code> and <code>--ngrok-domain &lt;domain&gt;</code> to expose via ngrok</li>
+              </ul>
+            </div>
+            <div>
+              <h3>Settings</h3>
+              <p>Open the Settings (gear icon) to configure:</p>
+              <ul class="list">
+                <li>Theme, Preview layout, Sidebar mode</li>
+                <li>OpenAI / Anthropic API keys (stored locally)</li>
+                <li>Default Model and Provider</li>
+              </ul>
+              <p class="hint">Settings persist to <code>~/.markdown-web/settings.json</code>.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="site-footer">
+      <div class="container footer-inner">
+        <div>
+          <div class="brand">Markdown Web Editor</div>
+          <div class="muted">MIT © <a href="https://github.com/vultuk">Vultuk</a></div>
+        </div>
+        <div class="footer-links">
+          <a href="https://github.com/vultuk/markdown-web" target="_blank" rel="noopener noreferrer">GitHub</a>
+          <a href="https://www.npmjs.com/package/markdown-web" target="_blank" rel="noopener noreferrer">npm</a>
+          <a href="../README.md" target="_blank" rel="noopener noreferrer">README</a>
+        </div>
+      </div>
+    </footer>
+
+    <script src="script.js"></script>
+  </body>
+  </html>
+

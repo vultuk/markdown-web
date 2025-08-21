@@ -225,6 +225,14 @@
   font-size: 14px;
 }
 
+.gitBadge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 6px;
+  /* inherits current text color for theme consistency */
+}
+
 .renameInput {
   width: 100%;
   padding: 4px 6px;

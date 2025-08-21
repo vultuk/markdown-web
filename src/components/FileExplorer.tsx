@@ -6,6 +6,7 @@ interface FileItem {
   type: 'file' | 'directory';
   path: string;
   children?: FileItem[];
+  isGitRepo?: boolean;
 }
 
 interface FileExplorerProps {
@@ -18,6 +19,8 @@ interface FileExplorerProps {
   selectedFile: string | null;
   onRenamePath: (oldPath: string, newPath: string) => Promise<boolean>;
   onOpenSettings?: () => void;
+  expandedDirs?: string[];
+  onExpandedChange?: (paths: string[]) => void;
 }
 
 export function FileExplorer({ 
@@ -29,9 +32,16 @@ export function FileExplorer({
   onDeleteDirectory,
   selectedFile,
   onRenamePath,
-  onOpenSettings
+  onOpenSettings,
+  expandedDirs: expandedDirsProp,
+  onExpandedChange,
 }: FileExplorerProps) {
-  const [expandedDirs, setExpandedDirs] = useState<Set<string>>(new Set());
+  const [expandedDirsSet, setExpandedDirsSet] = useState<Set<string>>(() => new Set(expandedDirsProp || []));
+  React.useEffect(() => {
+    if (expandedDirsProp) {
+      setExpandedDirsSet(new Set(expandedDirsProp));
+    }
+  }, [expandedDirsProp]);
   const [showCreateFile, setShowCreateFile] = useState<string | null>(null);
   const [showCreateDir, setShowCreateDir] = useState<string | null>(null);
   const [newFileName, setNewFileName] = useState('');
@@ -45,13 +55,14 @@ export function FileExplorer({
   const isAncestor = (parent: string, child: string) => child.startsWith(parent + '/');
 
   const toggleDirectory = (path: string) => {
-    const newExpanded = new Set(expandedDirs);
+    const newExpanded = new Set(expandedDirsSet);
     if (newExpanded.has(path)) {
       newExpanded.delete(path);
     } else {
       newExpanded.add(path);
     }
-    setExpandedDirs(newExpanded);
+    setExpandedDirsSet(newExpanded);
+    onExpandedChange?.(Array.from(newExpanded));
   };
 
   const handleCreateFile = (directory?: string) => {
@@ -72,7 +83,7 @@ export function FileExplorer({
   };
 
   const renderFileItem = (item: FileItem, level = 0) => {
-    const isExpanded = expandedDirs.has(item.path);
+    const isExpanded = expandedDirsSet.has(item.path);
     const isSelected = selectedFile === item.path;
     const isRenaming = renamingPath === item.path;
 
@@ -131,8 +142,8 @@ export function FileExplorer({
                   try { e.dataTransfer.dropEffect = 'move'; } catch {}
                   setDragOverDir(item.path);
                   // auto-expand on hover
-                  if (!expandedDirs.has(item.path)) {
-                    const next = new Set(expandedDirs); next.add(item.path); setExpandedDirs(next);
+                  if (!expandedDirsSet.has(item.path)) {
+                    const next = new Set(expandedDirsSet); next.add(item.path); setExpandedDirsSet(next); onExpandedChange?.(Array.from(next));
                   }
                 }}
                 onDragLeave={() => {
@@ -155,6 +166,13 @@ export function FileExplorer({
                 <span className={styles.icon}>
                   {isExpanded ? '📂' : '📁'}
                 </span>
+                {item.isGitRepo ? (
+                  <span className={styles.gitBadge} title="Git repository" aria-label="Git repository" aria-hidden>
+                    <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M12 2a10 10 0 0 0-3.16 19.49c.5.09.68-.22.68-.48v-1.7c-2.78.6-3.37-1.19-3.37-1.19-.46-1.17-1.12-1.48-1.12-1.48-.91-.63.07-.62.07-.62 1 .07 1.53 1.03 1.53 1.03.9 1.52 2.36 1.08 2.94.83.09-.65.35-1.09.63-1.34-2.22-.25-4.56-1.11-4.56-4.94 0-1.09.39-1.99 1.03-2.69-.1-.25-.45-1.27.1-2.65 0 0 .84-.27 2.75 1.02a9.56 9.56 0 0 1 5 0c1.9-1.29 2.74-1.02 2.74-1.02.56 1.38.21 2.4.1 2.65.64.7 1.02 1.6 1.02 2.69 0 3.84-2.34 4.68-4.57 4.93.36.31.68.92.68 1.86v2.76c0 .27.18.58.69.48A10 10 0 0 0 12 2z"/>
+                    </svg>
+                  </span>
+                ) : null}
                 {isRenaming ? (
                   <input
                     className={styles.renameInput}

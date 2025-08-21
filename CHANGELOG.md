@@ -2,6 +2,38 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.8.0] - 2025-08-21
+
+### Added
+- **Git Repository Detection**: Automatic detection of Git repositories in the file explorer
+- **Git Repository Badges**: Visual Git badge indicators for folders that contain Git repositories
+- **Enhanced Directory State Management**: Improved directory expansion state persistence and synchronization
+- **Smart Git Icons**: Professional SVG Git icon badges displayed next to repository folders
+
+### New Features
+- **Automatic Git Detection**: Server-side detection of `.git` directories to identify repositories
+- **Visual Repository Indicators**: Clean Git SVG badge icons shown alongside repository folder names
+- **Repository Identification**: Easy visual identification of which folders are Git repositories
+- **Theme-Aware Git Badges**: Git badges adapt to current theme colors for consistent styling
+
+### Technical Improvements
+- **Backend Git Detection**: Added `isGitRepo` flag to directory API responses with proper Git folder detection
+- **Enhanced File Explorer State**: Improved directory expansion state management with better prop synchronization
+- **SVG Icon Integration**: Professional Git logo SVG integrated into file explorer with proper accessibility
+- **State Persistence**: Enhanced directory expansion state handling with proper external control
+
+### User Experience
+- **Developer-Friendly**: Instant visual identification of Git repositories in project file trees
+- **Better Project Navigation**: Easier to distinguish between regular folders and Git repositories
+- **Clean Visual Design**: Subtle but clear Git badges that don't interfere with normal file browsing
+- **Accessibility Support**: Git badges include proper ARIA labels and accessibility attributes
+
+### Developer Experience
+- **Repository Awareness**: File explorer now provides Git context for better development workflow
+- **Visual Project Structure**: Clear visual hierarchy showing Git repositories alongside regular folders
+- **Theme Integration**: Git badges respect current theme colors and styling
+- **Performance Optimized**: Efficient Git detection that doesn't slow down file tree loading
+
 ## [2.7.1] - 2025-08-21
 
 ### Fixed

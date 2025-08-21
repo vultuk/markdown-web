@@ -14,6 +14,7 @@ interface FileItem {
   type: 'file' | 'directory';
   path: string;
   children?: FileItem[];
+  isGitRepo?: boolean;
 }
 
 function App() {
@@ -69,6 +70,7 @@ function App() {
   const [toast, setToast] = useState<{ message: string; type?: 'info' | 'error' | 'success' } | null>(null);
   const [aiPending, setAiPending] = useState<boolean>(false);
   const [aiPrevContent, setAiPrevContent] = useState<string | null>(null);
+  const [expandedDirs, setExpandedDirs] = useState<string[]>([]);
   const openAiModal = () => {
     try { window.dispatchEvent(new CustomEvent('open-ai-modal')); } catch {}
   };
@@ -642,6 +644,8 @@ function App() {
               selectedFile={selectedFile}
               onRenamePath={handleRenamePath}
               onOpenSettings={() => setSettingsOpen(true)}
+              expandedDirs={expandedDirs}
+              onExpandedChange={setExpandedDirs}
             />
           </div>
           {(sidebarMode === 'inline' && !isMobile) && (

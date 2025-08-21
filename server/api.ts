@@ -571,11 +571,18 @@ async function getDirectoryContents(dirPath: string): Promise<any[]> {
     
     if (item.isDirectory()) {
       const children = await getDirectoryContents(itemPath);
+      // Detect if this folder is a Git repository (contains a .git directory)
+      let isGitRepo = false;
+      try {
+        const gitStat = await fs.stat(path.join(itemPath, '.git'));
+        isGitRepo = gitStat.isDirectory();
+      } catch {}
       result.push({
         name: item.name,
         type: 'directory',
         path: relativePath,
-        children: children
+        children: children,
+        isGitRepo,
       });
     } else if (item.name.endsWith('.md')) {
       result.push({

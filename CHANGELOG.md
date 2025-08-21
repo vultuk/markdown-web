@@ -5,6 +5,42 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.17.0] - 2025-08-21
+
+### Added
+- **AI Cost Tracking**: Comprehensive tracking of OpenAI API usage costs and token consumption
+- **Usage Analytics**: Detailed logging of AI operations with token usage, costs, and timestamps
+- **Cost Display**: Real-time cost information shown in editor and status bar for transparency
+- **Accept/Revert Controls**: New UI controls to accept or revert AI-generated changes before auto-saving
+- **Per-File Cost History**: Individual cost tracking for each file with persistent logging
+
+### New Features
+- **Cost Estimation**: Automatic cost calculation based on token usage and model pricing
+- **Usage Badges**: Visual indicators showing cost and token usage for each AI operation
+- **Cost API Endpoint**: New `/api/ai/cost` endpoint to retrieve cumulative costs per file
+- **Smart Auto-Save**: Auto-save pauses during AI operations to prevent conflicts
+- **Cost Persistence**: AI usage logs stored in `~/.markdown-web/logs/` with per-file organization
+
+### Technical Improvements
+- **Enhanced AI API**: Extended AI endpoint with cost tracking, usage logging, and path-based organization
+- **Configurable Pricing**: Support for custom pricing via `OPENAI_PRICING` environment variable
+- **Usage Logging**: Comprehensive logging system with timestamps, model info, and usage metrics
+- **State Management**: Enhanced state management for AI pending operations and cost tracking
+- **File-Based Logging**: Per-file logging system with safe encoding and error handling
+
+### User Experience
+- **Cost Transparency**: Users can see exactly how much each AI operation costs
+- **Better Control**: Accept/revert buttons provide more control over AI changes
+- **Usage Insights**: Status bar shows cumulative AI costs for each file
+- **Visual Feedback**: Clear indicators for AI costs and token usage
+- **Non-Disruptive**: Auto-save intelligently pauses during AI operations
+
+### API Enhancements
+- **Extended AI Apply**: `/api/ai/apply` now returns usage statistics and cost information
+- **Cost Retrieval**: New `/api/ai/cost` endpoint for retrieving per-file cost summaries
+- **Usage Metadata**: Comprehensive usage tracking with input/output token counts
+- **Pricing Flexibility**: Configurable pricing models with environment variable support
+
 ## [1.16.2] - 2025-08-21
 
 ### Improved

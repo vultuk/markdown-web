@@ -5,9 +5,10 @@ interface UseAutoSaveProps {
   filePath: string | null;
   onSave: (content: string, filePath: string) => Promise<void>;
   delay?: number;
+  paused?: boolean;
 }
 
-export function useAutoSave({ content, filePath, onSave, delay = 15000 }: UseAutoSaveProps) {
+export function useAutoSave({ content, filePath, onSave, delay = 15000, paused = false }: UseAutoSaveProps) {
   const [isSaving, setIsSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<string>('');
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -43,6 +44,13 @@ export function useAutoSave({ content, filePath, onSave, delay = 15000 }: UseAut
   };
 
   useEffect(() => {
+    if (paused) {
+      // Clear any pending timers while paused
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+      return;
+    }
     if (!filePath || content === lastSaved) {
       return;
     }
@@ -70,7 +78,7 @@ export function useAutoSave({ content, filePath, onSave, delay = 15000 }: UseAut
         clearTimeout(timeoutRef.current);
       }
     };
-  }, [content, filePath, lastSaved, onSave, delay]);
+  }, [content, filePath, lastSaved, onSave, delay, paused]);
 
   return { isSaving, hasUnsavedChanges: content !== lastSaved, saveNow };
 }

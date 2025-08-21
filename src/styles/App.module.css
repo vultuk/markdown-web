@@ -14,7 +14,7 @@ body {
 .app {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 100dvh; /* use dynamic viewport to avoid mobile chrome/toolbars issues */
   width: 100vw;
 }
 
@@ -52,7 +52,7 @@ body {
   position: fixed;
   top: 48px; /* header height */
   left: 0;
-  height: calc(100vh - 48px);
+  height: calc(100dvh - 48px);
   width: 360px;
   z-index: 200;
   box-shadow: 2px 0 8px rgba(0,0,0,0.4);
@@ -84,14 +84,14 @@ body {
 @media (max-width: 768px) {
   .app {
     width: 100vw;
-    height: 100vh;
+    height: 100dvh;
   }
 
   .sidebar {
     position: fixed;
     top: 48px; /* header height */
     left: 0;
-    height: calc(100vh - 48px);
+    height: calc(100dvh - 48px);
     width: 80vw;
     max-width: 360px;
     z-index: 200;

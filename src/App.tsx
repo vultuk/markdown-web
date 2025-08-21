@@ -57,6 +57,7 @@ function App() {
   });
   const mainRef = useRef<HTMLDivElement | null>(null);
   const [toast, setToast] = useState<{ message: string; type?: 'info' | 'error' | 'success' } | null>(null);
+  const [aiPending, setAiPending] = useState<boolean>(false);
   const pendingSettingsRef = useRef<Record<string, unknown>>({});
   const settingsTimerRef = useRef<number | null>(null);
   const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
@@ -158,6 +159,7 @@ function App() {
     filePath: selectedFile,
     onSave: saveFile,
     delay: 5000,
+    paused: aiPending,
   });
 
   const loadFiles = useCallback(async () => {
@@ -639,6 +641,7 @@ function App() {
                   hasUnsavedChanges={hasUnsavedChanges}
                   onManualSave={saveNow}
                   fileName={selectedFile}
+                  onAiPendingChange={setAiPending}
                 />
               </div>
               <div
@@ -672,6 +675,7 @@ function App() {
               hasUnsavedChanges={hasUnsavedChanges}
               onManualSave={saveNow}
               fileName={selectedFile}
+              onAiPendingChange={setAiPending}
             />
           )}
         </div>

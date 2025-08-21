@@ -10,6 +10,7 @@ interface EditorProps {
   hasUnsavedChanges: boolean;
   onManualSave: () => Promise<void>;
   fileName: string | null;
+  onAiPendingChange?: (pending: boolean) => void;
 }
 
 export function Editor({ 
@@ -19,13 +20,16 @@ export function Editor({
   isSaving, 
   hasUnsavedChanges,
   onManualSave,
-  fileName 
+  fileName,
+  onAiPendingChange,
 }: EditorProps) {
   const [aiEnabled, setAiEnabled] = useState<boolean>(false);
   const [aiOpen, setAiOpen] = useState<boolean>(false);
   const [prompt, setPrompt] = useState<string>('');
   const [aiLoading, setAiLoading] = useState<boolean>(false);
   const [prevContent, setPrevContent] = useState<string | null>(null);
+  const [lastCost, setLastCost] = useState<number | null>(null);
+  const [lastTokens, setLastTokens] = useState<{ inputTokens: number; outputTokens: number; totalTokens: number } | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -115,7 +119,7 @@ export function Editor({
                       method: 'POST',
                       headers: { 'Content-Type': 'application/json' },
                       credentials: 'same-origin',
-                      body: JSON.stringify({ prompt: p, content }),
+                      body: JSON.stringify({ prompt: p, content, path: fileName || '' }),
                     });
                     if (!res.ok) {
                       let msg = 'AI request failed';
@@ -134,8 +138,13 @@ export function Editor({
                       return;
                     }
                     setPrevContent(content);
+                    onAiPendingChange?.(true);
                     onChange(data.content);
-                    setAiOpen(false);
+                    if (typeof data.costUsd === 'number') setLastCost(data.costUsd);
+                    if (data.usage && typeof data.usage.totalTokens === 'number') setLastTokens(data.usage);
+                    // Notify cost updated for this file
+                    try { window.dispatchEvent(new CustomEvent('ai-cost-updated', { detail: { path: fileName || '' } })); } catch {}
+                    // keep modal open to show cost
                     setPrompt('');
                   } catch (e) {
                     alert('AI request failed');
@@ -157,16 +166,37 @@ export function Editor({
           </div>
         </div>
       )}
+      {aiEnabled && aiOpen && lastTokens && (
+        <div className={styles.aiCostBadge} title={`Input: ${lastTokens.inputTokens}, Output: ${lastTokens.outputTokens}, Total: ${lastTokens.totalTokens}`}>
+          {lastCost !== null ? `$${lastCost.toFixed(4)}` : `${lastTokens.totalTokens} tok`}
+        </div>
+      )}
       {prevContent !== null && (
         <button
           className={styles.revertButton}
           onClick={() => {
             onChange(prevContent);
             setPrevContent(null);
+            onAiPendingChange?.(false);
           }}
           title="Revert AI changes"
         >
           Revert
+        </button>
+      )}
+      {prevContent !== null && (
+        <button
+          className={styles.acceptButton}
+          onClick={async () => {
+            try {
+              await onManualSave();
+            } catch {}
+            setPrevContent(null);
+            onAiPendingChange?.(false);
+          }}
+          title="Accept AI changes"
+        >
+          Accept
         </button>
       )}
       <StatusBar content={content} fileName={fileName} />

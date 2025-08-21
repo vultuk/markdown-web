@@ -1,6 +1,7 @@
 import express from 'express';
 import fs from 'fs/promises';
 import path from 'path';
+import os from 'os';
 import { ThemeManager } from './themeManager';
 import OpenAI from 'openai';
 
@@ -288,7 +289,7 @@ fileRouter.post('/ai/apply', async (req, res) => {
       return res.status(400).json({ error: 'OpenAI key not configured' });
     }
 
-    const { prompt, content } = req.body || {};
+    const { prompt, content, path: relPath } = req.body || {} as { prompt?: string; content?: string; path?: string };
     if (typeof prompt !== 'string' || typeof content !== 'string') {
       return res.status(400).json({ error: 'prompt and content are required' });
     }
@@ -332,13 +333,87 @@ fileRouter.post('/ai/apply', async (req, res) => {
         updated = pieces.join('');
       } catch {}
     }
+    const usage = (data as any)?.usage || {};
+    const inputTokens = Number(usage.input_tokens || usage.prompt_tokens || 0);
+    const outputTokens = Number(usage.output_tokens || usage.completion_tokens || 0);
+    const totalTokens = Number(usage.total_tokens || inputTokens + outputTokens);
+
+    // Estimate cost if pricing is known; allow override via env OPENAI_PRICING JSON
+    const defaultPricing: Record<string, { input: number; output: number }> = {
+      'gpt-5': { input: 0.01, output: 0.03 },
+      'gpt-5-mini': { input: 0.005, output: 0.015 },
+      'gpt-5-nano': { input: 0.002, output: 0.006 },
+    };
+    let pricing = defaultPricing;
+    try {
+      if (process.env.OPENAI_PRICING) {
+        pricing = JSON.parse(process.env.OPENAI_PRICING);
+      }
+    } catch {}
+    const rate = pricing[model];
+    const costUsd = rate ? ((inputTokens / 1000) * rate.input + (outputTokens / 1000) * rate.output) : null;
+
     if (typeof updated !== 'string' || !updated.trim()) {
       return res.status(502).json({ error: 'Invalid response from OpenAI' });
     }
-    return res.json({ content: updated });
+    // Attempt to write a log entry if a path was provided
+    try {
+      const home = os.homedir();
+      const logsRoot = path.join(home, '.markdown-web', 'logs');
+      const safeFolder = encodeURIComponent(String(relPath || 'untitled'));
+      const logDir = path.join(logsRoot, safeFolder);
+      const logPath = path.join(logDir, 'ai.json');
+      await fs.mkdir(logDir, { recursive: true });
+      let arr: any[] = [];
+      try {
+        const existing = await fs.readFile(logPath, 'utf-8');
+        arr = JSON.parse(existing);
+        if (!Array.isArray(arr)) arr = [];
+      } catch {}
+      const entry = {
+        ts: new Date().toISOString(),
+        model,
+        prompt: String(prompt).slice(0, 4000),
+        usage: { inputTokens, outputTokens, totalTokens },
+        costUsd,
+      };
+      arr.push(entry);
+      await fs.writeFile(logPath, JSON.stringify(arr, null, 2));
+    } catch (e) {
+      // best-effort logging only
+    }
+
+    return res.json({ content: updated, usage: { inputTokens, outputTokens, totalTokens }, model, costUsd });
   } catch (error) {
     console.error('AI apply failed:', error);
     return res.status(500).json({ error: 'AI apply failed' });
+  }
+});
+
+// Get cumulative AI cost for a file
+fileRouter.get('/ai/cost', async (req, res) => {
+  try {
+    const relPath = String(req.query.path || '');
+    if (!relPath) return res.json({ totalCostUsd: 0, entries: 0 });
+    const home = os.homedir();
+    const logsRoot = path.join(home, '.markdown-web', 'logs');
+    const safeFolder = encodeURIComponent(relPath);
+    const logPath = path.join(logsRoot, safeFolder, 'ai.json');
+    let total = 0;
+    let entries = 0;
+    try {
+      const data = await fs.readFile(logPath, 'utf-8');
+      const arr = JSON.parse(data);
+      if (Array.isArray(arr)) {
+        for (const it of arr) {
+          if (typeof it?.costUsd === 'number') total += it.costUsd;
+        }
+        entries = arr.length;
+      }
+    } catch {}
+    return res.json({ totalCostUsd: total, entries });
+  } catch (e) {
+    return res.status(500).json({ error: 'Failed to read AI cost' });
   }
 });
 

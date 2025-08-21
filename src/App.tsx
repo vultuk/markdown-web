@@ -111,7 +111,7 @@ function App() {
   }, []);
 
   const saveFile = useCallback(async (content: string, filePath: string) => {
-    const response = await fetch(`/api/files/${filePath}`, {
+    const response = await fetch(`/api/files/${encodeURIComponent(filePath)}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'same-origin',
@@ -142,7 +142,7 @@ function App() {
 
   const loadFileContent = useCallback(async (filePath: string): Promise<boolean> => {
     try {
-      const response = await fetch(`/api/files/${filePath}`, { credentials: 'same-origin' });
+      const response = await fetch(`/api/files/${encodeURIComponent(filePath)}`, { credentials: 'same-origin' });
       if (!response.ok) {
         throw new Error(`HTTP ${response.status}`);
       }
@@ -171,7 +171,7 @@ function App() {
       return;
     }
     setSelectedFile(filePath);
-    setIsPreviewMode(false);
+    // Keep current preview mode as-is
     // Close sidebar if overlay (desktop) or on mobile
     if (isMobile || sidebarMode === 'overlay') {
       setIsSidebarOpen(false);
@@ -193,7 +193,7 @@ function App() {
         await loadFiles();
         setSelectedFile(fullPath);
         setFileContent('');
-        setIsPreviewMode(false);
+        // Keep preview mode as-is
         updateURL(fullPath);
       } else {
         const error = await response.json();

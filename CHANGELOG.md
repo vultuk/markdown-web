@@ -5,6 +5,22 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.15.1] - 2025-08-21
+
+### Fixed
+- **File Path Encoding**: Added proper URL encoding for file paths in API requests to handle special characters and spaces
+- **Preview Mode Persistence**: Preview mode now persists when navigating between files instead of always resetting to edit mode
+
+### Improved
+- **File Handling**: Better support for files with special characters, spaces, and unicode names in file paths
+- **User Experience**: Preview mode preference maintained during file navigation and creation
+- **API Reliability**: More robust file loading and saving with proper path encoding
+
+### Technical Improvements
+- **URL Encoding**: Added `encodeURIComponent()` to file paths in `saveFile` and `loadFileContent` functions
+- **State Management**: Removed forced preview mode resets in file selection and creation workflows
+- **Consistent Behavior**: File navigation now respects current preview mode setting
+
 ## [1.15.0] - 2025-08-21
 
 ### Added

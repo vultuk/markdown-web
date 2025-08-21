@@ -2,6 +2,26 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.1] - 2025-08-21
+
+### Fixed
+- **Mermaid CDN Loading**: Switched from local bundled Mermaid to CDN-based loading for better reliability
+- **Build Compatibility**: Eliminated potential bundling issues by using external CDN instead of local imports
+- **Script Loading**: Changed from `async` to `defer` for more predictable script loading behavior
+- **Error Handling**: Enhanced error messages for CDN loading failures with clearer feedback
+
+### Technical Improvements
+- **CDN Integration**: Uses `https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js` for consistent availability
+- **Async Pattern**: Improved Promise-based loading pattern with proper async/await handling
+- **Deployment Reliability**: Reduces build-time dependencies and potential bundling conflicts
+- **Loading Performance**: Better script loading strategy with deferred execution
+
+### Reliability Enhancements
+- **External Dependencies**: Eliminates local bundling issues that could affect Mermaid diagram rendering
+- **Network Resilience**: Provides fallback messaging when CDN is unavailable
+- **Build Independence**: Removes dependency on local Mermaid files during build process
+- **Consistent Behavior**: More predictable diagram rendering across different deployment scenarios
+
 ## [2.0.0] - 2025-08-21
 
 Breaking changes

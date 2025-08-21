@@ -1,7 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 // Use UMD build via script tag to avoid ESM initialization issues in some bundlers
-// @ts-ignore - Vite will resolve this to a URL string
-import mermaidUrl from 'mermaid/dist/mermaid.min.js?url';
+const CDN_URL = 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js';
 
 interface MermaidProps {
   code: string;
@@ -20,17 +19,19 @@ export function Mermaid({ code, theme }: MermaidProps) {
     const render = async () => {
       try {
         if (!mermaidLoaderRef.current) {
-          mermaidLoaderRef.current = new Promise((resolve, reject) => {
-            // If global already exists, resolve immediately
+          mermaidLoaderRef.current = (async () => {
             const existing: any = (window as any).mermaid;
-            if (existing) return resolve(existing);
-            const s = document.createElement('script');
-            s.src = mermaidUrl;
-            s.async = true;
-            s.onload = () => resolve((window as any).mermaid);
-            s.onerror = () => reject(new Error('Failed to load mermaid'));
-            document.head.appendChild(s);
-          });
+            if (existing) return existing;
+            await new Promise<void>((resolve, reject) => {
+              const s = document.createElement('script');
+              s.src = CDN_URL;
+              s.defer = true;
+              s.onload = () => resolve();
+              s.onerror = () => reject(new Error('Failed to load mermaid CDN'));
+              document.head.appendChild(s);
+            });
+            return (window as any).mermaid;
+          })();
         }
         const m: any = await mermaidLoaderRef.current;
         m.initialize({ startOnLoad: false, securityLevel: 'strict', theme });

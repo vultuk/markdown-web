@@ -2,6 +2,42 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.13.0] - 2025-08-21
+
+### Added
+- **Anthropic AI Support**: Complete integration with Anthropic Claude models alongside existing OpenAI support
+- **Multi-Provider AI Architecture**: Unified AI system supporting both OpenAI and Anthropic providers seamlessly
+- **Dynamic Model Selection**: Model dropdown adapts based on available API keys, showing relevant models only
+- **Enhanced AI Status Detection**: AI availability checks both OpenAI and Anthropic API keys from environment and settings
+- **Provider-Aware AI Operations**: Both AI apply and ask endpoints automatically detect and use appropriate provider
+
+### New Features
+- **Anthropic Claude Models**: Support for claude-sonnet-4-20250514 and claude-opus-4-1-20250805 models
+- **Intelligent Provider Detection**: Automatic provider selection based on model name (claude-* for Anthropic, others for OpenAI)
+- **Unified AI Interface**: Single AI modal that works with both OpenAI and Anthropic models transparently
+- **Flexible Model Configuration**: Default model and provider settings with backward compatibility
+- **Cross-Provider Ask Mode**: Question-answering functionality works with both OpenAI and Anthropic models
+
+### Technical Improvements
+- **Anthropic SDK Integration**: Added @anthropic-ai/sdk dependency for official Anthropic API support
+- **Enhanced Settings Schema**: Added defaultModel and defaultModelProvider fields for multi-provider support
+- **Provider-Specific Error Handling**: Tailored error messages and handling for each AI provider
+- **Unified Response Processing**: Consistent response parsing and sanitization across both providers
+- **Legacy Compatibility**: Maintains backward compatibility with existing openAiModel settings
+
+### User Experience
+- **Seamless Provider Switching**: Users can switch between OpenAI and Anthropic models without interface changes
+- **Smart Model Availability**: Only shows models for which API keys are configured
+- **Consistent AI Experience**: Same AI functionality regardless of which provider is being used
+- **Automatic Provider Selection**: System automatically uses the appropriate provider based on selected model
+- **Unified Settings Interface**: Single settings section manages both OpenAI and Anthropic configurations
+
+### Developer Experience
+- **Multi-Provider Architecture**: Clean separation of provider-specific logic with shared interfaces
+- **Enhanced Error Reporting**: Provider-specific error handling with detailed debugging information
+- **Flexible Configuration**: Support for both environment variables and settings-based API key management
+- **Consistent API Patterns**: Both providers follow same request/response patterns for easy maintenance
+
 ## [2.12.0] - 2025-08-21
 
 ### Added

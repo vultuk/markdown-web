@@ -4,6 +4,7 @@ import path from 'path';
 import os from 'os';
 import { ThemeManager } from './themeManager';
 import OpenAI from 'openai';
+import Anthropic from '@anthropic-ai/sdk';
 import { execFile } from 'child_process';
 import { promisify } from 'util';
 const execFileAsync = promisify(execFile);
@@ -20,9 +21,9 @@ fileRouter.get('/ai/status', async (req, res) => {
     let enabled = false;
     try {
       const settings = await themeManager.getSettings();
-      enabled = !!(settings.openAiKey || process.env.OPENAI_KEY);
+      enabled = !!(settings.openAiKey || process.env.OPENAI_KEY || settings.anthropicKey || process.env.ANTHROPIC_API_KEY);
     } catch {
-      enabled = !!process.env.OPENAI_KEY;
+      enabled = !!(process.env.OPENAI_KEY || process.env.ANTHROPIC_API_KEY);
     }
     res.json({ enabled });
   } catch (e) {
@@ -293,15 +294,6 @@ fileRouter.get('/themes/:name', async (req, res) => {
 // Apply AI transformation to markdown
 fileRouter.post('/ai/apply', async (req, res) => {
   try {
-    let apiKey = process.env.OPENAI_KEY;
-    try {
-      const s = await themeManager.getSettings();
-      if (s.openAiKey && typeof s.openAiKey === 'string' && s.openAiKey.trim()) apiKey = s.openAiKey.trim();
-    } catch {}
-    if (!apiKey) {
-      return res.status(400).json({ error: 'OpenAI key not configured' });
-    }
-
     const { prompt, content, path: relPath, model: overrideModel } = req.body || {} as { prompt?: string; content?: string; path?: string; model?: string };
     if (typeof prompt !== 'string' || typeof content !== 'string') {
       return res.status(400).json({ error: 'prompt and content are required' });
@@ -311,19 +303,78 @@ fileRouter.post('/ai/apply', async (req, res) => {
     let model = 'gpt-5-mini';
     try {
       const settings = await themeManager.getSettings();
-      if (settings.openAiModel && typeof settings.openAiModel === 'string') {
+      if (settings.defaultModel && settings.defaultModelProvider === 'openai') {
+        model = settings.defaultModel;
+      } else if (settings.openAiModel && typeof settings.openAiModel === 'string') {
         model = settings.openAiModel;
       }
     } catch {}
-    // Allow one-off override if provided and valid
-    const allowed = new Set(['gpt-5', 'gpt-5-mini', 'gpt-5-nano']);
-    if (overrideModel && allowed.has(overrideModel)) {
+    // Allow one-off override (supports OpenAI and Anthropic identifiers)
+    if (overrideModel) {
       model = overrideModel;
     }
 
     const instruction = 'You are a precise markdown editor. Apply the user\'s requested changes to the provided markdown and return ONLY the full updated markdown. Do not include any explanation, code fences, or any BEGIN/END markers — only the final markdown document.';
     const input = `${instruction}\n\nCurrent Markdown:\n\n${content}\n\nInstructions:\n${prompt}\n\nReturn only the updated markdown.`;
 
+    // Anthropic branch
+    if (String(model).startsWith('claude-')) {
+      let aKey = process.env.ANTHROPIC_API_KEY;
+      try {
+        const s = await themeManager.getSettings();
+        if (s.anthropicKey && typeof s.anthropicKey === 'string' && s.anthropicKey.trim()) aKey = s.anthropicKey.trim();
+      } catch {}
+      if (!aKey) return res.status(400).json({ error: 'Anthropic key not configured' });
+      const anthropic = new Anthropic({ apiKey: aKey });
+      let aData: any;
+      try {
+        aData = await anthropic.messages.create({ model, max_tokens: 4096, messages: [{ role: 'user', content: input }] });
+      } catch (e: any) {
+        const details = e?.message || e?.response?.data || 'Unknown error';
+        return res.status(502).json({ error: 'Anthropic request failed', details: String(details).slice(0, 2000) });
+      }
+      let updated: string | undefined;
+      try {
+        const parts: string[] = [];
+        const arr = Array.isArray(aData?.content) ? aData.content : [];
+        for (const part of arr) if (part?.type === 'text' && typeof part?.text === 'string') parts.push(part.text);
+        updated = parts.join('');
+      } catch {}
+      const usageA = (aData as any)?.usage || {};
+      const inputTokens = Number(usageA?.input_tokens || 0);
+      const outputTokens = Number(usageA?.output_tokens || 0);
+      const totalTokens = inputTokens + outputTokens;
+      if (typeof updated === 'string') {
+        updated = updated.replace(/```[a-z]*\n([\s\S]*?)\n```/gi, '$1');
+        updated = updated.replace(/\n?\s*---BEGIN---\s*\n?/gi, '');
+        updated = updated.replace(/\n?\s*---END---\s*\n?/gi, '');
+      }
+      if (typeof updated !== 'string' || !updated.trim()) {
+        return res.status(502).json({ error: 'Invalid response from model' });
+      }
+      try {
+        const home = os.homedir();
+        const logsRoot = path.join(home, '.markdown-web', 'logs');
+        const safeFolder = encodeURIComponent(String(relPath || 'untitled'));
+        const logDir = path.join(logsRoot, safeFolder);
+        const logPath = path.join(logDir, 'ai.json');
+        await fs.mkdir(logDir, { recursive: true });
+        let arr: any[] = [];
+        try { const existing = await fs.readFile(logPath, 'utf-8'); arr = JSON.parse(existing); if (!Array.isArray(arr)) arr = []; } catch {}
+        const entry = { ts: new Date().toISOString(), model, prompt: String(prompt).slice(0,4000), usage: { inputTokens, outputTokens, totalTokens }, costUsd: null };
+        arr.push(entry);
+        await fs.writeFile(logPath, JSON.stringify(arr, null, 2));
+      } catch {}
+      return res.json({ content: updated, usage: { inputTokens, outputTokens, totalTokens }, model, costUsd: null });
+    }
+
+    // OpenAI branch
+    let apiKey = process.env.OPENAI_KEY;
+    try {
+      const s = await themeManager.getSettings();
+      if (s.openAiKey && typeof s.openAiKey === 'string' && s.openAiKey.trim()) apiKey = s.openAiKey.trim();
+    } catch {}
+    if (!apiKey) return res.status(400).json({ error: 'OpenAI key not configured' });
     const client = new OpenAI({ apiKey });
     let data: any;
     try {
@@ -418,76 +469,46 @@ fileRouter.post('/ai/apply', async (req, res) => {
 // Ask questions about current markdown (no file modification)
 fileRouter.post('/ai/ask', async (req, res) => {
   try {
-    let apiKey = process.env.OPENAI_KEY;
-    try {
-      const s = await themeManager.getSettings();
-      if (s.openAiKey && typeof s.openAiKey === 'string' && s.openAiKey.trim()) apiKey = s.openAiKey.trim();
-    } catch {}
-    if (!apiKey) {
-      return res.status(400).json({ error: 'OpenAI key not configured' });
-    }
-
     const { prompt, content, model: overrideModel } = (req.body || {}) as { prompt?: string; content?: string; model?: string };
     if (typeof prompt !== 'string' || typeof content !== 'string') {
       return res.status(400).json({ error: 'prompt and content are required' });
     }
 
-    // Resolve model
+    // Resolve model and provider
     let model = 'gpt-5-mini';
+    let provider: 'openai' | 'anthropic' = 'openai';
     try {
       const settings = await themeManager.getSettings();
-      if (settings.openAiModel && typeof settings.openAiModel === 'string') {
-        model = settings.openAiModel;
-      }
+      if (settings.defaultModel) { model = settings.defaultModel; provider = settings.defaultModelProvider === 'anthropic' || String(model).startsWith('claude-') ? 'anthropic' : 'openai'; }
+      else if (settings.openAiModel && typeof settings.openAiModel === 'string') { model = settings.openAiModel; provider = 'openai'; }
     } catch {}
-    const allowed = new Set(['gpt-5', 'gpt-5-mini', 'gpt-5-nano']);
-    if (overrideModel && allowed.has(overrideModel)) {
-      model = overrideModel;
-    }
+    if (overrideModel) { model = overrideModel; provider = String(model).startsWith('claude-') ? 'anthropic' : 'openai'; }
 
     const instruction = 'You are a helpful documentation assistant. Answer the user\'s question about the provided markdown. Be concise and use markdown formatting in your answer when appropriate. Do not include code fences that wrap the entire answer.';
     const input = `${instruction}\n\nMarkdown:\n\n${content}\n\nQuestion:\n${prompt}`;
 
-    const client = new OpenAI({ apiKey });
-    let data: any;
-    try {
-      data = await client.responses.create({ model, input });
-    } catch (e: any) {
-      const details = e?.message || e?.response?.data || 'Unknown error';
-      return res.status(502).json({ error: 'OpenAI request failed', details: String(details).slice(0, 2000) });
+    if (provider === 'openai') {
+      let apiKey = process.env.OPENAI_KEY; try { const s = await themeManager.getSettings(); if (s.openAiKey?.trim()) apiKey = s.openAiKey.trim(); } catch {}
+      if (!apiKey) return res.status(400).json({ error: 'OpenAI key not configured' });
+      const client = new OpenAI({ apiKey });
+      let data: any; try { data = await client.responses.create({ model, input }); } catch (e: any) { const details = e?.message || e?.response?.data || 'Unknown error'; return res.status(502).json({ error: 'OpenAI request failed', details: String(details).slice(0,2000) }); }
+      let answer: string | undefined = data?.output_text;
+      if (!answer) { try { const pieces: string[] = []; const out = Array.isArray(data?.output) ? data.output : []; for (const item of out) { const contentArr = Array.isArray((item as any)?.content) ? (item as any).content : []; for (const c of contentArr) { if (typeof (c as any)?.text === 'string') pieces.push((c as any).text); else if ((c as any)?.text?.value) pieces.push(String((c as any).text.value)); } } answer = pieces.join(''); } catch {} }
+      if (typeof answer === 'string') { answer = answer.replace(/```[a-z]*\n([\s\S]*?)\n```/gi, '$1'); answer = answer.replace(/\n?\s*---BEGIN---\s*\n?/gi, ''); answer = answer.replace(/\n?\s*---END---\s*\n?/gi, ''); }
+      if (!answer || typeof answer !== 'string' || !answer.trim()) return res.status(502).json({ error: 'Invalid response from model' });
+      const usage = (data as any)?.usage || {}; const inputTokens = Number(usage.input_tokens || usage.prompt_tokens || 0); const outputTokens = Number(usage.output_tokens || usage.completion_tokens || 0); const totalTokens = Number(usage.total_tokens || inputTokens + outputTokens);
+      return res.json({ answer, usage: { inputTokens, outputTokens, totalTokens }, model });
+    } else {
+      let apiKey = process.env.ANTHROPIC_API_KEY; try { const s = await themeManager.getSettings(); if (s.anthropicKey?.trim()) apiKey = s.anthropicKey.trim(); } catch {}
+      if (!apiKey) return res.status(400).json({ error: 'Anthropic key not configured' });
+      const anthropic = new Anthropic({ apiKey });
+      let data: any; try { data = await anthropic.messages.create({ model, max_tokens: 2048, messages: [{ role: 'user', content: input }] }); } catch (e: any) { const details = e?.message || e?.response?.data || 'Unknown error'; return res.status(502).json({ error: 'Anthropic request failed', details: String(details).slice(0,2000) }); }
+      let answer: string | undefined; try { const parts: string[] = []; const arr = Array.isArray(data?.content) ? data.content : []; for (const part of arr) if (part?.type === 'text' && typeof part?.text === 'string') parts.push(part.text); answer = parts.join(''); } catch {}
+      if (typeof answer === 'string') { answer = answer.replace(/```[a-z]*\n([\s\S]*?)\n```/gi, '$1'); answer = answer.replace(/\n?\s*---BEGIN---\s*\n?/gi, ''); answer = answer.replace(/\n?\s*---END---\s*\n?/gi, ''); }
+      if (!answer || typeof answer !== 'string' || !answer.trim()) return res.status(502).json({ error: 'Invalid response from model' });
+      const usage = (data as any)?.usage || {}; const inputTokens = Number(usage?.input_tokens || 0); const outputTokens = Number(usage?.output_tokens || 0); const totalTokens = inputTokens + outputTokens;
+      return res.json({ answer, usage: { inputTokens, outputTokens, totalTokens }, model });
     }
-
-    let answer: string | undefined = data?.output_text;
-    if (!answer) {
-      try {
-        const pieces: string[] = [];
-        const out = Array.isArray(data?.output) ? data.output : [];
-        for (const item of out) {
-          const contentArr = Array.isArray((item as any)?.content) ? (item as any).content : [];
-          for (const c of contentArr) {
-            if (typeof (c as any)?.text === 'string') pieces.push((c as any).text);
-            else if ((c as any)?.text?.value) pieces.push(String((c as any).text.value));
-          }
-        }
-        answer = pieces.join('');
-      } catch {}
-    }
-    if (typeof answer === 'string') {
-      // Strip full-answer code fences if present
-      answer = answer.replace(/```[a-z]*\n([\s\S]*?)\n```/gi, '$1');
-      answer = answer.replace(/\n?\s*---BEGIN---\s*\n?/gi, '');
-      answer = answer.replace(/\n?\s*---END---\s*\n?/gi, '');
-    }
-    if (!answer || typeof answer !== 'string' || !answer.trim()) {
-      return res.status(502).json({ error: 'Invalid response from OpenAI' });
-    }
-
-    const usage = (data as any)?.usage || {};
-    const inputTokens = Number(usage.input_tokens || usage.prompt_tokens || 0);
-    const outputTokens = Number(usage.output_tokens || usage.completion_tokens || 0);
-    const totalTokens = Number(usage.total_tokens || inputTokens + outputTokens);
-
-    return res.json({ answer, usage: { inputTokens, outputTokens, totalTokens }, model });
   } catch (error) {
     console.error('AI ask failed:', error);
     return res.status(500).json({ error: 'AI ask failed' });
@@ -570,6 +591,12 @@ fileRouter.post('/settings', async (req, res) => {
     }
     if ('anthropicKey' in incoming && typeof incoming.anthropicKey !== 'string') {
       return res.status(400).json({ error: 'anthropicKey must be a string' });
+    }
+    if ('defaultModel' in incoming && typeof incoming.defaultModel !== 'string') {
+      return res.status(400).json({ error: 'defaultModel must be a string' });
+    }
+    if ('defaultModelProvider' in incoming && !['openai','anthropic'].includes(String(incoming.defaultModelProvider))) {
+      return res.status(400).json({ error: 'defaultModelProvider must be "openai" or "anthropic"' });
     }
     // removed handling for scrollSync and mermaidEnabled
 

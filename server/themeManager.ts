@@ -53,9 +53,11 @@ export interface Settings {
   selectedTheme: string;
   previewLayout?: 'full' | 'split';
   sidebarMode?: 'overlay' | 'inline';
-  openAiModel?: string;
+  openAiModel?: string; // legacy
   openAiKey?: string;
   anthropicKey?: string;
+  defaultModel?: string;
+  defaultModelProvider?: 'openai' | 'anthropic';
 }
 
 export class ThemeManager {
@@ -123,10 +125,14 @@ export class ThemeManager {
       const parsed = JSON.parse(settingsData);
       // Fill defaults for any missing keys to keep behavior consistent
       const defaults: Settings = { selectedTheme: 'dark', previewLayout: 'full', sidebarMode: 'overlay', openAiModel: 'gpt-5-mini', openAiKey: undefined, anthropicKey: undefined } as Settings;
-      return { ...defaults, ...parsed };
+      const merged = { ...defaults, ...parsed } as Settings;
+      // Derive defaultModel/provider for forward compatibility
+      const dm = merged.defaultModel || merged.openAiModel || 'gpt-5-mini';
+      const provider: 'openai' | 'anthropic' = merged.defaultModelProvider || (String(dm).startsWith('claude-') ? 'anthropic' : 'openai');
+      return { ...merged, defaultModel: dm, defaultModelProvider: provider } as Settings;
     } catch (error) {
       // Return default settings if file doesn't exist
-      return { selectedTheme: 'dark', previewLayout: 'full', sidebarMode: 'overlay', openAiModel: 'gpt-5-mini' };
+      return { selectedTheme: 'dark', previewLayout: 'full', sidebarMode: 'overlay', openAiModel: 'gpt-5-mini', defaultModel: 'gpt-5-mini', defaultModelProvider: 'openai' } as Settings;
     }
   }
 

@@ -97,13 +97,14 @@ function App() {
       return 'overlay';
     }
   });
-  const [openAiModel, setOpenAiModel] = useState<string>(() => {
+  const [defaultModel, setDefaultModel] = useState<string>(() => {
     try {
       return localStorage.getItem('openAiModel') || 'gpt-5-mini';
     } catch {
       return 'gpt-5-mini';
     }
   });
+  const [defaultModelProvider, setDefaultModelProvider] = useState<'openai' | 'anthropic'>(() => (String(localStorage.getItem('openAiModel') || 'gpt-5-mini').startsWith('claude-') ? 'anthropic' : 'openai'));
   const [openAiKey, setOpenAiKey] = useState<string | undefined>(undefined);
   const [anthropicKey, setAnthropicKey] = useState<string | undefined>(undefined);
   // Mermaid always enabled
@@ -119,7 +120,10 @@ function App() {
         if (cancelled) return;
         if (s && (s.previewLayout === 'full' || s.previewLayout === 'split')) setPreviewLayout(s.previewLayout);
         if (s && (s.sidebarMode === 'overlay' || s.sidebarMode === 'inline')) setSidebarMode(s.sidebarMode);
-        if (s && typeof s.openAiModel === 'string') setOpenAiModel(s.openAiModel);
+        if (s && typeof s.defaultModel === 'string') setDefaultModel(s.defaultModel);
+        else if (s && typeof s.openAiModel === 'string') setDefaultModel(s.openAiModel);
+        if (s && (s.defaultModelProvider === 'openai' || s.defaultModelProvider === 'anthropic')) setDefaultModelProvider(s.defaultModelProvider);
+        else setDefaultModelProvider(((s?.defaultModel || s?.openAiModel || 'gpt-5-mini') as string).startsWith('claude-') ? 'anthropic' : 'openai');
         if (s && typeof s.openAiKey === 'string') setOpenAiKey(s.openAiKey);
         if (s && typeof s.anthropicKey === 'string') setAnthropicKey(s.anthropicKey);
         if (s && typeof s.scrollSync === 'boolean') setScrollSync(s.scrollSync);
@@ -466,10 +470,10 @@ function App() {
 
   useEffect(() => {
     try {
-      localStorage.setItem('openAiModel', openAiModel);
+      localStorage.setItem('openAiModel', defaultModel);
     } catch {}
-    if (settingsLoaded) queueSettingsUpdate({ openAiModel });
-  }, [openAiModel]);
+    if (settingsLoaded) queueSettingsUpdate({ defaultModel, defaultModelProvider });
+  }, [defaultModel, defaultModelProvider]);
 
   useEffect(() => {
     if (settingsLoaded) queueSettingsUpdate({ openAiKey });
@@ -687,7 +691,7 @@ function App() {
                   onManualSave={saveNow}
                   fileName={selectedFile}
                   onAiPendingChange={setAiPending}
-                  defaultModel={openAiModel}
+                  defaultModel={defaultModel}
                   onAiApply={(newContent) => { setAiPrevContent(fileContent); setFileContent(newContent); setAiPending(true); }}
                 />
               </div>
@@ -723,7 +727,7 @@ function App() {
               onManualSave={saveNow}
               fileName={selectedFile}
               onAiPendingChange={setAiPending}
-              defaultModel={openAiModel}
+              defaultModel={defaultModel}
               onAiApply={(newContent) => { setAiPrevContent(fileContent); setFileContent(newContent); setAiPending(true); }}
             />
           )}
@@ -737,8 +741,8 @@ function App() {
         onChangePreviewLayout={setPreviewLayout}
         sidebarMode={sidebarMode}
         onChangeSidebarMode={setSidebarMode}
-        openAiModel={openAiModel}
-        onChangeOpenAiModel={setOpenAiModel}
+        defaultModel={defaultModel}
+        onChangeDefaultModel={(m: string) => { setDefaultModel(m); setDefaultModelProvider(m.startsWith('claude-') ? 'anthropic' : 'openai'); }}
         openAiKey={openAiKey}
         onChangeOpenAiKey={(k: string) => setOpenAiKey(k)}
         anthropicKey={anthropicKey}

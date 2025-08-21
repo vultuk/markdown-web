@@ -12,8 +12,8 @@ interface SettingsModalProps {
   onChangePreviewLayout: (layout: PreviewLayout) => void;
   sidebarMode: SidebarMode;
   onChangeSidebarMode: (mode: SidebarMode) => void;
-  openAiModel: string;
-  onChangeOpenAiModel: (model: string) => void;
+  defaultModel: string;
+  onChangeDefaultModel: (model: string) => void;
   openAiKey?: string;
   onChangeOpenAiKey?: (key: string) => void;
   anthropicKey?: string;
@@ -21,7 +21,7 @@ interface SettingsModalProps {
   onPersistSettings?: (partial: Record<string, unknown>) => void;
 }
 
-export function SettingsModal({ isOpen, onClose, previewLayout, onChangePreviewLayout, sidebarMode, onChangeSidebarMode, openAiModel, onChangeOpenAiModel, openAiKey, onChangeOpenAiKey, anthropicKey, onChangeAnthropicKey, onPersistSettings }: SettingsModalProps) {
+export function SettingsModal({ isOpen, onClose, previewLayout, onChangePreviewLayout, sidebarMode, onChangeSidebarMode, defaultModel, onChangeDefaultModel, openAiKey, onChangeOpenAiKey, anthropicKey, onChangeAnthropicKey, onPersistSettings }: SettingsModalProps) {
   const { availableThemes, selectedTheme, loading, changeTheme } = useTheme();
   useEffect(() => {
     if (!isOpen) return;
@@ -123,23 +123,42 @@ export function SettingsModal({ isOpen, onClose, previewLayout, onChangePreviewL
           </fieldset>
 
           <fieldset style={{ border: 'none', padding: 0, margin: 0, marginTop: 16 }}>
-            <legend style={{ color: '#bbb', marginBottom: 8, fontSize: 13 }}>OpenAI model</legend>
-            <select
-              value={openAiModel}
-              onChange={(e) => onChangeOpenAiModel(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '8px 10px',
-                borderRadius: 4,
-                border: '1px solid #3e3e42',
-                background: '#1e1e1e',
-                color: '#ddd'
-              }}
-            >
-              <option value="gpt-5">gpt-5</option>
-              <option value="gpt-5-mini">gpt-5-mini</option>
-              <option value="gpt-5-nano">gpt-5-nano</option>
-            </select>
+            <legend style={{ color: '#bbb', marginBottom: 8, fontSize: 13 }}>Default Model</legend>
+            {(() => {
+              const openaiModels = [
+                { id: 'gpt-5', label: 'gpt-5' },
+                { id: 'gpt-5-mini', label: 'gpt-5-mini' },
+                { id: 'gpt-5-nano', label: 'gpt-5-nano' },
+              ];
+              const anthropicModels = [
+                { id: 'claude-sonnet-4-20250514', label: 'claude-sonnet-4-20250514' },
+                { id: 'claude-opus-4-1-20250805', label: 'claude-opus-4-1-20250805' },
+              ];
+              const items = [
+                ...(openAiKey ? openaiModels : []),
+                ...(anthropicKey ? anthropicModels : []),
+              ];
+              return items.length ? (
+                <select
+                  value={defaultModel}
+                  onChange={(e) => onChangeDefaultModel(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '8px 10px',
+                    borderRadius: 4,
+                    border: '1px solid #3e3e42',
+                    background: '#1e1e1e',
+                    color: '#ddd'
+                  }}
+                >
+                  {items.map(m => (
+                    <option key={m.id} value={m.id}>{m.label}</option>
+                  ))}
+                </select>
+              ) : (
+                <div style={{ color: '#999', fontSize: 13 }}>Add an API key above to choose a model.</div>
+              );
+            })()}
           </fieldset>
 
           <fieldset style={{ border: 'none', padding: 0, margin: 0, marginTop: 16 }}>

@@ -58,6 +58,10 @@ function App() {
   const mainRef = useRef<HTMLDivElement | null>(null);
   const [toast, setToast] = useState<{ message: string; type?: 'info' | 'error' | 'success' } | null>(null);
   const [aiPending, setAiPending] = useState<boolean>(false);
+  const [aiPrevContent, setAiPrevContent] = useState<string | null>(null);
+  const openAiModal = () => {
+    try { window.dispatchEvent(new CustomEvent('open-ai-modal')); } catch {}
+  };
   const pendingSettingsRef = useRef<Record<string, unknown>>({});
   const settingsTimerRef = useRef<number | null>(null);
   const [settingsOpen, setSettingsOpen] = useState<boolean>(false);
@@ -590,6 +594,10 @@ function App() {
         hasSelectedFile={!!selectedFile}
         fileContent={fileContent}
         fileName={selectedFile}
+        onOpenAI={openAiModal}
+        showAiReview={aiPrevContent !== null}
+        onAcceptAI={async () => { try { await saveNow(); } catch {}; setAiPrevContent(null); setAiPending(false); }}
+        onRejectAI={() => { if (aiPrevContent !== null) { setFileContent(aiPrevContent); } setAiPrevContent(null); setAiPending(false); }}
       />
       {/* Backdrop to close sidebar (mobile always; desktop only in overlay mode) */}
       {isSidebarOpen && (
@@ -642,6 +650,7 @@ function App() {
                   onManualSave={saveNow}
                   fileName={selectedFile}
                   onAiPendingChange={setAiPending}
+                  onAiApply={(newContent) => { setAiPrevContent(fileContent); setFileContent(newContent); setAiPending(true); }}
                 />
               </div>
               <div
@@ -676,6 +685,7 @@ function App() {
               onManualSave={saveNow}
               fileName={selectedFile}
               onAiPendingChange={setAiPending}
+              onAiApply={(newContent) => { setAiPrevContent(fileContent); setFileContent(newContent); setAiPending(true); }}
             />
           )}
         </div>

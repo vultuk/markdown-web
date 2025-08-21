@@ -66,19 +66,7 @@
   overflow: hidden;
 }
 
-.aiCostBadge {
-  position: absolute;
-  left: calc(50% - min(720px, 92vw) / 2 - 8px);
-  bottom: 22px;
-  transform: translateX(-50%);
-  background: #2d2f36;
-  color: #e6e6e6;
-  border: 1px solid #3e3e42;
-  border-radius: 999px;
-  padding: 6px 10px;
-  font-size: 12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-}
+/* AI cost badge removed per request; cost is shown in StatusBar */
 
 .aiHeader {
   background: linear-gradient(135deg, #2d2f36, #23252b);

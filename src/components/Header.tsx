@@ -13,6 +13,10 @@ interface HeaderProps {
   hasSelectedFile: boolean;
   fileContent?: string;
   fileName?: string | null;
+  onOpenAI?: () => void;
+  showAiReview?: boolean;
+  onAcceptAI?: () => void;
+  onRejectAI?: () => void;
 }
 
 export function Header({ 
@@ -24,7 +28,11 @@ export function Header({
   hasUnsavedChanges,
   hasSelectedFile,
   fileContent = '',
-  fileName
+  fileName,
+  onOpenAI,
+  showAiReview = false,
+  onAcceptAI,
+  onRejectAI,
 }: HeaderProps) {
   return (
     <header className={styles.header}>
@@ -51,6 +59,14 @@ export function Header({
             >
               {isPreviewMode ? 'Edit' : 'Preview'}
             </button>
+            {showAiReview ? (
+              <>
+                <button className={styles.toggleButton} onClick={onAcceptAI}>Accept</button>
+                <button className={styles.toggleButton} onClick={onRejectAI}>Revert</button>
+              </>
+            ) : (
+              <button className={styles.toggleButton} onClick={onOpenAI} title="Open AI assistant">✨ AI</button>
+            )}
             <ExportButton content={fileContent} fileName={fileName} isPreviewMode={isPreviewMode} />
           </>
         )}

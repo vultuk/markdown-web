@@ -28,8 +28,6 @@ export function Editor({
   const [prompt, setPrompt] = useState<string>('');
   const [aiLoading, setAiLoading] = useState<boolean>(false);
   const [prevContent, setPrevContent] = useState<string | null>(null);
-  const [lastCost, setLastCost] = useState<number | null>(null);
-  const [lastTokens, setLastTokens] = useState<{ inputTokens: number; outputTokens: number; totalTokens: number } | null>(null);
 
   useEffect(() => {
     let mounted = true;
@@ -64,19 +62,16 @@ export function Editor({
     };
   }, [onManualSave]);
 
+  // Listen for header AI open requests
+  useEffect(() => {
+    const handler = () => setAiOpen(true);
+    window.addEventListener('open-ai-modal', handler as EventListener);
+    return () => window.removeEventListener('open-ai-modal', handler as EventListener);
+  }, []);
+
   return (
     <div className={styles.editor}>
-      {aiEnabled && (
-        <button
-          type="button"
-          className={styles.aiButton}
-          title="Open AI prompt"
-          onClick={() => setAiOpen((v) => !v)}
-          aria-label="Open AI prompt"
-        >
-          ✨
-        </button>
-      )}
+      {/* AI open button moved to Header */}
       <div className={styles.content}>
         {!fileName ? (
           <div className={styles.placeholder}>
@@ -139,12 +134,9 @@ export function Editor({
                     }
                     setPrevContent(content);
                     onAiPendingChange?.(true);
-                    onChange(data.content);
-                    if (typeof data.costUsd === 'number') setLastCost(data.costUsd);
-                    if (data.usage && typeof data.usage.totalTokens === 'number') setLastTokens(data.usage);
-                    // Notify cost updated for this file
+                    if (onAiApply) onAiApply(data.content); else onChange(data.content);
                     try { window.dispatchEvent(new CustomEvent('ai-cost-updated', { detail: { path: fileName || '' } })); } catch {}
-                    // keep modal open to show cost
+                    setAiOpen(false);
                     setPrompt('');
                   } catch (e) {
                     alert('AI request failed');
@@ -166,39 +158,7 @@ export function Editor({
           </div>
         </div>
       )}
-      {aiEnabled && aiOpen && lastTokens && (
-        <div className={styles.aiCostBadge} title={`Input: ${lastTokens.inputTokens}, Output: ${lastTokens.outputTokens}, Total: ${lastTokens.totalTokens}`}>
-          {lastCost !== null ? `$${lastCost.toFixed(4)}` : `${lastTokens.totalTokens} tok`}
-        </div>
-      )}
-      {prevContent !== null && (
-        <button
-          className={styles.revertButton}
-          onClick={() => {
-            onChange(prevContent);
-            setPrevContent(null);
-            onAiPendingChange?.(false);
-          }}
-          title="Revert AI changes"
-        >
-          Revert
-        </button>
-      )}
-      {prevContent !== null && (
-        <button
-          className={styles.acceptButton}
-          onClick={async () => {
-            try {
-              await onManualSave();
-            } catch {}
-            setPrevContent(null);
-            onAiPendingChange?.(false);
-          }}
-          title="Accept AI changes"
-        >
-          Accept
-        </button>
-      )}
+      {/* Accept/Reject controls moved to Header */}
       <StatusBar content={content} fileName={fileName} />
     </div>
   );

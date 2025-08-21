@@ -5,6 +5,38 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.18.0] - 2025-08-21
+
+### Added
+- **Syntax Highlighting**: Added comprehensive syntax highlighting for code blocks using highlight.js
+- **Theme-Aware Highlighting**: Code highlighting adapts to current theme (light/dark backgrounds)
+- **Enhanced AI Controls**: Moved AI button and accept/revert controls to header for better accessibility
+- **Improved Code Display**: Better visual distinction for code blocks in both preview and print modes
+
+### New Features
+- **Dynamic Syntax Themes**: Automatic selection between GitHub dark/light highlighting themes based on background
+- **Integrated Code Support**: Full syntax highlighting for popular programming languages
+- **Enhanced Header Layout**: Consolidated AI controls in header with accept/revert buttons when changes are pending
+- **Better UX Flow**: Streamlined AI interaction workflow with clearer visual feedback
+
+### Technical Improvements
+- **highlight.js Integration**: Added `highlight.js@^11.9.0` and `rehype-highlight@^6.0.0` dependencies
+- **Theme-Smart Highlighting**: Automatic highlight theme selection based on background luminance
+- **Component Reorganization**: Moved AI controls from Editor to Header component for better organization
+- **Enhanced Preview**: ReactMarkdown now includes rehype-highlight plugin for code rendering
+- **CSS Architecture**: Improved styling for code blocks with theme-aware highlight injection
+
+### User Experience
+- **Cleaner Interface**: AI controls now integrated in header alongside other primary actions
+- **Better Code Readability**: Syntax highlighting makes code blocks more readable and professional
+- **Consistent Theming**: Code highlighting matches overall application theme automatically
+- **Improved Workflow**: Accept/revert AI changes directly from header without scrolling
+
+### Developer Experience
+- **Modern Code Display**: Professional syntax highlighting for technical documentation
+- **Multi-Language Support**: Comprehensive language detection and highlighting
+- **Print-Friendly**: Syntax highlighting preserved in print output with appropriate theme selection
+
 ## [1.17.0] - 2025-08-21
 
 ### Added

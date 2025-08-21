@@ -148,8 +148,9 @@ export function ExportButton({ content, fileName, isPreviewMode }: ExportButtonP
         aria-label="Export markdown file"
       >
         <span className={styles.exportIcon} aria-hidden>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-            <path d="M5 20h14v-2H5v2zm7-18l-5 5h3v6h4V7h3l-5-5z"/>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" focusable="false">
+            <path d="M5 20h14v2H5z"/>
+            <path d="M11 3h2v10h3l-4 4-4-4h3z"/>
           </svg>
         </span>
         <span className={styles.exportLabel}>Export</span>
@@ -161,7 +162,7 @@ export function ExportButton({ content, fileName, isPreviewMode }: ExportButtonP
         title="Export options"
       >
         <span className={styles.exportCaret} aria-hidden>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" focusable="false">
             <path d="M7 10l5 5 5-5H7z"/>
           </svg>
         </span>

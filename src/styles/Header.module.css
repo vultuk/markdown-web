@@ -86,12 +86,13 @@
     font-size: 12px;
     min-width: 34px;
     justify-content: center;
+    min-height: 28px;
   }
 
   .btnLabel {
     display: none;
   }
-  .btnIcon { display: inline-flex; }
+  .btnIcon { display: inline-flex !important; }
 }
 
 .btnIcon { display: none; color: currentColor; line-height: 0; }

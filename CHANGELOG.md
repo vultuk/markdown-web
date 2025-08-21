@@ -2,6 +2,31 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.6.2] - 2025-08-21
+
+### Enhanced
+- **SVG Icon Accessibility**: Added `focusable="false"` attribute to SVG icons for better screen reader compatibility
+- **Improved Icon Visual Design**: Enhanced export button SVG with cleaner, more distinct paths
+- **Refined Mobile Layout**: Added consistent button height (`min-height: 28px`) for better mobile touch targets
+- **Optimized Icon Display**: Strengthened mobile icon visibility with improved CSS rules
+
+### Technical Improvements
+- **Accessibility Standards**: Enhanced SVG accessibility by preventing unwanted focus on decorative icons
+- **Icon Path Optimization**: Split export icon SVG into separate paths for better visual clarity
+- **Mobile CSS Enhancement**: Added `!important` rule for reliable mobile icon display
+- **Icon Consistency**: Standardized dropdown toggle icon size to 16px for visual uniformity
+
+### User Experience
+- **Better Touch Interaction**: Consistent button sizing provides more reliable mobile touch experience
+- **Enhanced Visual Clarity**: Improved export icon design with cleaner visual separation
+- **Accessibility Improvements**: Screen readers now handle SVG icons more appropriately
+- **Cross-Platform Consistency**: More reliable icon display across different devices and screen sizes
+
+### Bug Fixes
+- **Mobile Icon Display**: Fixed edge cases where icons might not display properly on some mobile devices
+- **Export Button Visual**: Improved export icon visual clarity and distinction
+- **Button Layout**: Enhanced mobile button layout consistency with proper height constraints
+
 ## [2.6.1] - 2025-08-21
 
 ### Improved

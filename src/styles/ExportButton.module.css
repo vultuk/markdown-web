@@ -83,8 +83,8 @@
 
 .exportIcon { line-height: 0; color: currentColor; display: none; }
 .exportLabel { line-height: 1; }
-.exportCaret { line-height: 0; display: none; }
-.exportCaretLabel { display: inline; }
+.exportCaret { line-height: 0; display: inline-flex; }
+.exportCaretLabel { display: none; }
 
 @media (max-width: 768px) {
   .exportButton { padding: 6px; min-width: 34px; justify-content: center; }

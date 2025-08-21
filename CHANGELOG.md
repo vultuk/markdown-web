@@ -5,6 +5,25 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.20.2] - 2025-08-21
+
+### Fixed
+- **Enhanced Mermaid Loading**: Improved dynamic import with module caching to prevent double-initialization issues
+- **ESM Import Path**: Uses explicit `'mermaid/dist/mermaid.esm.min.mjs'` entry point to avoid bundler optimizer glitches
+- **Module Caching**: Added module reference caching across renders for better performance and reliability
+- **Initialization Safety**: Added error handling around Mermaid initialization to handle edge cases gracefully
+
+### Technical Improvements
+- **Performance**: Better module loading performance with `mermaidLoaderRef` caching system
+- **Bundler Compatibility**: More robust handling of different bundling scenarios and optimization settings
+- **Error Prevention**: Safer initialization prevents "Cannot access before initialization" errors in some environments
+- **Memory Efficiency**: Prevents duplicate module loading and initialization across component re-renders
+
+### Reliability Enhancements
+- **Edge Case Handling**: Better handling of bundler edge cases that could cause Mermaid loading failures
+- **Consistent Rendering**: More reliable diagram rendering across different deployment environments
+- **Initialization Robustness**: Try-catch protection around initialization calls for better error recovery
+
 ## [1.20.1] - 2025-08-21
 
 ### Fixed

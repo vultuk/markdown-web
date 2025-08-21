@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.3] - 2025-08-21
+
+### Improved
+- **Scroll Sync Performance**: Enhanced scroll synchronization with requestAnimationFrame for smoother performance
+- **State Management**: Added better state management for scroll ratios to prevent UI glitches
+- **Animation Optimization**: Implemented proper animation frame handling to reduce scroll event processing overhead
+
+### Technical Improvements
+- **RAF Implementation**: Used requestAnimationFrame to throttle scroll synchronization updates
+- **State Persistence**: Added refs for tracking scroll ratios and animation frames
+- **Performance**: Reduced potential for rapid scroll updates causing UI lag
+- **Memory Management**: Proper cleanup of animation frame requests
+
+### Performance Enhancements
+- **Smoother Scrolling**: Better coordination between editor and preview scroll events
+- **Reduced Overhead**: Optimized scroll event handling with frame-based updates
+- **UI Responsiveness**: Improved overall UI responsiveness during scroll synchronization
+
 ## [2.0.2] - 2025-08-21
 
 ### Fixed

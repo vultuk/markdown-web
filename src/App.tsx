@@ -69,9 +69,16 @@ function App() {
     try { const v = localStorage.getItem('scrollSync'); return v ? v === 'true' : true; } catch { return true; }
   });
   const canSync = (isPreviewMode && !isMobile && previewLayout === 'split' && scrollSync);
+  const lastScrollRatioRef = useRef(0);
+  const syncRafRef = useRef<number | null>(null);
   const handleEditorScrollRatio = (r: number) => {
     if (!canSync) return;
-    try { setPreviewScrollRef.current && setPreviewScrollRef.current(r); } catch {}
+    lastScrollRatioRef.current = r;
+    if (syncRafRef.current) cancelAnimationFrame(syncRafRef.current);
+    syncRafRef.current = requestAnimationFrame(() => {
+      try { setPreviewScrollRef.current && setPreviewScrollRef.current(lastScrollRatioRef.current); } catch {}
+      syncRafRef.current = null;
+    });
   };
   const pendingSettingsRef = useRef<Record<string, unknown>>({});
   const settingsTimerRef = useRef<number | null>(null);

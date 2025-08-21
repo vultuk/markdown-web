@@ -37,6 +37,8 @@ export function Editor({
   const [model, setModel] = useState<string>(defaultModel || 'gpt-5-mini');
   const [mode, setMode] = useState<'adjust' | 'ask'>('adjust');
   const [answer, setAnswer] = useState<string | null>(null);
+  const [hasOpenAiKey, setHasOpenAiKey] = useState<boolean>(false);
+  const [hasAnthropicKey, setHasAnthropicKey] = useState<boolean>(false);
   const textRef = useRef<HTMLTextAreaElement | null>(null);
   const overlayRef = useRef<HTMLDivElement | null>(null);
   const [selStart, setSelStart] = useState<number | null>(null);
@@ -84,7 +86,25 @@ export function Editor({
         const data = await res.json().catch(() => ({}));
         setAiEnabled(!!data.enabled);
       } catch {}
-      setModel(defaultModel || 'gpt-5-mini');
+      try {
+        const r = await fetch('/api/settings', { credentials: 'same-origin' });
+        if (r.ok) {
+          const s = await r.json();
+          const hasOA = !!(s && typeof s.openAiKey === 'string' && s.openAiKey.trim());
+          const hasAN = !!(s && typeof s.anthropicKey === 'string' && s.anthropicKey.trim());
+          setHasOpenAiKey(hasOA);
+          setHasAnthropicKey(hasAN);
+          // Ensure selected model is valid for available keys
+          const opts: string[] = [
+            ...(hasOA ? ['gpt-5', 'gpt-5-mini', 'gpt-5-nano'] : []),
+            ...(hasAN ? ['claude-sonnet-4-20250514', 'claude-opus-4-1-20250805'] : []),
+          ];
+          const current = (defaultModel || model);
+          if (opts.length > 0 && !opts.includes(current)) {
+            setModel(opts[0]);
+          }
+        }
+      } catch {}
       setMode('adjust');
       setAnswer(null);
       setAiOpen(true);
@@ -204,9 +224,19 @@ export function Editor({
                 <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
                   <label htmlFor="ai-model" style={{ color: '#bbb', fontSize: 12 }}>Model</label>
                   <select id="ai-model" value={model} onChange={(e) => setModel(e.currentTarget.value)} disabled={aiLoading} style={{ background: '#1e1e1e', color: '#e6e6e6', border: '1px solid #3e3e42', borderRadius: 6, padding: '6px 8px' }}>
-                    <option value="gpt-5">gpt-5</option>
-                    <option value="gpt-5-mini">gpt-5-mini</option>
-                    <option value="gpt-5-nano">gpt-5-nano</option>
+                    {hasOpenAiKey && (
+                      <>
+                        <option value="gpt-5">gpt-5</option>
+                        <option value="gpt-5-mini">gpt-5-mini</option>
+                        <option value="gpt-5-nano">gpt-5-nano</option>
+                      </>
+                    )}
+                    {hasAnthropicKey && (
+                      <>
+                        <option value="claude-sonnet-4-20250514">claude-sonnet-4-20250514</option>
+                        <option value="claude-opus-4-1-20250805">claude-opus-4-1-20250805</option>
+                      </>
+                    )}
                   </select>
                 </div>
               </div>

@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.13.1] - 2025-08-21
+
+### Fixed
+- **AI Model Selection**: Enhanced dynamic model selection with proper API key validation in AI modal
+- **Model Validation**: Added proper validation to ensure selected model is available for configured API keys
+- **Settings Integration**: Improved integration with settings API to dynamically populate model options
+
+### User Experience
+- **Smart Model Filtering**: AI modal now only shows models for which valid API keys are configured
+- **Automatic Model Fallback**: Automatically selects first available model if current selection is invalid
+
 ## [2.13.0] - 2025-08-21
 
 ### Added

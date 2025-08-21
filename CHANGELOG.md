@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.0.2] - 2025-08-21
+
+### Fixed
+- **Scroll Sync Stability**: Removed unused preview scroll handlers that could cause potential errors
+- **Error Handling**: Added try-catch protection for scroll synchronization to prevent crashes
+- **Code Cleanup**: Simplified scroll event handling by removing redundant preview-to-editor sync
+
+### Technical Improvements
+- **Event Handler Optimization**: Streamlined scroll synchronization to use unidirectional flow (editor-to-preview only)
+- **Error Prevention**: Added defensive programming patterns to handle edge cases in scroll calculations
+- **Performance**: Reduced unnecessary event listeners and potential memory leaks
+
 ## [2.0.1] - 2025-08-21
 
 ### Fixed

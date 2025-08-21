@@ -71,11 +71,7 @@ function App() {
   const canSync = (isPreviewMode && !isMobile && previewLayout === 'split' && scrollSync);
   const handleEditorScrollRatio = (r: number) => {
     if (!canSync) return;
-    setPreviewScrollRef.current && setPreviewScrollRef.current(r);
-  };
-  const handlePreviewScrollRatio = (r: number) => {
-    if (!canSync) return;
-    setEditorScrollRef.current && setEditorScrollRef.current(r);
+    try { setPreviewScrollRef.current && setPreviewScrollRef.current(r); } catch {}
   };
   const pendingSettingsRef = useRef<Record<string, unknown>>({});
   const settingsTimerRef = useRef<number | null>(null);
@@ -695,8 +691,6 @@ function App() {
                 {selectedFile ? (
                   <MarkdownPreview
                     content={fileContent}
-                    enableScrollSync={canSync}
-                    onScrollRatio={handlePreviewScrollRatio}
                     registerSetScroll={(fn) => { setPreviewScrollRef.current = fn; }}
                   />
                 ) : null}

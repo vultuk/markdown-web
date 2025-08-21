@@ -77,7 +77,13 @@ export function Editor({
 
   // Listen for header AI open requests
   useEffect(() => {
-    const handler = () => {
+    const handler = async () => {
+      // Refresh AI status in case key was added in settings
+      try {
+        const res = await fetch('/api/ai/status', { credentials: 'same-origin' });
+        const data = await res.json().catch(() => ({}));
+        setAiEnabled(!!data.enabled);
+      } catch {}
       setModel(defaultModel || 'gpt-5-mini');
       setMode('adjust');
       setAnswer(null);

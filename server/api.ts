@@ -17,7 +17,13 @@ const getWorkingDir = () => process.env.WORKING_DIR || process.cwd();
 // AI status endpoint
 fileRouter.get('/ai/status', async (req, res) => {
   try {
-    const enabled = !!process.env.OPENAI_KEY;
+    let enabled = false;
+    try {
+      const settings = await themeManager.getSettings();
+      enabled = !!(settings.openAiKey || process.env.OPENAI_KEY);
+    } catch {
+      enabled = !!process.env.OPENAI_KEY;
+    }
     res.json({ enabled });
   } catch (e) {
     res.json({ enabled: false });
@@ -287,7 +293,11 @@ fileRouter.get('/themes/:name', async (req, res) => {
 // Apply AI transformation to markdown
 fileRouter.post('/ai/apply', async (req, res) => {
   try {
-    const apiKey = process.env.OPENAI_KEY;
+    let apiKey = process.env.OPENAI_KEY;
+    try {
+      const s = await themeManager.getSettings();
+      if (s.openAiKey && typeof s.openAiKey === 'string' && s.openAiKey.trim()) apiKey = s.openAiKey.trim();
+    } catch {}
     if (!apiKey) {
       return res.status(400).json({ error: 'OpenAI key not configured' });
     }
@@ -408,7 +418,11 @@ fileRouter.post('/ai/apply', async (req, res) => {
 // Ask questions about current markdown (no file modification)
 fileRouter.post('/ai/ask', async (req, res) => {
   try {
-    const apiKey = process.env.OPENAI_KEY;
+    let apiKey = process.env.OPENAI_KEY;
+    try {
+      const s = await themeManager.getSettings();
+      if (s.openAiKey && typeof s.openAiKey === 'string' && s.openAiKey.trim()) apiKey = s.openAiKey.trim();
+    } catch {}
     if (!apiKey) {
       return res.status(400).json({ error: 'OpenAI key not configured' });
     }
@@ -550,6 +564,12 @@ fileRouter.post('/settings', async (req, res) => {
     }
     if ('openAiModel' in incoming && typeof incoming.openAiModel !== 'string') {
       return res.status(400).json({ error: 'openAiModel must be a string' });
+    }
+    if ('openAiKey' in incoming && typeof incoming.openAiKey !== 'string') {
+      return res.status(400).json({ error: 'openAiKey must be a string' });
+    }
+    if ('anthropicKey' in incoming && typeof incoming.anthropicKey !== 'string') {
+      return res.status(400).json({ error: 'anthropicKey must be a string' });
     }
     // removed handling for scrollSync and mermaidEnabled
 

@@ -54,6 +54,8 @@ export interface Settings {
   previewLayout?: 'full' | 'split';
   sidebarMode?: 'overlay' | 'inline';
   openAiModel?: string;
+  openAiKey?: string;
+  anthropicKey?: string;
 }
 
 export class ThemeManager {
@@ -120,7 +122,7 @@ export class ThemeManager {
       const settingsData = await fs.readFile(this.settingsFile, 'utf-8');
       const parsed = JSON.parse(settingsData);
       // Fill defaults for any missing keys to keep behavior consistent
-      const defaults: Settings = { selectedTheme: 'dark', previewLayout: 'full', sidebarMode: 'overlay', openAiModel: 'gpt-5-mini' };
+      const defaults: Settings = { selectedTheme: 'dark', previewLayout: 'full', sidebarMode: 'overlay', openAiModel: 'gpt-5-mini', openAiKey: undefined, anthropicKey: undefined } as Settings;
       return { ...defaults, ...parsed };
     } catch (error) {
       // Return default settings if file doesn't exist

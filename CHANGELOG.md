@@ -2,6 +2,40 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.12.0] - 2025-08-21
+
+### Added
+- **AI API Key Management**: Secure storage and management of OpenAI and Anthropic API keys in settings
+- **Enhanced AI Integration**: AI services now use settings-stored API keys as primary source with environment fallback
+- **Secure API Key Storage**: Password-masked input fields for API key management in settings modal
+- **Persistent AI Configuration**: API keys stored securely in user settings file on local machine
+
+### New Features
+- **OpenAI API Key Input**: Dedicated settings field for OpenAI API key with secure password input
+- **Anthropic API Key Input**: Settings field for Anthropic API key management
+- **Dynamic AI Status Detection**: AI availability now checks both environment variables and settings-stored keys
+- **Real-time AI Refresh**: AI status refreshes when opening AI modal after adding keys in settings
+- **Settings Validation**: Extended settings validation to handle new API key fields
+
+### Technical Improvements
+- **Enhanced AI Service Integration**: AI endpoints prioritize settings-stored keys over environment variables
+- **Settings Schema Extension**: Added `openAiKey` and `anthropicKey` to settings interface and validation
+- **Secure Key Handling**: API keys handled securely with proper validation and fallback logic
+- **Settings Persistence**: API keys automatically persisted with other user preferences
+- **Error Handling**: Graceful fallback for AI key retrieval with comprehensive error handling
+
+### User Experience
+- **Streamlined AI Setup**: Users can configure AI keys directly in settings without environment variables
+- **Visual Security**: Password-masked input fields for API key entry
+- **Contextual Help**: Informative text explaining secure local storage of API keys
+- **Immediate Availability**: AI features become available immediately after adding valid API keys
+
+### Security Features
+- **Local Storage Only**: API keys stored only in local user settings file on the machine
+- **No Network Transmission**: API keys not transmitted to external services except for AI API calls
+- **Secure Input Handling**: Password-type inputs prevent shoulder surfing during key entry
+- **Validation**: Proper input validation and sanitization for API key fields
+
 ## [2.11.1] - 2025-08-21
 
 ### Fixed

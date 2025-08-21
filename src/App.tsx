@@ -104,6 +104,8 @@ function App() {
       return 'gpt-5-mini';
     }
   });
+  const [openAiKey, setOpenAiKey] = useState<string | undefined>(undefined);
+  const [anthropicKey, setAnthropicKey] = useState<string | undefined>(undefined);
   // Mermaid always enabled
 
   // Load persisted settings from server
@@ -118,6 +120,8 @@ function App() {
         if (s && (s.previewLayout === 'full' || s.previewLayout === 'split')) setPreviewLayout(s.previewLayout);
         if (s && (s.sidebarMode === 'overlay' || s.sidebarMode === 'inline')) setSidebarMode(s.sidebarMode);
         if (s && typeof s.openAiModel === 'string') setOpenAiModel(s.openAiModel);
+        if (s && typeof s.openAiKey === 'string') setOpenAiKey(s.openAiKey);
+        if (s && typeof s.anthropicKey === 'string') setAnthropicKey(s.anthropicKey);
         if (s && typeof s.scrollSync === 'boolean') setScrollSync(s.scrollSync);
         
       } catch {}
@@ -467,6 +471,14 @@ function App() {
     if (settingsLoaded) queueSettingsUpdate({ openAiModel });
   }, [openAiModel]);
 
+  useEffect(() => {
+    if (settingsLoaded) queueSettingsUpdate({ openAiKey });
+  }, [openAiKey, settingsLoaded]);
+
+  useEffect(() => {
+    if (settingsLoaded) queueSettingsUpdate({ anthropicKey });
+  }, [anthropicKey, settingsLoaded]);
+
   // removed scrollSync persistence
 
   // Mermaid toggle removed (always on)
@@ -727,6 +739,10 @@ function App() {
         onChangeSidebarMode={setSidebarMode}
         openAiModel={openAiModel}
         onChangeOpenAiModel={setOpenAiModel}
+        openAiKey={openAiKey}
+        onChangeOpenAiKey={(k: string) => setOpenAiKey(k)}
+        anthropicKey={anthropicKey}
+        onChangeAnthropicKey={(k: string) => setAnthropicKey(k)}
         onPersistSettings={(partial) => queueSettingsUpdate(partial)}
         
       />

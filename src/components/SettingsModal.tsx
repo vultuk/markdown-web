@@ -14,10 +14,14 @@ interface SettingsModalProps {
   onChangeSidebarMode: (mode: SidebarMode) => void;
   openAiModel: string;
   onChangeOpenAiModel: (model: string) => void;
+  openAiKey?: string;
+  onChangeOpenAiKey?: (key: string) => void;
+  anthropicKey?: string;
+  onChangeAnthropicKey?: (key: string) => void;
   onPersistSettings?: (partial: Record<string, unknown>) => void;
 }
 
-export function SettingsModal({ isOpen, onClose, previewLayout, onChangePreviewLayout, sidebarMode, onChangeSidebarMode, openAiModel, onChangeOpenAiModel, onPersistSettings }: SettingsModalProps) {
+export function SettingsModal({ isOpen, onClose, previewLayout, onChangePreviewLayout, sidebarMode, onChangeSidebarMode, openAiModel, onChangeOpenAiModel, openAiKey, onChangeOpenAiKey, anthropicKey, onChangeAnthropicKey, onPersistSettings }: SettingsModalProps) {
   const { availableThemes, selectedTheme, loading, changeTheme } = useTheme();
   useEffect(() => {
     if (!isOpen) return;
@@ -136,6 +140,43 @@ export function SettingsModal({ isOpen, onClose, previewLayout, onChangePreviewL
               <option value="gpt-5-mini">gpt-5-mini</option>
               <option value="gpt-5-nano">gpt-5-nano</option>
             </select>
+          </fieldset>
+
+          <fieldset style={{ border: 'none', padding: 0, margin: 0, marginTop: 16 }}>
+            <legend style={{ color: '#bbb', marginBottom: 8, fontSize: 13 }}>OpenAI API key</legend>
+            <input
+              type="password"
+              value={openAiKey || ''}
+              onChange={(e) => onChangeOpenAiKey && onChangeOpenAiKey(e.target.value)}
+              placeholder="Paste your OpenAI API key"
+              style={{
+                width: '100%',
+                padding: '8px 10px',
+                borderRadius: 4,
+                border: '1px solid #3e3e42',
+                background: '#1e1e1e',
+                color: '#ddd'
+              }}
+            />
+            <div style={{ color: '#888', fontSize: 12, marginTop: 6 }}>Stored securely in your user settings file on this machine.</div>
+          </fieldset>
+
+          <fieldset style={{ border: 'none', padding: 0, margin: 0, marginTop: 16 }}>
+            <legend style={{ color: '#bbb', marginBottom: 8, fontSize: 13 }}>Anthropic API key</legend>
+            <input
+              type="password"
+              value={anthropicKey || ''}
+              onChange={(e) => onChangeAnthropicKey && onChangeAnthropicKey(e.target.value)}
+              placeholder="Paste your Anthropic API key"
+              style={{
+                width: '100%',
+                padding: '8px 10px',
+                borderRadius: 4,
+                border: '1px solid #3e3e42',
+                background: '#1e1e1e',
+                color: '#ddd'
+              }}
+            />
           </fieldset>
         </div>
         <div className={styles.footer}>

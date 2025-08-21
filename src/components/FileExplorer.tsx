@@ -540,42 +540,47 @@ export function FileExplorer({
               {(() => {
                 const p = menu.path || '';
                 const node = findNodeByPath(files, p);
-                if (node && typeof node.gitStatus !== 'undefined') {
-                  const label = node.gitStatus === 'untracked' ? 'Add to Git' : 'Stage changes';
-                  return (
+                const label = node?.gitStatus === 'untracked' ? 'Add to Git' : 'Stage changes';
+                return (
+                  <button
+                    className={styles.contextItem}
+                    onClick={async () => {
+                      setMenu(null);
+                      try {
+                        const res = await fetch('/api/git/add', { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin', body: JSON.stringify({ path: p }) });
+                        const data = await res.json().catch(() => ({}));
+                        if (!res.ok) alert(data.error || 'Failed to stage');
+                        onRefreshFiles && onRefreshFiles();
+                      } catch { alert('Failed to stage'); }
+                    }}
+                  >
+                    {label}
+                  </button>
+                );
+              })()}
+              {(() => {
+                const node = findNodeByPath(files, menu.path || '');
+                if (node?.gitStatus === 'deleted') return null;
+                return (
+                  <>
                     <button
                       className={styles.contextItem}
-                      onClick={async () => {
+                      onClick={() => {
                         setMenu(null);
-                        try {
-                          const res = await fetch('/api/git/add', { method: 'POST', headers: { 'Content-Type': 'application/json' }, credentials: 'same-origin', body: JSON.stringify({ path: p }) });
-                          const data = await res.json().catch(() => ({}));
-                          if (!res.ok) alert(data.error || 'Failed to stage');
-                          onRefreshFiles && onRefreshFiles();
-                        } catch { alert('Failed to stage'); }
+                        if (menu.path) { setRenamingPath(menu.path); setRenameValue(basename(menu.path)); }
                       }}
                     >
-                      {label}
+                      Rename File
                     </button>
-                  );
-                }
-                return null;
+                    <button
+                      className={`${styles.contextItem} ${styles.danger}`}
+                      onClick={() => { setMenu(null); if (menu.path) onDeleteFile(menu.path); }}
+                    >
+                      Delete File
+                    </button>
+                  </>
+                );
               })()}
-              <button
-                className={styles.contextItem}
-                onClick={() => {
-                  setMenu(null);
-                  if (menu.path) { setRenamingPath(menu.path); setRenameValue(basename(menu.path)); }
-                }}
-              >
-                Rename File
-              </button>
-              <button
-                className={`${styles.contextItem} ${styles.danger}`}
-                onClick={() => { setMenu(null); if (menu.path) onDeleteFile(menu.path); }}
-              >
-                Delete File
-              </button>
             </>
           )}
           {menu.type === 'root' && (

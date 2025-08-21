@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.11.1] - 2025-08-21
+
+### Fixed
+- **Git Deleted File Handling**: Enhanced Git staging to properly handle deleted files using `git rm --cached`
+- **Git Context Menu Logic**: Improved conditional rendering for deleted files in context menu
+- **Git Operation Labels**: Dynamic labeling for Git operations ("Add to Git" vs "Stage changes")
+- **File Explorer Git Integration**: Better Git status handling and visual feedback for deleted files
+
+### Technical Improvements
+- **Git API Enhancement**: Added file existence check before staging with appropriate Git commands
+- **Deleted File Injection**: Proper handling of deleted files in directory listings within Git repositories
+- **UI Conditional Rendering**: Context menu items now conditionally render based on file Git status
+
 ## [2.11.0] - 2025-08-21
 
 ### Added

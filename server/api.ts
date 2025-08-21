@@ -592,8 +592,12 @@ fileRouter.post('/git/add', async (req, res) => {
     const repoRoot = await findGitRoot(absPath);
     if (!repoRoot) return res.status(400).json({ error: 'Not inside a git repository' });
     const relToRepo = path.relative(repoRoot, absPath).replace(/\\/g, '/');
+    // If the file no longer exists, stage the deletion instead
+    let exists = true;
+    try { await fs.stat(absPath); } catch { exists = false; }
     try {
-      const { stdout, stderr } = await execFileAsync('git', ['add', '--', relToRepo], { cwd: repoRoot });
+      const args = exists ? ['add', '--', relToRepo] : ['rm', '--cached', '--', relToRepo];
+      const { stdout, stderr } = await execFileAsync('git', args, { cwd: repoRoot });
       return res.json({ success: true, stdout, stderr });
     } catch (e: any) {
       return res.status(502).json({ error: 'git add failed', details: e?.stderr || e?.message || String(e) });
@@ -775,6 +779,27 @@ async function getDirectoryContents(dirPath: string, gitCtx: GitContext = null):
       });
     }
   }
+  // Inject deleted files that belong to this directory (within repo context)
+  try {
+    if (gitCtx && gitCtx.root) {
+      const relDir = path.relative(gitCtx.root, dirPath).replace(/\\/g, '/');
+      const relDirNorm = relDir === '' ? '' : relDir;
+      for (const [relPathFromRepo, status] of gitCtx.map.entries()) {
+        if (status !== 'deleted') continue;
+        if (!relPathFromRepo.endsWith('.md')) continue;
+        const parent = path.posix.dirname(relPathFromRepo);
+        const parentNorm = parent === '.' ? '' : parent;
+        if (parentNorm !== relDirNorm) continue;
+        const name = path.posix.basename(relPathFromRepo);
+        const abs = path.join(gitCtx.root, relPathFromRepo);
+        const relToWorking = path.relative(getWorkingDir(), abs).replace(/\\/g, '/');
+        // avoid duplicates if a similarly named file somehow exists in result
+        if (!result.some((r: any) => r.type === 'file' && r.path === relToWorking)) {
+          result.push({ name, type: 'file', path: relToWorking, gitStatus: 'deleted' });
+        }
+      }
+    }
+  } catch {}
   
   return result.sort((a, b) => {
     if (a.type === b.type) return a.name.localeCompare(b.name);

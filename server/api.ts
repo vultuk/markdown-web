@@ -787,7 +787,7 @@ fileRouter.post('/git/clone', async (req, res) => {
     })();
     const target = path.resolve(baseAbs, derivedName);
     const relTarget = path.relative(workingDir, target);
-    if (relTarget.startsWith('..') || relTarget.startsWith(path.sep)) return res.status(403).json({ error: 'Access denied' });
+    if (relTarget.startsWith('..') || path.isAbsolute(relTarget)) return res.status(403).json({ error: 'Access denied' });
     // Prevent cloning over existing folder
     try {
       const s = await fs.stat(target);

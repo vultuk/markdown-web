@@ -34,7 +34,9 @@
     "setup-ssl": "sudo ./scripts/setup-ssl.sh",
     "typecheck": "tsc --noEmit",
     "prepublishOnly": "npm run build",
-    "test": "vitest run"
+    "test": "vitest run",
+    "lint": "eslint . --ext .ts,.tsx,.js,.jsx",
+    "lint:fix": "eslint . --ext .ts,.tsx,.js,.jsx --fix"
   },
   "keywords": [
     "markdown",
@@ -86,6 +88,12 @@
     "vite": "^5.0.8",
     "vitest": "^2.1.1",
     "supertest": "^6.3.4",
-    "@types/supertest": "^2.0.16"
+    "@types/supertest": "^2.0.16",
+    "eslint": "^8.57.0",
+    "@typescript-eslint/parser": "^7.18.0",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "eslint-plugin-react": "^7.34.3",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-config-prettier": "^9.1.0"
   }
 }

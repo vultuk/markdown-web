@@ -2,6 +2,28 @@
 
 All notable changes to this project will be documented in this file.
 
+## [2.15.0] - 2025-08-22
+
+### Added
+- **Cross-Platform File Path Handling**: Enhanced file path normalization for better Windows/Unix compatibility
+- **Case-Insensitive Markdown Detection**: Improved markdown file detection to handle .MD, .Md, and .md extensions
+- **Standardized Path Separators**: Consistent forward slash path separators for client-side file paths
+
+### Technical Improvements
+- **Path Separator Normalization**: Added `relForClient` path conversion using forward slashes for cross-platform consistency
+- **Regex-Based File Matching**: Replaced string `endsWith` with case-insensitive regex patterns for more robust file detection
+- **Enhanced File System Compatibility**: Better handling of different operating system path conventions
+
+### Cross-Platform Enhancements
+- **Windows Compatibility**: Improved file path handling on Windows systems with proper separator conversion
+- **Case Sensitivity**: Better handling of markdown files with different case extensions across operating systems
+- **Consistent API Responses**: Standardized file path format in API responses regardless of server OS
+
+### Bug Fixes
+- **File Path Display**: Fixed inconsistent path separators in file explorer on different operating systems
+- **Markdown File Detection**: Enhanced detection of markdown files with varying case extensions
+- **Git Integration**: Improved Git status detection with normalized path handling
+
 ## [2.14.0] - 2025-08-21
 
 ### Added

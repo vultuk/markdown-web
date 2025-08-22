@@ -841,6 +841,7 @@ async function getDirectoryContents(dirPath: string, gitCtx: GitContext = null):
     
     const itemPath = path.join(dirPath, item.name);
     const relativePath = path.relative(getWorkingDir(), itemPath);
+    const relForClient = relativePath.split(path.sep).join('/');
     
     if (item.isDirectory()) {
       // Detect if this folder is a Git repository (contains a .git directory)
@@ -859,12 +860,12 @@ async function getDirectoryContents(dirPath: string, gitCtx: GitContext = null):
       result.push({
         name: item.name,
         type: 'directory',
-        path: relativePath,
+        path: relForClient,
         children: children,
         isGitRepo,
         gitSummary,
       });
-    } else if (item.name.endsWith('.md')) {
+    } else if (/\.md$/i.test(item.name)) {
       // Attach per-file git status if we are inside a repo context
       let gitStatus: GitFileStatus | undefined = undefined;
       if (gitCtx && gitCtx.root) {
@@ -875,7 +876,7 @@ async function getDirectoryContents(dirPath: string, gitCtx: GitContext = null):
       result.push({
         name: item.name,
         type: 'file',
-        path: relativePath,
+        path: relForClient,
         gitStatus,
       });
     }
@@ -887,7 +888,7 @@ async function getDirectoryContents(dirPath: string, gitCtx: GitContext = null):
       const relDirNorm = relDir === '' ? '' : relDir;
       for (const [relPathFromRepo, status] of gitCtx.map.entries()) {
         if (status !== 'deleted') continue;
-        if (!relPathFromRepo.endsWith('.md')) continue;
+        if (!/\.md$/i.test(relPathFromRepo)) continue;
         const parent = path.posix.dirname(relPathFromRepo);
         const parentNorm = parent === '.' ? '' : parent;
         if (parentNorm !== relDirNorm) continue;

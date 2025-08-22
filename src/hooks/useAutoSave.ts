@@ -13,13 +13,28 @@ export function useAutoSave({ content, filePath, onSave, delay = 15000, paused =
   const [lastSaved, setLastSaved] = useState<string>('');
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   const initialContentRef = useRef<string>('');
+  const needsResetRef = useRef(false);
 
+  // When the file path changes mark that we need to capture the new initial content
   useEffect(() => {
-    if (filePath && content !== initialContentRef.current) {
-      initialContentRef.current = content;
-      setLastSaved(content);
+    if (filePath) {
+      needsResetRef.current = true;
+    } else {
+      // No file selected – clear references
+      initialContentRef.current = '';
+      setLastSaved('');
+      needsResetRef.current = false;
     }
   }, [filePath]);
+
+  // Capture the initial content for a file once it has loaded
+  useEffect(() => {
+    if (filePath && needsResetRef.current && content != null) {
+      initialContentRef.current = content;
+      setLastSaved(content);
+      needsResetRef.current = false;
+    }
+  }, [content, filePath]);
 
   const saveNow = async () => {
     if (!filePath || content === lastSaved || isSaving) {

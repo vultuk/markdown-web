@@ -36,7 +36,7 @@ This starts both the client (Vite) and server (Express) in development mode with
 2. If not, create a new issue with:
    - Clear, descriptive title
    - Steps to reproduce
-   - Expected vs actual behavior
+   - Expected vs actual behaviour
    - System information (OS, Node.js version, browser)
    - Screenshots if applicable
 
@@ -104,13 +104,16 @@ Then create a pull request on GitHub with:
 markdown-web/
 ├── src/                    # React frontend source
 │   ├── components/         # React components
-│   ├── hooks/             # Custom React hooks
-│   └── styles/            # CSS modules
-├── server/                # Express backend
-│   ├── index.ts          # Server entry point
-│   └── api.ts            # API routes
-├── bin/                   # CLI entry point
-└── dist/                  # Built files
+│   ├── hooks/              # Custom React hooks
+│   └── styles/             # CSS modules
+├── server/                 # Express backend
+│   ├── api.ts              # API routes
+│   ├── auth.ts             # Authentication helpers
+│   ├── https-server.ts     # HTTPS server bootstrap
+│   ├── index.ts            # Server entry point
+│   └── themeManager.ts     # Theme management
+├── bin/                    # CLI entry point
+└── dist/                   # Built files
 ```
 
 ### Key Components

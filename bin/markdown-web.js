@@ -61,7 +61,7 @@ async function main() {
     if (ngrokAuthToken && ngrokDomain) {
       try {
         const ngrok = await import('@ngrok/ngrok');
-        // Some environments require explicit authtoken setup
+        // Some environments require explicit auth token setup
         try { await ngrok.authtoken(ngrokAuthToken); } catch {}
         const addr = 3001; // local server port
         ngrokListener = await ngrok.connect({ addr, authtoken: ngrokAuthToken, domain: ngrokDomain });

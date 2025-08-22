@@ -789,10 +789,10 @@ fileRouter.post('/git/clone', async (req, res) => {
     return res.status(500).json({ error: 'git clone failed' });
   }
 });
-type GitFileStatus = 'untracked' | 'modified' | 'deleted';
-type GitContext = { root: string; map: Map<string, GitFileStatus>; hasUnstaged: boolean; hasStaged: boolean } | null;
+export type GitFileStatus = 'untracked' | 'modified' | 'deleted';
+export type GitContext = { root: string; map: Map<string, GitFileStatus>; hasUnstaged: boolean; hasStaged: boolean } | null;
 
-async function getGitStatusMap(repoRoot: string): Promise<GitContext> {
+export async function getGitStatusMap(repoRoot: string): Promise<GitContext> {
   try {
     const { stdout } = await execFileAsync('git', ['status', '--porcelain'], { cwd: repoRoot });
     const map = new Map<string, GitFileStatus>();
@@ -832,7 +832,7 @@ async function getGitStatusMap(repoRoot: string): Promise<GitContext> {
   }
 }
 
-async function getDirectoryContents(dirPath: string, gitCtx: GitContext = null): Promise<any[]> {
+export async function getDirectoryContents(dirPath: string, gitCtx: GitContext = null): Promise<any[]> {
   const items = await fs.readdir(dirPath, { withFileTypes: true });
   const result = [];
   

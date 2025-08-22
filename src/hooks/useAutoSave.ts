@@ -29,7 +29,7 @@ export function useAutoSave({ content, filePath, onSave, delay = 15000, paused =
 
   // Capture the initial content for a file once it has loaded
   useEffect(() => {
-    if (filePath && needsResetRef.current) {
+    if (filePath && needsResetRef.current && content != null) {
       initialContentRef.current = content;
       setLastSaved(content);
       needsResetRef.current = false;

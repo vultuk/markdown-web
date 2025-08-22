@@ -245,7 +245,7 @@ fileRouter.delete('/directories/*', async (req, res) => {
     const rel = path.relative(workingDir, dirPath);
 
     // Security check: ensure directory is within working directory
-    if (rel.startsWith('..') || rel.startsWith(path.sep)) {
+    if (rel.startsWith('..') || path.isAbsolute(rel)) {
       return res.status(403).json({ error: 'Access denied' });
     }
 

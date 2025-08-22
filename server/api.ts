@@ -34,7 +34,7 @@ fileRouter.get('/ai/status', async (req, res) => {
 // Get directory structure
 fileRouter.get('/files', async (req, res) => {
   try {
-    const workingDir = getWorkingDir();
+    const workingDir = path.resolve(getWorkingDir());
     const files = await getDirectoryContents(workingDir);
     res.json(files);
   } catch (error) {
@@ -46,15 +46,16 @@ fileRouter.get('/files', async (req, res) => {
 // Read file content
 fileRouter.get('/files/*', async (req, res) => {
   try {
-    const workingDir = getWorkingDir();
+    const workingDir = path.resolve(getWorkingDir());
     const relativePath = decodeURIComponent(req.url.replace('/files/', ''));
-    const filePath = path.join(workingDir, relativePath);
-    
+    const filePath = path.resolve(workingDir, relativePath);
+    const rel = path.relative(workingDir, filePath);
+
     // Security check: ensure file is within working directory
-    if (!filePath.startsWith(workingDir)) {
+    if (rel.startsWith('..') || rel.startsWith(path.sep)) {
       return res.status(403).json({ error: 'Access denied' });
     }
-    
+
     const content = await fs.readFile(filePath, 'utf-8');
     res.json({ content });
   } catch (error) {
@@ -66,19 +67,20 @@ fileRouter.get('/files/*', async (req, res) => {
 // Save file content
 fileRouter.post('/files/*', async (req, res) => {
   try {
-    const workingDir = getWorkingDir();
+    const workingDir = path.resolve(getWorkingDir());
     const relativePath = decodeURIComponent(req.url.replace('/files/', ''));
-    const filePath = path.join(workingDir, relativePath);
+    const filePath = path.resolve(workingDir, relativePath);
     const { content } = req.body;
-    
+    const rel = path.relative(workingDir, filePath);
+
     // Security check: ensure file is within working directory
-    if (!filePath.startsWith(workingDir)) {
+    if (rel.startsWith('..') || rel.startsWith(path.sep)) {
       return res.status(403).json({ error: 'Access denied' });
     }
-    
+
     // Ensure directory exists
     await fs.mkdir(path.dirname(filePath), { recursive: true });
-    
+
     await fs.writeFile(filePath, content, 'utf-8');
     res.json({ success: true });
   } catch (error) {
@@ -90,20 +92,21 @@ fileRouter.post('/files/*', async (req, res) => {
 // Create new file
 fileRouter.post('/create-file', async (req, res) => {
   try {
-    const workingDir = getWorkingDir();
+    const workingDir = path.resolve(getWorkingDir());
     const { fileName } = req.body;
-    
+
     if (!fileName || !fileName.endsWith('.md')) {
       return res.status(400).json({ error: 'Invalid file name. Must end with .md' });
     }
-    
-    const filePath = path.join(workingDir, fileName);
-    
+
+    const filePath = path.resolve(workingDir, fileName);
+    const rel = path.relative(workingDir, filePath);
+
     // Security check
-    if (!filePath.startsWith(workingDir)) {
+    if (rel.startsWith('..') || rel.startsWith(path.sep)) {
       return res.status(403).json({ error: 'Access denied' });
     }
-    
+
     // Check if file already exists
     try {
       await fs.access(filePath);
@@ -111,10 +114,10 @@ fileRouter.post('/create-file', async (req, res) => {
     } catch {
       // File doesn't exist, continue
     }
-    
+
     // Ensure directory exists
     await fs.mkdir(path.dirname(filePath), { recursive: true });
-    
+
     await fs.writeFile(filePath, '', 'utf-8');
     res.json({ success: true });
   } catch (error) {
@@ -126,20 +129,21 @@ fileRouter.post('/create-file', async (req, res) => {
 // Create new directory
 fileRouter.post('/create-directory', async (req, res) => {
   try {
-    const workingDir = getWorkingDir();
+    const workingDir = path.resolve(getWorkingDir());
     const { dirName } = req.body;
-    
+
     if (!dirName) {
       return res.status(400).json({ error: 'Directory name is required' });
     }
-    
-    const dirPath = path.join(workingDir, dirName);
-    
+
+    const dirPath = path.resolve(workingDir, dirName);
+    const rel = path.relative(workingDir, dirPath);
+
     // Security check
-    if (!dirPath.startsWith(workingDir)) {
+    if (rel.startsWith('..') || rel.startsWith(path.sep)) {
       return res.status(403).json({ error: 'Access denied' });
     }
-    
+
     await fs.mkdir(dirPath, { recursive: true });
     res.json({ success: true });
   } catch (error) {
@@ -151,18 +155,20 @@ fileRouter.post('/create-directory', async (req, res) => {
 // Rename file or directory
 fileRouter.post('/rename', async (req, res) => {
   try {
-    const workingDir = getWorkingDir();
+    const workingDir = path.resolve(getWorkingDir());
     const { oldPath, newPath } = req.body as { oldPath?: string; newPath?: string };
 
     if (!oldPath || !newPath) {
       return res.status(400).json({ error: 'oldPath and newPath are required' });
     }
 
-    const absOld = path.join(workingDir, oldPath);
-    const absNew = path.join(workingDir, newPath);
+    const absOld = path.resolve(workingDir, oldPath);
+    const absNew = path.resolve(workingDir, newPath);
+    const relOld = path.relative(workingDir, absOld);
+    const relNew = path.relative(workingDir, absNew);
 
     // Security: ensure both paths are within working dir
-    if (!absOld.startsWith(workingDir) || !absNew.startsWith(workingDir)) {
+    if (relOld.startsWith('..') || relOld.startsWith(path.sep) || relNew.startsWith('..') || relNew.startsWith(path.sep)) {
       return res.status(403).json({ error: 'Access denied' });
     }
 
@@ -200,27 +206,28 @@ fileRouter.post('/rename', async (req, res) => {
 // Delete file
 fileRouter.delete('/files/*', async (req, res) => {
   try {
-    const workingDir = getWorkingDir();
+    const workingDir = path.resolve(getWorkingDir());
     const relativePath = decodeURIComponent(req.url.replace('/files/', ''));
-    const filePath = path.join(workingDir, relativePath);
-    
+    const filePath = path.resolve(workingDir, relativePath);
+    const rel = path.relative(workingDir, filePath);
+
     // Security check: ensure file is within working directory
-    if (!filePath.startsWith(workingDir)) {
+    if (rel.startsWith('..') || rel.startsWith(path.sep)) {
       return res.status(403).json({ error: 'Access denied' });
     }
-    
+
     // Prevent deletion of the working directory itself
     if (filePath === workingDir) {
       return res.status(403).json({ error: 'Cannot delete working directory' });
     }
-    
+
     // Check if file exists
     try {
       await fs.access(filePath);
     } catch {
       return res.status(404).json({ error: 'File not found' });
     }
-    
+
     await fs.rm(filePath);
     res.json({ success: true });
   } catch (error) {
@@ -232,20 +239,21 @@ fileRouter.delete('/files/*', async (req, res) => {
 // Delete directory
 fileRouter.delete('/directories/*', async (req, res) => {
   try {
-    const workingDir = getWorkingDir();
+    const workingDir = path.resolve(getWorkingDir());
     const relativePath = decodeURIComponent(req.url.replace('/directories/', ''));
-    const dirPath = path.join(workingDir, relativePath);
-    
+    const dirPath = path.resolve(workingDir, relativePath);
+    const rel = path.relative(workingDir, dirPath);
+
     // Security check: ensure directory is within working directory
-    if (!dirPath.startsWith(workingDir)) {
+    if (rel.startsWith('..') || rel.startsWith(path.sep)) {
       return res.status(403).json({ error: 'Access denied' });
     }
-    
+
     // Prevent deletion of the working directory itself
     if (dirPath === workingDir) {
       return res.status(403).json({ error: 'Cannot delete working directory' });
     }
-    
+
     // Check if directory exists
     try {
       const stat = await fs.stat(dirPath);
@@ -255,7 +263,7 @@ fileRouter.delete('/directories/*', async (req, res) => {
     } catch {
       return res.status(404).json({ error: 'Directory not found' });
     }
-    
+
     await fs.rm(dirPath, { recursive: true, force: true });
     res.json({ success: true });
   } catch (error) {
@@ -685,11 +693,12 @@ async function findGitRoot(startPath: string): Promise<string | null> {
 // Git: add (stage) a file
 fileRouter.post('/git/add', async (req, res) => {
   try {
-    const workingDir = getWorkingDir();
+    const workingDir = path.resolve(getWorkingDir());
     const relPath = String((req.body || {}).path || '');
     if (!relPath) return res.status(400).json({ error: 'path is required' });
-    const absPath = path.join(workingDir, relPath);
-    if (!absPath.startsWith(workingDir)) return res.status(403).json({ error: 'Access denied' });
+    const absPath = path.resolve(workingDir, relPath);
+    const rel = path.relative(workingDir, absPath);
+    if (rel.startsWith('..') || rel.startsWith(path.sep)) return res.status(403).json({ error: 'Access denied' });
     const repoRoot = await findGitRoot(absPath);
     if (!repoRoot) return res.status(400).json({ error: 'Not inside a git repository' });
     const relToRepo = path.relative(repoRoot, absPath).replace(/\\/g, '/');
@@ -711,11 +720,12 @@ fileRouter.post('/git/add', async (req, res) => {
 // Git: commit (from a repo folder)
 fileRouter.post('/git/commit', async (req, res) => {
   try {
-    const workingDir = getWorkingDir();
+    const workingDir = path.resolve(getWorkingDir());
     const { repoPath, title, message } = (req.body || {}) as { repoPath?: string; title?: string; message?: string };
     if (!repoPath || !title) return res.status(400).json({ error: 'repoPath and title are required' });
-    const absRepo = path.join(workingDir, repoPath);
-    if (!absRepo.startsWith(workingDir)) return res.status(403).json({ error: 'Access denied' });
+    const absRepo = path.resolve(workingDir, repoPath);
+    const rel = path.relative(workingDir, absRepo);
+    if (rel.startsWith('..') || rel.startsWith(path.sep)) return res.status(403).json({ error: 'Access denied' });
     const repoRoot = await findGitRoot(absRepo);
     if (!repoRoot) return res.status(400).json({ error: 'Not a git repository' });
     const args = ['commit', '-m', String(title)];
@@ -734,11 +744,12 @@ fileRouter.post('/git/commit', async (req, res) => {
 // Git: push
 fileRouter.post('/git/push', async (req, res) => {
   try {
-    const workingDir = getWorkingDir();
+    const workingDir = path.resolve(getWorkingDir());
     const { repoPath } = (req.body || {}) as { repoPath?: string };
     if (!repoPath) return res.status(400).json({ error: 'repoPath is required' });
-    const absRepo = path.join(workingDir, repoPath);
-    if (!absRepo.startsWith(workingDir)) return res.status(403).json({ error: 'Access denied' });
+    const absRepo = path.resolve(workingDir, repoPath);
+    const rel = path.relative(workingDir, absRepo);
+    if (rel.startsWith('..') || rel.startsWith(path.sep)) return res.status(403).json({ error: 'Access denied' });
     const repoRoot = await findGitRoot(absRepo);
     if (!repoRoot) return res.status(400).json({ error: 'Not a git repository' });
     try {
@@ -755,12 +766,13 @@ fileRouter.post('/git/push', async (req, res) => {
 // Git: clone a repository into a directory (relative to working dir)
 fileRouter.post('/git/clone', async (req, res) => {
   try {
-    const workingDir = getWorkingDir();
+    const workingDir = path.resolve(getWorkingDir());
     const { url, directory, name } = (req.body || {}) as { url?: string; directory?: string; name?: string };
     if (!url || typeof url !== 'string') return res.status(400).json({ error: 'url is required' });
     const baseRel = typeof directory === 'string' ? directory : '';
-    const baseAbs = path.join(workingDir, baseRel);
-    if (!baseAbs.startsWith(workingDir)) return res.status(403).json({ error: 'Access denied' });
+    const baseAbs = path.resolve(workingDir, baseRel);
+    const relBase = path.relative(workingDir, baseAbs);
+    if (relBase.startsWith('..') || relBase.startsWith(path.sep)) return res.status(403).json({ error: 'Access denied' });
     try { await fs.mkdir(baseAbs, { recursive: true }); } catch {}
     const derivedName = ((): string => {
       if (typeof name === 'string' && name.trim()) return name.trim();
@@ -773,7 +785,9 @@ fileRouter.post('/git/clone', async (req, res) => {
         return m.replace(/\.git$/i, '') || 'repo';
       }
     })();
-    const target = path.join(baseAbs, derivedName);
+    const target = path.resolve(baseAbs, derivedName);
+    const relTarget = path.relative(workingDir, target);
+    if (relTarget.startsWith('..') || relTarget.startsWith(path.sep)) return res.status(403).json({ error: 'Access denied' });
     // Prevent cloning over existing folder
     try {
       const s = await fs.stat(target);

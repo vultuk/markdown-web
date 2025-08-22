@@ -725,7 +725,7 @@ fileRouter.post('/git/commit', async (req, res) => {
     if (!repoPath || !title) return res.status(400).json({ error: 'repoPath and title are required' });
     const absRepo = path.resolve(workingDir, repoPath);
     const rel = path.relative(workingDir, absRepo);
-    if (rel.startsWith('..') || rel.startsWith(path.sep)) return res.status(403).json({ error: 'Access denied' });
+    if (rel.startsWith('..') || path.isAbsolute(rel)) return res.status(403).json({ error: 'Access denied' });
     const repoRoot = await findGitRoot(absRepo);
     if (!repoRoot) return res.status(400).json({ error: 'Not a git repository' });
     const args = ['commit', '-m', String(title)];

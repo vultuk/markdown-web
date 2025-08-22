@@ -1,0 +1,9 @@
+dist/
+build/
+out/
+coverage/
+node_modules/
+docs/
+.vite/
+.cache/
+

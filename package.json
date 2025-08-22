@@ -1,6 +1,6 @@
 {
   "name": "markdown-web",
-  "version": "2.15.0",
+  "version": "2.15.1",
   "description": "A modern, browser-based markdown editor that you can run in any directory. Edit .md files with live preview, auto-save, and a VS Code-inspired interface.",
   "main": "dist/server/index.js",
   "bin": {
@@ -33,7 +33,10 @@
     "start:https": "sudo node dist/server/https-server.js",
     "setup-ssl": "sudo ./scripts/setup-ssl.sh",
     "typecheck": "tsc --noEmit",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "test": "vitest run",
+    "lint": "eslint . --ext .ts,.tsx,.js,.jsx",
+    "lint:fix": "eslint . --ext .ts,.tsx,.js,.jsx --fix"
   },
   "keywords": [
     "markdown",
@@ -82,6 +85,15 @@
     "concurrently": "^8.2.2",
     "tsx": "^4.6.2",
     "typescript": "^5.3.3",
-    "vite": "^5.0.8"
+    "vite": "^5.0.8",
+    "vitest": "^2.1.1",
+    "supertest": "^6.3.4",
+    "@types/supertest": "^2.0.16",
+    "eslint": "^8.57.0",
+    "@typescript-eslint/parser": "^7.18.0",
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "eslint-plugin-react": "^7.34.3",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-config-prettier": "^9.1.0"
   }
 }

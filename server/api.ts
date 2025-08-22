@@ -168,7 +168,7 @@ fileRouter.post('/rename', async (req, res) => {
     const relNew = path.relative(workingDir, absNew);
 
     // Security: ensure both paths are within working dir
-    if (relOld.startsWith('..') || relOld.startsWith(path.sep) || relNew.startsWith('..') || relNew.startsWith(path.sep)) {
+    if (relOld.startsWith('..') || path.isAbsolute(relOld) || relNew.startsWith('..') || path.isAbsolute(relNew)) {
       return res.status(403).json({ error: 'Access denied' });
     }
 

@@ -140,7 +140,7 @@ fileRouter.post('/create-directory', async (req, res) => {
     const rel = path.relative(workingDir, dirPath);
 
     // Security check
-    if (rel.startsWith('..') || rel.startsWith(path.sep)) {
+    if (rel.startsWith('..') || path.isAbsolute(rel)) {
       return res.status(403).json({ error: 'Access denied' });
     }
 

@@ -772,7 +772,7 @@ fileRouter.post('/git/clone', async (req, res) => {
     const baseRel = typeof directory === 'string' ? directory : '';
     const baseAbs = path.resolve(workingDir, baseRel);
     const relBase = path.relative(workingDir, baseAbs);
-    if (relBase.startsWith('..') || relBase.startsWith(path.sep)) return res.status(403).json({ error: 'Access denied' });
+    if (relBase.startsWith('..') || path.isAbsolute(relBase)) return res.status(403).json({ error: 'Access denied' });
     try { await fs.mkdir(baseAbs, { recursive: true }); } catch {}
     const derivedName = ((): string => {
       if (typeof name === 'string' && name.trim()) return name.trim();

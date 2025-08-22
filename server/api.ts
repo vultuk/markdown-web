@@ -698,7 +698,7 @@ fileRouter.post('/git/add', async (req, res) => {
     if (!relPath) return res.status(400).json({ error: 'path is required' });
     const absPath = path.resolve(workingDir, relPath);
     const rel = path.relative(workingDir, absPath);
-    if (rel.startsWith('..') || rel.startsWith(path.sep)) return res.status(403).json({ error: 'Access denied' });
+    if (rel.startsWith('..') || path.isAbsolute(rel)) return res.status(403).json({ error: 'Access denied' });
     const repoRoot = await findGitRoot(absPath);
     if (!repoRoot) return res.status(400).json({ error: 'Not inside a git repository' });
     const relToRepo = path.relative(repoRoot, absPath).replace(/\\/g, '/');
